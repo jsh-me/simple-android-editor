@@ -1,10 +1,7 @@
 package kr.co.jsh.customview
 
-import android.animation.ObjectAnimator
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Typeface
 import android.media.MediaExtractor
 import android.media.MediaFormat
 import android.media.MediaMetadataRetriever
@@ -17,12 +14,9 @@ import android.util.LongSparseArray
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.widget.HorizontalScrollView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.ObservableFloat
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Observable
 import kotlinx.android.synthetic.main.include_view_trimmer.view.*
 import kr.co.jsh.R
 import kr.co.jsh.interfaces.OnProgressVideoListener
@@ -77,11 +71,7 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
         LayoutInflater.from(context).inflate(R.layout.include_view_trimmer, this, true)
         handlerTop.progress = handlerTop.max / 2
         handlerTop.isEnabled = false
-
-        var view_width=ScreenSizeUtil(context).widthPixels /2
-        Log.i("여기 너비는?","${view_width}")
-
-
+        
         setUpListeners()
         //setUpMargins()
         icon_video_play.setOnClickListener {
@@ -91,12 +81,9 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
                 //mMessageHandler.removeMessages(SHOW_PROGRESS)
                 icon_video_play.isSelected = false
                 video_loader.pause()
-//                scroll.post {
-//                    scroll.smoothScrollToView().pause()
-//                }
+
                 Log.i("video stop","")
             } else {
-                // icon_video_play.visibility = View.GONE
                 if (mResetSeekBar) {
                     mResetSeekBar = false
                     video_loader.seekTo(mStartPosition.toInt())
@@ -106,9 +93,7 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
                 var thread = ThreadClass()
                 //---------
                 thread.start()
-//                scroll.post {
-//                    scroll.smoothScrollToView().start()
-//                }
+
                 Log.i("video start","")
 
             }
@@ -131,27 +116,20 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
     inner class ThreadClass:Thread(){
 
         override fun run() {
-            while(video_loader.isPlaying){
+            while (video_loader.isPlaying) {
 
                 context.runOnUiThread {
                     textStartTime.text = String.format(
                         "%s",
                         TrimVideoUtils.stringForTime(video_loader.currentPosition.toFloat())
                     )
+                    //시간 흐를때마다 뷰 옆으로 이동!
+                    scroll.scrollTo ((video_loader.currentPosition * (timeLineView.width - ScreenSizeUtil(context).widthPixels))/video_loader.duration, 0)
                 }
                 sleep(1)
             }
         }
     }
-
-    private fun HorizontalScrollView.smoothScrollToView(): ObjectAnimator {
-        //나중에 propertyName을 width로 바꿔보기
-        return ObjectAnimator.ofInt(this, "scrollX", timeLineView.width - ScreenSizeUtil(context).widthPixels)
-            .apply {
-                duration = (mDuration).toLong()
-            }
-    }
-
 
     private fun setUpListeners() {
         mListeners = ArrayList()
@@ -166,20 +144,8 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
             false
         }
 
-        timeLineView.setOnTouchListener { v, event ->
-            when(event.action){
-                MotionEvent.ACTION_DOWN -> {scroll.smoothScrollToView().pause()}
-                MotionEvent.ACTION_MOVE -> {scroll.smoothScrollToView().pause()}
-
-            }
-            true
-        }
-
-
         video_loader.setOnPreparedListener { mp -> onVideoPrepared(mp) }
         video_loader.setOnCompletionListener { onVideoCompleted() }
-
-
     }
 
     fun onSaveClicked() {
@@ -319,7 +285,6 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
         mTimeVideo = mDuration
     }
 
-    @SuppressLint("CheckResult")
     private fun setTimeFrames() {
          textTimeSelection.text = String.format("%s", TrimVideoUtils.stringForTime(mEndPosition))
         //rxTextView 적용 예정
@@ -343,15 +308,6 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
                     video_loader.seekTo(touch_time.get().toInt())
                     Log.i("seekto","${touch_time.get()}")
 
-//                    Observable.just(touch_time)
-//                        .subscribeOn(AndroidSchedulers.mainThread())
-//                        .subscribe {
-//                            textStartTime.text = String.format(
-//                                "%s",
-//                                TrimVideoUtils.stringForTime(it)
-//                            )
-//                            video_loader.seekTo(it.toInt())
-//                        }
                     true
                 }
 
@@ -401,7 +357,6 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
         mSrc = videoURI
         video_loader.setVideoURI(mSrc)
         video_loader.requestFocus()
-        //timeLineView.setVideo(mSrc)
         mBitmaps = getThumbnailList()
         timeLineView.drawView(mBitmaps)
         return this
@@ -423,16 +378,7 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
                     //cropWidth/height = timelineview에 하나씩 붙일 , 리사이즈된 프레임의 너비 높이
                     //numThumbs = 썸네일 보여줄 갯수
                     val videoLengthInMs = (Integer.parseInt(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION))).toLong()
-                    // val frameHeight = video_loader.height
-                    //처음 프레임 가져옴
-                    // val initialBitmap = mediaMetadataRetriever.getFrameAtTime(0, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
-                    //initialBitmap width=240, height=320 frameheight=105, framewidth=78
-                    //val frameWidth = ((initialBitmap.width / initialBitmap.height) * frameHeight.toFloat()).toInt()
-                    //3초에 하나씩 프레임이 캡쳐되어 ThumbnailList에 담겨질 것임
                     var numThumbs = if(videoLengthInMs>=3000) ceil(videoLengthInMs/3000.0).toInt() else 1
-                    //Timber.i("viewWidth: ${timeLineView.width}, frameWidth: $frameWidth numThumbs : $numThumbs")
-                    //if (numThumbs < threshold) numThumbs = threshold
-//                    val cropWidth = viewWidth / threshold, view width = 940
                     val cropHeight = 150 //timelineview에서 한 프레임의 너비 (동적으로 변경되게끔 코드 수정해야함!)
                     val cropWidth = ScreenSizeUtil(context).widthPixels/4 //timelineview에서 한 프레임의 너비
 
@@ -460,9 +406,6 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
                         }
                     }
                     mediaMetadataRetriever.release()
-//                    UiThreadExecutor.runTask("", Runnable {
-//                        invalidate()
-//                    },0L)
                 } catch (e: Throwable) {
                     Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), e)
                 }
