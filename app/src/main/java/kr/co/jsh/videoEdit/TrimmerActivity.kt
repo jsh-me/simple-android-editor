@@ -69,7 +69,6 @@ class TrimmerActivity : AppCompatActivity() ,OnTrimVideoListener,OnVideoListener
 
     fun save(view: View) {
         videoTrimmer.onSaveClicked()
-
     }
 
 //    fun thisframe(view: View){

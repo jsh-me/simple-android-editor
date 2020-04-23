@@ -2,6 +2,7 @@ package kr.co.jsh.customview
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.media.MediaExtractor
 import android.media.MediaFormat
 import android.media.MediaMetadataRetriever
@@ -14,6 +15,7 @@ import android.util.LongSparseArray
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.ObservableFloat
@@ -22,6 +24,7 @@ import kr.co.jsh.R
 import kr.co.jsh.interfaces.OnProgressVideoListener
 import kr.co.jsh.interfaces.OnTrimVideoListener
 import kr.co.jsh.interfaces.OnVideoListener
+import kr.co.jsh.paint.Mypainter.Companion.count
 import kr.co.jsh.utils.*
 import org.jetbrains.anko.runOnUiThread
 import java.io.File
@@ -31,6 +34,22 @@ import kotlin.collections.ArrayList
 
 
 class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int = 0) : ConstraintLayout(context, attrs, defStyleAttr) {
+
+    private var touch_time = ObservableFloat()
+
+    //자른 횟수
+    private var crop_count = 0
+
+    // crop 거리(crop_x1. crop_x2) , current-position
+    // 두번 자르면 총 4개의 key-value가 나와야 함
+    lateinit var crop_time : ArrayList<Pair<Int,Int>>
+
+    private var bitmapArrayList = LongSparseArray<Bitmap>()
+    private var crop_x1 = 0
+    private var crop_x2 = 0
+
+    private var thread = ThreadClass()
+
 
     private lateinit var mSrc: Uri
     private var mFinalPath: String? = null
@@ -71,7 +90,7 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
         LayoutInflater.from(context).inflate(R.layout.include_view_trimmer, this, true)
         handlerTop.progress = handlerTop.max / 2
         handlerTop.isEnabled = false
-        
+
         setUpListeners()
         //setUpMargins()
         icon_video_play.setOnClickListener {
@@ -90,10 +109,7 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
                 }
                 icon_video_play.isSelected = true
                 video_loader.start()
-                var thread = ThreadClass()
-                //---------
                 thread.start()
-
                 Log.i("video start","")
 
             }
@@ -102,15 +118,6 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
         video_loader.setOnCompletionListener {
             icon_video_play.isSelected = false
         }
-
-//        timeLineView.setOnTouchListener{ _: View, motionEvent: MotionEvent ->
-//            when(motionEvent.action) {
-//                MotionEvent.ACTION_MOVE, MotionEvent.ACTION_DOWN, MotionEvent.ACTION_UP-> Log.i("scroll X", "${scroll.scrollX}")
-//                textStartTime.text =
-//                    String.format( "%s", TrimVideoUtils.stringForTime((mDuration * scroll.scrollX)/timeLineView.width))
-//            }
-//            true
-//            }
     }
 
     inner class ThreadClass:Thread(){
@@ -201,39 +208,6 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
         mOnTrimVideoListener?.cancelAction()
     }
 
-    fun frameCapture():Bitmap {
-
-        val mediaMetadataRetriever = MediaMetadataRetriever()
-        mediaMetadataRetriever.setDataSource(context, mSrc)
-        var currentPosition: Long
-        try {
-            currentPosition=video_loader.currentPosition.toLong()
-            //currentPosition = frame_location!!.toLong() //현재 위치 프레임
-        } catch (e: NullPointerException) {
-            currentPosition = 0L
-        }
-        Toast.makeText(
-            context,
-            "Current Position: $currentPosition (ms)",
-            Toast.LENGTH_LONG
-        ).show()
-
-        var bmFrame: Bitmap = mediaMetadataRetriever.getFrameAtTime(currentPosition* 1000L)
-
-        if (bmFrame == null) {
-            Toast.makeText(
-                context,
-                "bmFrame == null!",
-                Toast.LENGTH_LONG
-            ).show()
-        } else {
-            Log.i("bmFrame", " 통과")
-
-
-        }
-        return bmFrame
-    }
-
     fun setVideoInformationVisibility(visible: Boolean): VideoTrimmer {
         // timeFrame.visibility = if (visible) View.VISIBLE else View.GONE
         return this
@@ -250,9 +224,7 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
         Log.i("video size","width : ${videoWidth} and height: ${videoHeight}")
 
         handlerTop.visibility=View.VISIBLE
-
         video_loader.layoutParams = lp
-
         icon_video_play.visibility = View.VISIBLE
 
         mDuration = video_loader.duration.toFloat()
@@ -297,16 +269,24 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
 
         timeLineView.setOnTouchListener{ _: View, motionEvent: MotionEvent ->
             when(motionEvent.action) {
-                MotionEvent.ACTION_MOVE, MotionEvent.ACTION_DOWN -> {
-//                    Log.i("scroll X", "${scroll.scrollX}")
-                    var touch_time = ObservableFloat()
-                    touch_time.set ((mDuration * scroll.scrollX) / (timeLineView.width - ScreenSizeUtil(context).widthPixels))
+                MotionEvent.ACTION_SCROLL, MotionEvent.ACTION_UP, MotionEvent.ACTION_MOVE, MotionEvent.ACTION_DOWN -> {
+                    Log.i("action up or scroll", "${scroll.scrollX}")
+                    //var temp = (((mDuration * scroll.scrollX) / (timeLineView.width - ScreenSizeUtil(context).widthPixels)).toInt() / 3000) * 3000
+                    touch_time.set(
+                        (mDuration * scroll.scrollX) / (timeLineView.width - ScreenSizeUtil(
+                            context
+                        ).widthPixels)
+                    )
+                    //touch_time.set (temp.toFloat())
+
                     textStartTime.text = String.format(
                         "%s",
                         TrimVideoUtils.stringForTime(touch_time.get())
                     )
                     video_loader.seekTo(touch_time.get().toInt())
-                    Log.i("seekto","${touch_time.get()}")
+                    // scroll.scrollTo (ScreenSizeUtil(context).widthPixels/4 * (temp/3000+1) , 0)
+
+                    Log.i("seekto", "${touch_time.get()}")
 
                     true
                 }
@@ -314,6 +294,55 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
                 else -> false
             }
         }
+
+        crop_btn.setOnClickListener {
+
+            crop_time = arrayListOf() //initialize
+            crop_time.add(Pair(0,0))//1
+
+            //내가 가위로 자른 지점의 거리
+            crop_count++
+            if(crop_count ==1) {
+                bitmapArrayList = mBitmaps
+                crop_x1 = (video_loader.currentPosition * (timeLineView.width - ScreenSizeUtil(context).widthPixels)) / video_loader.duration
+                crop_time.add(Pair(crop_x1, video_loader.currentPosition))//2
+
+                timeLineView.cropView(bitmapArrayList, crop_x1, crop_x2, crop_count)
+            }
+            else if (crop_count ==2){
+                crop_x2 = (video_loader.currentPosition * (timeLineView.width - ScreenSizeUtil(context).widthPixels)) / video_loader.duration
+
+                crop_time.add(Pair(crop_x2, video_loader.currentPosition)) //3
+                crop_time.add(Pair(timeLineView.width - ScreenSizeUtil(context).widthPixels, video_loader.duration)) //4
+
+                timeLineView.cropView(bitmapArrayList, crop_x1, crop_x2, crop_count)
+
+                bordering()
+            }
+            else if(crop_count >=3) {
+                Toast.makeText(context,"CROP은 두 번만 가능 !",Toast.LENGTH_LONG).show()
+            }
+        }
+
+        reset.setOnClickListener {
+            try {
+                crop_count = 0
+                crop_time.clear()
+                timeLineView.resetView(crop_count)
+            }
+            catch (e: Exception) {
+                Toast.makeText(context, "잘라진 것이 없어요!", Toast.LENGTH_LONG).show()
+            }
+        }
+
+    }
+
+    private fun bordering(){
+        Log.i("bordering","${crop_time.get(0).first}") //아 자꾸 0이 나오네
+        var params = FrameLayout.LayoutParams(crop_x1, timeLineView.height)
+        params.marginStart = ScreenSizeUtil(context).widthPixels/2
+        border.layoutParams = params
+        border.visibility = View.VISIBLE
     }
 
     private fun onVideoCompleted() {
@@ -345,7 +374,6 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
     fun destroy() {
         BackgroundExecutor.cancelAll("", true)
         UiThreadExecutor.cancelAll("")
-
     }
 
     fun setDestinationPath(path: String): VideoTrimmer {
@@ -383,7 +411,7 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
                     val cropWidth = ScreenSizeUtil(context).widthPixels/4 //timelineview에서 한 프레임의 너비
 
                     //val interval = videoLengthInMs / numThumbs
-                    val interval = if(videoLengthInMs< 3000) videoLengthInMs else 3000
+                    val interval = if(videoLengthInMs< 3000) videoLengthInMs*1000 else 3000*1000
                     Log.i("test","${numThumbs}")
 
                     for (i in 0 until numThumbs) {

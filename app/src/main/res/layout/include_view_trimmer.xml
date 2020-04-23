@@ -39,18 +39,28 @@
         android:background="@drawable/remove_button_selector"
         app:layout_constraintBottom_toBottomOf="@+id/child_layout"
         app:layout_constraintStart_toStartOf="@+id/scroll"
-        app:layout_constraintTop_toBottomOf="@+id/imageView2"
+        app:layout_constraintTop_toBottomOf="@+id/crop_btn"
         app:layout_constraintVertical_bias="0.9" />
 
     <ImageButton
+        android:id="@+id/imageButton2"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginStart="20dp"
         android:background="@drawable/brush_button_selector"
         app:layout_constraintBottom_toBottomOf="@+id/child_layout"
         app:layout_constraintStart_toEndOf="@+id/imageButton"
-        app:layout_constraintTop_toBottomOf="@+id/imageView2"
+        app:layout_constraintTop_toBottomOf="@+id/crop_btn"
         app:layout_constraintVertical_bias="0.9" />
+
+    <ImageButton
+        android:id="@+id/reset"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:background="@drawable/ic_launcher_foreground"
+        app:layout_constraintBottom_toBottomOf="@+id/imageButton2"
+        app:layout_constraintStart_toEndOf="@+id/imageButton2"
+        app:layout_constraintTop_toTopOf="@+id/imageButton2" />
 
     <ImageView
         android:id="@+id/icon_video_play"
@@ -74,8 +84,8 @@
         app:layout_constraintStart_toEndOf="@+id/icon_video_play"
         app:layout_constraintTop_toBottomOf="@+id/video_loader" />
 
-    <ImageView
-        android:id="@+id/imageView2"
+    <ImageButton
+        android:id="@+id/crop_btn"
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_marginTop="10dp"
@@ -95,17 +105,25 @@
         app:layout_constraintTop_toTopOf="@+id/child_layout"
         app:layout_constraintVertical_bias="0.26999998">
 
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="50dp">
+
         <kr.co.jsh.customview.TimeLineView
             android:id="@+id/timeLineView"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
-            android:adjustViewBounds="true"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.509"
-            app:layout_constraintStart_toStartOf="@id/guideline"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.591" />
+            android:adjustViewBounds="true" />
+
+            <View
+                android:id="@+id/border"
+                android:visibility="invisible"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/boader_round" />
+
+        </FrameLayout>
+
     </HorizontalScrollView>
 
     <TextView
