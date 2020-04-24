@@ -2,34 +2,39 @@ package kr.co.jsh.customview
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.media.MediaExtractor
 import android.media.MediaFormat
 import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Environment
+import android.telephony.mbms.MbmsErrors
 import android.util.AttributeSet
 import android.util.Log
 import android.util.LongSparseArray
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewTreeObserver
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.ObservableFloat
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.android.synthetic.main.include_view_trimmer.view.*
 import kr.co.jsh.R
 import kr.co.jsh.interfaces.OnProgressVideoListener
 import kr.co.jsh.interfaces.OnTrimVideoListener
 import kr.co.jsh.interfaces.OnVideoListener
-import kr.co.jsh.paint.Mypainter.Companion.count
 import kr.co.jsh.utils.*
 import org.jetbrains.anko.runOnUiThread
+import timber.log.Timber
 import java.io.File
 import java.lang.Math.ceil
 import java.util.*
+import kotlin.Pair
 import kotlin.collections.ArrayList
 
 
@@ -42,7 +47,10 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
 
     // crop 거리(crop_x1. crop_x2) , current-position
     // 두번 자르면 총 4개의 key-value가 나와야 함
-    lateinit var crop_time : ArrayList<Pair<Int,Int>>
+    lateinit var crop_time : ArrayList<Pair<Int, Int>>
+
+    //border view 의 크기를 만들어줌
+    lateinit var params : FrameLayout.LayoutParams
 
     private var bitmapArrayList = LongSparseArray<Bitmap>()
     private var crop_x1 = 0
@@ -91,6 +99,9 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
         handlerTop.progress = handlerTop.max / 2
         handlerTop.isEnabled = false
 
+        crop_time = arrayListOf() //initialize
+        crop_time.add(Pair(0, 0))//1
+
         setUpListeners()
         //setUpMargins()
         icon_video_play.setOnClickListener {
@@ -103,11 +114,12 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
 
                 Log.i("video stop","")
             } else {
-                if (mResetSeekBar) {
-                    mResetSeekBar = false
-                    video_loader.seekTo(mStartPosition.toInt())
-                }
+//                if (mResetSeekBar) {
+//                    mResetSeekBar = false
+//                    video_loader.seekTo(mStartPosition.toInt())
+//                }
                 icon_video_play.isSelected = true
+                video_loader.seekTo(touch_time.get().toInt())
                 video_loader.start()
                 thread.start()
                 Log.i("video start","")
@@ -269,58 +281,84 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
 
         timeLineView.setOnTouchListener{ _: View, motionEvent: MotionEvent ->
             when(motionEvent.action) {
-                MotionEvent.ACTION_SCROLL, MotionEvent.ACTION_UP, MotionEvent.ACTION_MOVE, MotionEvent.ACTION_DOWN -> {
-                    Log.i("action up or scroll", "${scroll.scrollX}")
-                    //var temp = (((mDuration * scroll.scrollX) / (timeLineView.width - ScreenSizeUtil(context).widthPixels)).toInt() / 3000) * 3000
-                    touch_time.set(
-                        (mDuration * scroll.scrollX) / (timeLineView.width - ScreenSizeUtil(
-                            context
-                        ).widthPixels)
-                    )
-                    //touch_time.set (temp.toFloat())
-
-                    textStartTime.text = String.format(
-                        "%s",
-                        TrimVideoUtils.stringForTime(touch_time.get())
-                    )
-                    video_loader.seekTo(touch_time.get().toInt())
-                    // scroll.scrollTo (ScreenSizeUtil(context).widthPixels/4 * (temp/3000+1) , 0)
-
-                    Log.i("seekto", "${touch_time.get()}")
-
-                    true
+                //편집할 영역을 선택하기
+                MotionEvent.ACTION_UP,MotionEvent.ACTION_DOWN -> {
+                    try {
+                        if(crop_count == 2) {
+                            setBoarderRange(motionEvent.x)
+                            Log.i("touch x coordi:", "${motionEvent.x}")
+                            true
+                        }
+                        else { false }
+                    }
+                    catch(e:Exception){
+                        false
+                    }
                 }
-
                 else -> false
             }
         }
 
+        scroll.setOnScrollChangeListener{ view: View, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int ->
+            if(scrollX != oldScrollX && !video_loader.isPlaying){
+                Observable.just(scroll.scrollX)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                        touch_time.set((mDuration * it) / ((timeLineView.width) - ScreenSizeUtil(context).widthPixels))
+                        video_loader.seekTo(touch_time.get().toInt())
+                        textStartTime.text = String.format(
+                            "%s",
+                            TrimVideoUtils.stringForTime(touch_time.get())
+                        )
+                        Timber.i("test!!")
+                    }, {
+                        Timber.i(it.localizedMessage)
+                    })
+            }
+        }
+
+
         crop_btn.setOnClickListener {
-
-            crop_time = arrayListOf() //initialize
-            crop_time.add(Pair(0,0))//1
-
-            //내가 가위로 자른 지점의 거리
+            Log.i("size:", "${crop_time.size}")
             crop_count++
-            if(crop_count ==1) {
-                bitmapArrayList = mBitmaps
-                crop_x1 = (video_loader.currentPosition * (timeLineView.width - ScreenSizeUtil(context).widthPixels)) / video_loader.duration
-                crop_time.add(Pair(crop_x1, video_loader.currentPosition))//2
 
-                timeLineView.cropView(bitmapArrayList, crop_x1, crop_x2, crop_count)
-            }
-            else if (crop_count ==2){
-                crop_x2 = (video_loader.currentPosition * (timeLineView.width - ScreenSizeUtil(context).widthPixels)) / video_loader.duration
+            when (crop_count) {
+                1 -> {
+                    bitmapArrayList = mBitmaps
+                    crop_x1 =
+                        (video_loader.currentPosition * (timeLineView.width - ScreenSizeUtil(context).widthPixels)) / video_loader.duration
+                    //미리 두번 넣고 추후에 수정하자.
+                    crop_time.add(Pair(crop_x1, video_loader.currentPosition))//2
+                    Log.i("size:", "${crop_time.size}")
+                    crop_time.add(Pair(crop_x1, video_loader.currentPosition))//3
+                    Log.i("size:", "${crop_time.size}")
 
-                crop_time.add(Pair(crop_x2, video_loader.currentPosition)) //3
-                crop_time.add(Pair(timeLineView.width - ScreenSizeUtil(context).widthPixels, video_loader.duration)) //4
+                    timeLineView.cropView(bitmapArrayList, crop_x1, crop_x2, crop_count)
+                }
+                2 -> {
+                    crop_x2 =
+                        (video_loader.currentPosition * (timeLineView.width - ScreenSizeUtil(context).widthPixels)) / video_loader.duration
 
-                timeLineView.cropView(bitmapArrayList, crop_x1, crop_x2, crop_count)
+                    //요렇게하면 crop_time은 좌표값이 작은 순부터 큰 순으로 자동정렬 되겠지
+                    if (crop_x1 < crop_x2) {
+                        crop_time[2] = Pair(crop_x2, video_loader.currentPosition)
+                    } else {
+                        crop_time[1] = Pair(crop_x2, video_loader.currentPosition)
+                    }
 
-                bordering()
-            }
-            else if(crop_count >=3) {
-                Toast.makeText(context,"CROP은 두 번만 가능 !",Toast.LENGTH_LONG).show()
+                    crop_time.add(
+                        Pair(
+                            timeLineView.width - ScreenSizeUtil(context).widthPixels,
+                            video_loader.duration
+                        )
+                    ) //4
+                    timeLineView.cropView(bitmapArrayList, crop_x1, crop_x2, crop_count)
+                    initialBordering()
+                }
+                else -> {
+                    Toast.makeText(context, "CROP은 두 번만 가능 !", Toast.LENGTH_LONG).show()
+                }
             }
         }
 
@@ -328,7 +366,10 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
             try {
                 crop_count = 0
                 crop_time.clear()
+                crop_time.add(Pair(0, 0))//1
+
                 timeLineView.resetView(crop_count)
+                border.visibility = View.INVISIBLE
             }
             catch (e: Exception) {
                 Toast.makeText(context, "잘라진 것이 없어요!", Toast.LENGTH_LONG).show()
@@ -337,12 +378,42 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
 
     }
 
-    private fun bordering(){
-        Log.i("bordering","${crop_time.get(0).first}") //아 자꾸 0이 나오네
-        var params = FrameLayout.LayoutParams(crop_x1, timeLineView.height)
+    //coordiX: 사용자가 터치한 좌표의 X값을 가져옴 (상대좌표)
+    private fun setBoarderRange(coordiX:Float){
+        //터치한 곳에서 width/2 를 빼야지 원활한 계산이 가능해짐
+        var startX = coordiX - ScreenSizeUtil(context).widthPixels/2
+        if(startX >= crop_time[1].first && startX <= crop_time[2].first){
+            border.visibility = View.INVISIBLE
+            //7은 TimeLintView 에서 그려줄 때 만든 margin 값
+            params = FrameLayout.LayoutParams(crop_time[2].first - crop_time[1].first +7 , timeLineView.height)
+            params.marginStart = ScreenSizeUtil(context).widthPixels/2 + crop_time[1].first
+            border.layoutParams = params
+            border.visibility = View.VISIBLE
+        }
+        else if(startX > crop_time[2].first){
+            border.visibility = View.INVISIBLE
+            params = FrameLayout.LayoutParams(crop_time[3].first - crop_time[2].first +14 , timeLineView.height)
+            params.marginStart = ScreenSizeUtil(context).widthPixels/2 + crop_time[2].first
+            border.layoutParams = params
+            border.visibility = View.VISIBLE
+        }
+        else if (startX >= 0 && startX < crop_time[1].first) {
+            border.visibility = View.INVISIBLE
+            initialBordering()
+        }
+        else{
+            border.visibility = View.INVISIBLE
+        }
+
+    }
+
+    //두번 자르면, 자동으로 맨 처음 영역이 선택됨. 그 후에 setEditRange로 수정 가능
+    private fun initialBordering(){
+        params = FrameLayout.LayoutParams(crop_time[1].first, timeLineView.height)
         params.marginStart = ScreenSizeUtil(context).widthPixels/2
         border.layoutParams = params
         border.visibility = View.VISIBLE
+        Toast.makeText(context, "편집할 영역을 선택하세요.", Toast.LENGTH_LONG).show()
     }
 
     private fun onVideoCompleted() {

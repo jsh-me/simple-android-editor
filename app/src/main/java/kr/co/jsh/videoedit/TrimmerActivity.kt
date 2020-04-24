@@ -1,11 +1,9 @@
-package kr.co.jsh.videoEdit
+package kr.co.jsh.videoedit
 
 import android.Manifest
 import android.content.ContentUris
 import android.content.ContentValues
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Bundle

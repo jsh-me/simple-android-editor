@@ -1,4 +1,4 @@
-package kr.co.jsh.videoEdit
+package kr.co.jsh.videoedit
 
 import android.app.Dialog
 import android.content.Context
@@ -8,7 +8,7 @@ import android.os.Bundle
 import kr.co.jsh.R
 
 
-class VideoProgressIndeterminateDialog(private var ctx: Context, private var message: String) : Dialog(ctx) {
+class VideoProgressIndeterminateDialog(ctx: Context, message: String) : Dialog(ctx) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -16,9 +16,5 @@ class VideoProgressIndeterminateDialog(private var ctx: Context, private var mes
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         setCancelable(false)
         setCanceledOnTouchOutside(false)
-
-        //messageLabel.text = message
-
-        //messageLabel.typeface = FontsHelper[ctx, FontsConstants.SEMI_BOLD]
     }
 }

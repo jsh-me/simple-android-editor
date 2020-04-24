@@ -11,7 +11,7 @@ fun ScreenSizeUtil(context: Context): DisplayMetrics {
     val metrics = DisplayMetrics()
     var windowManager:WindowManager = context.applicationContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     windowManager.defaultDisplay.getMetrics(metrics)
-    Log.i("ScreenSize:","${metrics.widthPixels} and ${metrics.heightPixels}")
+    //Log.i("ScreenSize:","${metrics.widthPixels} and ${metrics.heightPixels}")
 
     return metrics
 }

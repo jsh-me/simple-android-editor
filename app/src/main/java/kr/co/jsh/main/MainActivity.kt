@@ -14,7 +14,7 @@ import androidx.databinding.DataBindingUtil
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityMainBinding
 import kr.co.jsh.utils.FileUtils
-import kr.co.jsh.videoEdit.TrimmerActivity
+import kr.co.jsh.videoedit.TrimmerActivity
 
 
 class MainActivity : AppCompatActivity() {

@@ -5,7 +5,7 @@
     <data>
         <variable
             name="trimmer"
-            type="kr.co.jsh.videoEdit.TrimmerActivity" />
+            type="kr.co.jsh.videoedit.TrimmerActivity" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
