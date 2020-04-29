@@ -26,7 +26,8 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <activity android:name=".main.MainActivity">
+        <activity android:name=".main.MainActivity"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -36,7 +37,9 @@
 
         <activity
             android:name=".videoedit.TrimmerActivity"
-            android:parentActivityName=".main.MainActivity"/>
+            android:parentActivityName=".main.MainActivity"
+            android:screenOrientation="portrait"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
     </application>
 
 </manifest>

@@ -1,6 +1,7 @@
 package kr.co.jsh.customview
 
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.media.MediaExtractor
 import android.media.MediaFormat
@@ -8,18 +9,20 @@ import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Environment
-import android.telephony.mbms.MbmsErrors
 import android.util.AttributeSet
 import android.util.Log
 import android.util.LongSparseArray
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewTreeObserver
+import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.ObservableFloat
+import androidx.lifecycle.MutableLiveData
+import com.byox.drawview.enums.BackgroundScale
+import com.byox.drawview.enums.BackgroundType
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -28,6 +31,7 @@ import kr.co.jsh.R
 import kr.co.jsh.interfaces.OnProgressVideoListener
 import kr.co.jsh.interfaces.OnTrimVideoListener
 import kr.co.jsh.interfaces.OnVideoListener
+import kr.co.jsh.main.MainActivity
 import kr.co.jsh.utils.*
 import org.jetbrains.anko.runOnUiThread
 import timber.log.Timber
@@ -38,9 +42,12 @@ import kotlin.Pair
 import kotlin.collections.ArrayList
 
 
-class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int = 0) : ConstraintLayout(context, attrs, defStyleAttr) {
+class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int = 0)
+    : ConstraintLayout(context, attrs, defStyleAttr) {
 
     private var touch_time = ObservableFloat()
+
+    //private var touch_time1 : MutableLiveData<String> = MutableLiveData()
 
     //자른 횟수
     private var crop_count = 0
@@ -51,6 +58,9 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
 
     //border view 의 크기를 만들어줌
     lateinit var params : FrameLayout.LayoutParams
+
+    //비디오의 전체화면
+    private var isFull = false
 
     private var bitmapArrayList = LongSparseArray<Bitmap>()
     private var crop_x1 = 0
@@ -94,6 +104,8 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
         init(context)
     }
 
+
+
     private fun init(context: Context) {
         LayoutInflater.from(context).inflate(R.layout.include_view_trimmer, this, true)
         handlerTop.progress = handlerTop.max / 2
@@ -105,19 +117,15 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
         setUpListeners()
         //setUpMargins()
         icon_video_play.setOnClickListener {
+
             Log.i("video_loader.isPlaying","${video_loader.isPlaying}")
             if (video_loader.isPlaying) {
                 //icon_video_play.visibility = View.VISIBLE
                 //mMessageHandler.removeMessages(SHOW_PROGRESS)
                 icon_video_play.isSelected = false
                 video_loader.pause()
-
                 Log.i("video stop","")
             } else {
-//                if (mResetSeekBar) {
-//                    mResetSeekBar = false
-//                    video_loader.seekTo(mStartPosition.toInt())
-//                }
                 icon_video_play.isSelected = true
                 video_loader.seekTo(touch_time.get().toInt())
                 video_loader.start()
@@ -150,6 +158,7 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
         }
     }
 
+
     private fun setUpListeners() {
         mListeners = ArrayList()
         mListeners.add(object : OnProgressVideoListener {
@@ -165,6 +174,45 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
 
         video_loader.setOnPreparedListener { mp -> onVideoPrepared(mp) }
         video_loader.setOnCompletionListener { onVideoCompleted() }
+
+        remove_btn.setOnClickListener { removeMode() }
+        reset_paint_btn.setOnClickListener { clearDraw() }
+        fullscreen_btn.setOnClickListener { fullScreen() }
+
+    }
+
+    private fun fullScreen(){
+        setFullScreen(!isFull)
+    }
+
+    private fun setFullScreen(full: Boolean){
+        isFull = full
+
+    }
+
+    private fun removeMode(){
+        video_frame_view.setBackgroundResource(R.color.background_space)
+        val mediaMetadataRetriever = MediaMetadataRetriever()
+        mediaMetadataRetriever.setDataSource(context, mSrc)
+        var bitmap = mediaMetadataRetriever.getFrameAtTime(touch_time.get().toLong() * 1000 , MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+        video_frame_view.setBackgroundImage(bitmap, BackgroundType.BITMAP, BackgroundScale.CENTER_INSIDE)
+
+        hideVideoView()
+    }
+
+    private fun showVideoView(){
+        if(video_loader.visibility == View.INVISIBLE) {
+            video_loader.visibility = View.VISIBLE
+            video_frame_view.visibility = View.INVISIBLE
+            clearDraw()
+        }
+    }
+
+    private fun hideVideoView(){
+        if(video_loader.visibility == View.VISIBLE) {
+            video_loader.visibility = View.INVISIBLE
+            video_frame_view.visibility = View.VISIBLE
+        }
     }
 
     fun onSaveClicked() {
@@ -305,6 +353,8 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({
+                        showVideoView() //재생 버튼 누른 후 remove 하면 이상하게 동작함. 무조건 seekbar로 이동시에만 정상동작.
+
                         touch_time.set((mDuration * it) / ((timeLineView.width) - ScreenSizeUtil(context).widthPixels))
                         video_loader.seekTo(touch_time.get().toInt())
                         textStartTime.text = String.format(
@@ -377,6 +427,12 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
         }
 
     }
+
+    private fun clearDraw(){
+        video_frame_view.restartDrawing()
+        removeMode()
+    }
+
 
     //coordiX: 사용자가 터치한 좌표의 X값을 가져옴 (상대좌표)
     private fun setBoarderRange(coordiX:Float){

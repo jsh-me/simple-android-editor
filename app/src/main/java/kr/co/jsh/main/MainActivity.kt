@@ -2,6 +2,7 @@ package kr.co.jsh.main
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -24,6 +25,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.main = this@MainActivity
+
+
+        //dialog 필요하면 ~
+//        val dialogVew = layoutInflater.inflate(R.layout.dialog_layout, null)
+//        val builder = AlertDialog.Builder(this)
+//        builder.setView(dialogVew)
+//            .setPositiveButton("확인") { dialog, which ->  }
+//            .setNegativeButton("취소") { dialog, which ->  }
+//            .show()
     }
 
     fun pickFromVideo(intentCode: Int) {
