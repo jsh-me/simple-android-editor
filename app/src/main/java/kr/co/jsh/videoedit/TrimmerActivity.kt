@@ -69,25 +69,6 @@ class TrimmerActivity : AppCompatActivity() ,OnTrimVideoListener,OnVideoListener
         videoTrimmer.onSaveClicked()
     }
 
-//    fun thisframe(view: View){
-//        videoTrimmer.frameCapture() //return type :Frame
-//            if (!TrimmerActivity@ this.isFinishing) {
-//                //비트맵으로 받아와서 class로 던진다.
-//                var sendBitmap: Bitmap = videoTrimmer.frameCapture() //return type :Frame
-//                Log.i("FramecaptureDialog", "출발")
-//                var frameintent = Intent(this, FrameCaptureDialog::class.java)
-//                var stream = ByteArrayOutputStream()
-//                sendBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-//                var byteArray: ByteArray = stream.toByteArray()
-//                frameintent.putExtra("FrameCapture", byteArray)
-//
-//                startActivity(frameintent)
-//                //스레드 ?
-//
-//            } else {
-//                Log.i("here", "여기에요 여기!!!")
-//            }
-//    }
 
     override fun onTrimStarted() {
         RunOnUiThread(this).safely {
@@ -165,22 +146,4 @@ class TrimmerActivity : AppCompatActivity() ,OnTrimVideoListener,OnVideoListener
     override fun onDestroy() {
         super.onDestroy()
     }
-
-//    override fun onRequestPermissionsResult(
-//        requestCode: Int,
-//        permissions: Array<out String>,
-//        grantResults: IntArray
-//    ) {
-//        when (requestCode) {
-//            101 -> {
-//                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-//                    PermissionsDialog(
-//                        this@TrimmerActivity,
-//                        "To continue, give Zoho Social access to your Photos."
-//                    ).show()
-//                } else doThis()
-//            }
-//        }
-//
-//    }
 }

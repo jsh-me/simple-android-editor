@@ -37,7 +37,7 @@
             android:layout_gravity="end"
             android:layout_margin="10dp"
             android:background="@drawable/save_button"
-            android:onClick="@{trimmer::save }"
+            android:onClick="@{trimmer::save}"
             android:padding="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.93"
