@@ -19,10 +19,11 @@ import androidx.databinding.DataBindingUtil
 import kotlinx.android.synthetic.main.activity_trimmer.*
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityTrimmerBinding
+import kr.co.jsh.globalconst.Consts.Companion.EXTRA_VIDEO_PATH
 import kr.co.jsh.interfaces.OnTrimVideoListener
 import kr.co.jsh.interfaces.OnVideoListener
-import kr.co.jsh.main.MainActivity
 import kr.co.jsh.utils.RunOnUiThread
+import kr.co.jsh.utils.setupPermissions
 import java.io.File
 
 
@@ -42,11 +43,15 @@ class TrimmerActivity : AppCompatActivity() ,OnTrimVideoListener,OnVideoListener
         binding.trimmer = this@TrimmerActivity
         Environment.getExternalStorageState()
 
-        setupPermissions {
+        setupPermissions(this) {
             val extraIntent = intent
             var path = ""
-            if (extraIntent != null) path =
-                extraIntent.getStringExtra(MainActivity.EXTRA_VIDEO_PATH)
+//            if (extraIntent != null) path =
+//                extraIntent.getStringExtra(EXTRA_VIDEO_PATH)
+
+            extraIntent?.let{
+                path =  extraIntent.getStringExtra(EXTRA_VIDEO_PATH)
+            }
 //            videoTrimmer.setTextTimeSelectionTypeface(FontsHelper[this, FontsConstants.SEMI_BOLD])
 
             videoTrimmer
@@ -124,24 +129,24 @@ class TrimmerActivity : AppCompatActivity() ,OnTrimVideoListener,OnVideoListener
         }
     }
 
-    lateinit var doThis: () -> Unit
-    private fun setupPermissions(doSomething: () -> Unit) {
-        val writePermission =
-            ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        val readPermission =
-            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-        doThis = doSomething
-        if (writePermission != PackageManager.PERMISSION_GRANTED && readPermission != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                ),
-                101
-            )
-        } else doThis()
-    }
+//    lateinit var doThis: () -> Unit
+//    private fun setupPermissions(doSomething: () -> Unit) {
+//        val writePermission =
+//            ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+//        val readPermission =
+//            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+//        doThis = doSomething
+//        if (writePermission != PackageManager.PERMISSION_GRANTED && readPermission != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(
+//                this,
+//                arrayOf(
+//                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+//                    Manifest.permission.READ_EXTERNAL_STORAGE
+//                ),
+//                101
+//            )
+//        } else doThis()
+//    }
 
     override fun onDestroy() {
         super.onDestroy()
