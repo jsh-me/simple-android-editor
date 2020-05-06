@@ -11,7 +11,7 @@
     <color name="shadow_color">#FF000000</color>
     <color name="line_button">#565758</color>
     <color name="black_translucent">#50000000</color>
-    <color name="transparent">#1A000000</color>
+    <color name="transparent">#FFFFFF</color>
     <color name="background_space">#202020</color>
     <color name="backgound_space1">#282828</color>
 </resources>

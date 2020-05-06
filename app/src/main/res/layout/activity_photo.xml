@@ -39,37 +39,40 @@
         android:layout_margin="10dp"
         android:background="@drawable/save_button"
         android:padding="10dp"
+        android:onClick="@{photo::savePhoto}"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.93"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/imageview"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="32dp"
-        app:layout_constraintBottom_toTopOf="@+id/child_layout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.617"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView3"
-        app:layout_constraintVertical_bias="0.49"
-        tools:srcCompat="@drawable/ic_launcher_background" />
-
-    <com.github.chrisbanes.photoview.PhotoView
+    <com.byox.drawview.views.DrawView
         android:id="@+id/photoview"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="32dp"
-        android:visibility="invisible"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        app:dv_draw_alpha="100"
+        app:dv_draw_anti_alias="true"
+        app:dv_draw_color="@color/colorAccent"
+        app:dv_draw_corners="round"
+        app:dv_draw_dither="true"
+        app:dv_draw_enable_zoom="true"
+        app:dv_draw_max_zoom_factor="8"
+        app:dv_draw_mode="draw"
+        app:dv_draw_style="stroke"
+        app:dv_draw_tool="pen"
+        app:dv_draw_width="20"
+        app:dv_draw_zoomregion_maxscale="5"
+        app:dv_draw_zoomregion_minscale="2"
+        app:dv_draw_zoomregion_scale="4"
         app:layout_constraintBottom_toTopOf="@+id/child_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.617"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView3"
-        app:layout_constraintVertical_bias="0.49"
-        tools:srcCompat="@drawable/ic_launcher_background" />
+        app:layout_constraintVertical_bias="0.49" />
+
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/child_layout"
@@ -102,6 +105,17 @@
         app:layout_constraintBottom_toBottomOf="@+id/child_layout"
         app:layout_constraintStart_toEndOf="@+id/remove_btn"
         app:layout_constraintTop_toTopOf="@+id/child_layout"
+        app:layout_constraintVertical_bias="0.3" />
+
+    <ImageButton
+        android:id="@+id/reset_paint_btn"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:onClick="@{photo::resetButton}"
+        app:layout_constraintBottom_toBottomOf="@+id/child_layout"
+        app:layout_constraintStart_toEndOf="@+id/improve_btn"
+        app:layout_constraintTop_toBottomOf="@+id/photoview"
         app:layout_constraintVertical_bias="0.3" />
 
 

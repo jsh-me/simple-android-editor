@@ -1,15 +1,15 @@
 package kr.co.jsh.photoedit
 
-import android.net.Uri
-import androidx.databinding.ObservableField
+import android.content.Context
+import android.graphics.Bitmap
 
 interface PhotoContract {
     interface View{
-        fun displayImageView(uri: Uri)
-        fun displayPhotoView(uri: Uri)
+        fun displayPhotoView(bitmap: Bitmap)
     }
     interface Presenter{
         var view: View
-        fun setImageView(flag: ObservableField<Boolean>, string: String)
+        fun setImageView(context: Context, string: String)
+        fun saveImage()
     }
 }
