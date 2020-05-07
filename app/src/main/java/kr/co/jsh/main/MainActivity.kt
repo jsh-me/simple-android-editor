@@ -2,30 +2,35 @@ package kr.co.jsh.main
 
 import android.Manifest
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityMainBinding
+import kr.co.jsh.globalconst.Consts.Companion.EXTRA_PHOTO_PATH
+import kr.co.jsh.globalconst.Consts.Companion.EXTRA_VIDEO_PATH
+import kr.co.jsh.globalconst.Consts.Companion.REQUEST_VIDEO_CROPPER
+import kr.co.jsh.globalconst.Consts.Companion.REQUEST_VIDEO_TRIMMER
+import kr.co.jsh.photoedit.PhotoActivity
 import kr.co.jsh.utils.FileUtils
 import kr.co.jsh.videoedit.TrimmerActivity
 
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.main = this@MainActivity
-
 
         //dialog 필요하면 ~
 //        val dialogVew = layoutInflater.inflate(R.layout.dialog_layout, null)
@@ -57,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_VIDEO_TRIMMER) {
                 val selectedUri = data!!.data
@@ -73,7 +78,7 @@ class MainActivity : AppCompatActivity() {
             } else if (requestCode == REQUEST_VIDEO_CROPPER) {
                 val selectedUri = data!!.data
                 if (selectedUri != null) {
-                   // startCropActivity(selectedUri)
+                    startPhotoActivity(selectedUri)
                 } else {
                     Toast.makeText(
                         this@MainActivity,
@@ -92,16 +97,11 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-//    private fun startCropActivity(uri: Uri) {
-//        val intent = Intent(this, EditImageActivity::class.java)
-//        intent.putExtra(EXTRA_VIDEO_PATH, FileUtils.getPath(this, uri))
-//        startActivity(intent)
-//    }
+    private fun startPhotoActivity(uri: Uri) {
+        val intent = Intent(this, PhotoActivity::class.java)
+        intent.putExtra(EXTRA_PHOTO_PATH, FileUtils.getPath(this, uri))
+        startActivity(intent)
 
-    companion object {
-        const val REQUEST_VIDEO_TRIMMER = 0x01
-        const val REQUEST_VIDEO_CROPPER = 0x02
-        internal const val EXTRA_VIDEO_PATH = "EXTRA_VIDEO_PATH"
     }
 
     lateinit var doThis: () -> Unit

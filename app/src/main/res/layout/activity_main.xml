@@ -6,6 +6,10 @@
         <variable
             name="main"
             type="kr.co.jsh.main.MainActivity" />
+
+        <variable
+            name="consts"
+            type="kr.co.jsh.globalconst.Consts" />
     </data>
 
     <ScrollView
@@ -54,7 +58,7 @@
                 android:layout_margin="20dp"
                 android:background="#35EEB8"
                 android:text="+ Video"
-                android:onClick="@{() -> main.pickFromVideo(main.REQUEST_VIDEO_TRIMMER)}"
+                android:onClick="@{() -> main.pickFromVideo(consts.REQUEST_VIDEO_TRIMMER)}"
                 app:layout_constraintBottom_toTopOf="@+id/guideline"
                 app:layout_constraintEnd_toEndOf="@+id/imageView"
                 app:layout_constraintStart_toStartOf="@+id/imageView"
@@ -67,7 +71,7 @@
                 android:layout_margin="20dp"
                 android:background="#35EEB8"
                 android:text="+ Photo"
-                android:onClick="@{() -> main.pickFromPicture(main.REQUEST_VIDEO_CROPPER)}"
+                android:onClick="@{() -> main.pickFromPicture(consts.REQUEST_VIDEO_CROPPER)}"
                 app:layout_constraintBottom_toTopOf="@+id/guideline"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/imageView"

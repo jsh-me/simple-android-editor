@@ -30,7 +30,6 @@
             android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -40,6 +39,10 @@
             android:parentActivityName=".main.MainActivity"
             android:screenOrientation="portrait"
             android:configChanges="keyboardHidden|orientation|screenSize"/>
+
+        <activity android:name=".photoedit.PhotoActivity"
+            android:parentActivityName=".main.MainActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>
