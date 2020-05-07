@@ -1,9 +1,7 @@
-package kr.co.jsh.videoedit
+package kr.co.jsh.feature.videoedit
 
-import android.Manifest
 import android.content.ContentUris
 import android.content.ContentValues
-import android.content.pm.PackageManager
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Bundle
@@ -13,8 +11,6 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import kotlinx.android.synthetic.main.activity_trimmer.*
 import kr.co.jsh.R
@@ -24,36 +20,30 @@ import kr.co.jsh.interfaces.OnTrimVideoListener
 import kr.co.jsh.interfaces.OnVideoListener
 import kr.co.jsh.utils.RunOnUiThread
 import kr.co.jsh.utils.setupPermissions
+import timber.log.Timber
 import java.io.File
 
 
 class TrimmerActivity : AppCompatActivity() ,OnTrimVideoListener,OnVideoListener {
-    lateinit var binding: ActivityTrimmerBinding
-
-    private val progressDialog: VideoProgressIndeterminateDialog by lazy {
-        VideoProgressIndeterminateDialog(
-            this,
-            "Cropping video. Please wait..."
-        )
-    }
+    private lateinit var binding: ActivityTrimmerBinding
+    private lateinit var progressDialog : VideoProgressIndeterminateDialog
+   // private lateinit var presenter : TrimmerPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_trimmer)
-        binding.trimmer = this@TrimmerActivity
         Environment.getExternalStorageState()
+        setupDatabinding()
+        initView()
+    }
 
+    private fun initView(){
         setupPermissions(this) {
             val extraIntent = intent
             var path = ""
-//            if (extraIntent != null) path =
-//                extraIntent.getStringExtra(EXTRA_VIDEO_PATH)
 
             extraIntent?.let{
                 path =  extraIntent.getStringExtra(EXTRA_VIDEO_PATH)
             }
-//            videoTrimmer.setTextTimeSelectionTypeface(FontsHelper[this, FontsConstants.SEMI_BOLD])
-
             videoTrimmer
                 .setOnTrimVideoListener(this)
                 .setOnVideoListener(this)
@@ -65,19 +55,27 @@ class TrimmerActivity : AppCompatActivity() ,OnTrimVideoListener,OnVideoListener
         }
     }
 
+    private fun setupDatabinding(){
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_trimmer)
+        binding.trimmer = this@TrimmerActivity
+        //presenter = TrimmerPresenter(this)
+    }
 
-    fun back(view: View){
+
+    fun back(v: View){
         videoTrimmer.onCancelClicked()
     }
 
-    fun save(view: View) {
+    fun save(v: View) {
         videoTrimmer.onSaveClicked()
+        //presenter.getResult(progressDialog, this, uri = Uri )
     }
 
 
     override fun onTrimStarted() {
         RunOnUiThread(this).safely {
             Toast.makeText(this, "Started Trimming", Toast.LENGTH_SHORT).show()
+            progressDialog = VideoProgressIndeterminateDialog(this, "Cropping Video. Please Wait...")
             progressDialog.show()
         }
     }
@@ -120,7 +118,7 @@ class TrimmerActivity : AppCompatActivity() ,OnTrimVideoListener,OnVideoListener
     }
 
     override fun onError(message: String) {
-        Log.e("ERROR", message)
+        Timber.e(message)
     }
 
     override fun onVideoPrepared() {

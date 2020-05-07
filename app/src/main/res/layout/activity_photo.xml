@@ -7,7 +7,7 @@
     <data>
         <variable
             name="photo"
-            type="kr.co.jsh.photoedit.PhotoActivity" />
+            type="kr.co.jsh.feature.photoedit.PhotoActivity" />
     </data>
 
 

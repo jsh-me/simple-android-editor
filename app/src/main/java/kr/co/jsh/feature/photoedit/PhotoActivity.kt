@@ -1,4 +1,4 @@
-package kr.co.jsh.photoedit
+package kr.co.jsh.feature.photoedit
 
 import android.content.ContentValues
 import android.graphics.Bitmap
@@ -11,7 +11,6 @@ import androidx.databinding.DataBindingUtil
 import com.byox.drawview.enums.BackgroundScale
 import com.byox.drawview.enums.BackgroundType
 import com.byox.drawview.enums.DrawingCapture
-import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityPhotoBinding
 import kr.co.jsh.globalconst.BitmapImage
 import kr.co.jsh.globalconst.Consts.Companion.EXTRA_PHOTO_PATH

@@ -1,4 +1,4 @@
-package kr.co.jsh.photoedit
+package kr.co.jsh.feature.photoedit
 
 import android.content.Context
 import android.graphics.Bitmap

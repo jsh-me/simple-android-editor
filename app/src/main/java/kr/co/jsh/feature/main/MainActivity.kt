@@ -1,17 +1,11 @@
-package kr.co.jsh.main
+package kr.co.jsh.feature.main
 
-import android.Manifest
 import android.app.Activity
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityMainBinding
@@ -19,9 +13,10 @@ import kr.co.jsh.globalconst.Consts.Companion.EXTRA_PHOTO_PATH
 import kr.co.jsh.globalconst.Consts.Companion.EXTRA_VIDEO_PATH
 import kr.co.jsh.globalconst.Consts.Companion.REQUEST_VIDEO_CROPPER
 import kr.co.jsh.globalconst.Consts.Companion.REQUEST_VIDEO_TRIMMER
-import kr.co.jsh.photoedit.PhotoActivity
+import kr.co.jsh.feature.photoedit.PhotoActivity
 import kr.co.jsh.utils.FileUtils
-import kr.co.jsh.videoedit.TrimmerActivity
+import kr.co.jsh.utils.setupPermissions
+import kr.co.jsh.feature.videoedit.TrimmerActivity
 
 
 class MainActivity : AppCompatActivity() {
@@ -42,7 +37,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun pickFromVideo(intentCode: Int) {
-        setupPermissions {
+        setupPermissions(this) {
             val intent = Intent()
             intent.setTypeAndNormalize("video/*")
             intent.action = Intent.ACTION_GET_CONTENT
@@ -52,13 +47,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun pickFromPicture(intentCode: Int) {
-        setupPermissions {
+        setupPermissions(this) {
             val intent = Intent()
             intent.setTypeAndNormalize("image/*")
             intent.action = Intent.ACTION_GET_CONTENT
             intent.addCategory(Intent.CATEGORY_OPENABLE)
             startActivityForResult(Intent.createChooser(intent, "label_select_picture"), intentCode)
-            //startActivityForResult : 액티비티로 다시 돌아오기 위해 사용
         }
     }
 
@@ -104,22 +98,22 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    lateinit var doThis: () -> Unit
-    private fun setupPermissions(doSomething: () -> Unit) {
-        val writePermission =
-            ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        val readPermission =
-            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-        doThis = doSomething
-        if (writePermission != PackageManager.PERMISSION_GRANTED && readPermission != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                ),
-                101
-            )
-        } else doThis()
-    }
+//    lateinit var doThis: () -> Unit
+//    private fun setupPermissions(doSomething: () -> Unit) {
+//        val writePermission =
+//            ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+//        val readPermission =
+//            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+//        doThis = doSomething
+//        if (writePermission != PackageManager.PERMISSION_GRANTED && readPermission != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(
+//                this,
+//                arrayOf(
+//                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+//                    Manifest.permission.READ_EXTERNAL_STORAGE
+//                ),
+//                101
+//            )
+//        } else doThis()
+//    }
 }

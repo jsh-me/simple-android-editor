@@ -1,7 +1,6 @@
 package kr.co.jsh.customview
 
 import android.content.Context
-import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.media.MediaExtractor
 import android.media.MediaFormat
@@ -15,12 +14,10 @@ import android.util.LongSparseArray
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.ObservableFloat
-import androidx.lifecycle.MutableLiveData
 import com.byox.drawview.enums.BackgroundScale
 import com.byox.drawview.enums.BackgroundType
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -31,7 +28,6 @@ import kr.co.jsh.R
 import kr.co.jsh.interfaces.OnProgressVideoListener
 import kr.co.jsh.interfaces.OnTrimVideoListener
 import kr.co.jsh.interfaces.OnVideoListener
-import kr.co.jsh.main.MainActivity
 import kr.co.jsh.utils.*
 import org.jetbrains.anko.runOnUiThread
 import timber.log.Timber

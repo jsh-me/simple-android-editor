@@ -1,4 +1,4 @@
-package kr.co.jsh.paint
+package kr.co.jsh.feature.paint
 
 import android.content.Context
 import android.graphics.*
@@ -46,7 +46,7 @@ class Mypainter : AppCompatImageView {
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        fit_height= h
+        fit_height = h
         fit_width = w
 
         Log.i("size:", "W,H: $fit_width, $fit_height")
@@ -77,13 +77,23 @@ class Mypainter : AppCompatImageView {
         if (event.action == MotionEvent.ACTION_DOWN) {
             oldX = X
             oldY = Y
-            pixeldata.add(pixelData(X,Y))
+            pixeldata.add(
+                pixelData(
+                    X,
+                    Y
+                )
+            )
             path.moveTo(X,Y)
 
         } else if (event.action == MotionEvent.ACTION_MOVE) {
 
             path.lineTo(X,Y)
-            pixeldata.add(pixelData(X,Y))
+            pixeldata.add(
+                pixelData(
+                    X,
+                    Y
+                )
+            )
 
             invalidate()
             oldX = X
@@ -91,7 +101,12 @@ class Mypainter : AppCompatImageView {
 
         } else if (event.action == MotionEvent.ACTION_UP) {
 
-            pixeldata.add(pixelData(X,Y))
+            pixeldata.add(
+                pixelData(
+                    X,
+                    Y
+                )
+            )
             path.lineTo(X,Y)
 
             invalidate()

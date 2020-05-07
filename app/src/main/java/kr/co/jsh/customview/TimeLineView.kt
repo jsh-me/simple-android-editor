@@ -10,7 +10,7 @@ import android.util.LongSparseArray
 import android.view.View
 import androidx.core.graphics.get
 import kr.co.jsh.R
-import kr.co.jsh.paint.Mypainter.Companion.count
+import kr.co.jsh.feature.paint.Mypainter.Companion.count
 import kr.co.jsh.utils.ScreenSizeUtil
 
 
