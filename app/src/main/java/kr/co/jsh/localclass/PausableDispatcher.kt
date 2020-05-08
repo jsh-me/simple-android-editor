@@ -5,7 +5,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import java.util.*
 import kotlin.coroutines.CoroutineContext
 
-class PauseableDispatcher(private val handler: Handler): CoroutineDispatcher() {
+class PausableDispatcher(private val handler: Handler): CoroutineDispatcher() {
     private val queue: Queue<Runnable> = LinkedList()
     private var isPaused: Boolean = false
 

@@ -60,40 +60,48 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageButton
+    <TextView
         android:id="@+id/remove_btn"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:background="@drawable/remove_button_selector"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginStart="10dp"
+        android:gravity="center"
+        android:text="지울 객체 \n그리기"
         app:layout_constraintBottom_toBottomOf="@+id/child_layout"
         app:layout_constraintStart_toStartOf="@+id/scroll"
         app:layout_constraintTop_toBottomOf="@+id/crop_btn"
         app:layout_constraintVertical_bias="0.9" />
 
-    <ImageButton
+    <TextView
         android:id="@+id/imageButton2"
-        android:layout_width="30dp"
+        android:layout_width="wrap_content"
         android:layout_height="30dp"
         android:layout_marginStart="20dp"
-        android:background="@drawable/brush_button_selector"
+        android:text="이건 몰랑"
         app:layout_constraintBottom_toBottomOf="@+id/child_layout"
         app:layout_constraintStart_toEndOf="@+id/remove_btn"
         app:layout_constraintTop_toBottomOf="@+id/crop_btn"
         app:layout_constraintVertical_bias="0.9" />
 
-    <ImageButton
+    <TextView
         android:id="@+id/reset"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:background="@drawable/ic_launcher_foreground"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="8dp"
+        android:text="자르기 \n초기화"
         app:layout_constraintBottom_toBottomOf="@+id/imageButton2"
         app:layout_constraintStart_toEndOf="@+id/imageButton2"
         app:layout_constraintTop_toTopOf="@+id/imageButton2" />
 
-    <ImageButton
+    <TextView
         android:id="@+id/reset_paint_btn"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="8dp"
+        android:gravity="center"
+        android:text="그리기 \n전체 삭제"
         app:layout_constraintBottom_toBottomOf="@+id/reset"
         app:layout_constraintStart_toEndOf="@+id/reset" />
 

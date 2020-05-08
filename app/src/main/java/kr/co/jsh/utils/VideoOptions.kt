@@ -7,15 +7,15 @@ import com.github.hiteshsondhi88.libffmpeg.ExecuteBinaryResponseHandler
 import com.github.hiteshsondhi88.libffmpeg.FFmpeg
 import com.github.hiteshsondhi88.libffmpeg.FFmpegLoadBinaryResponseHandler
 import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegCommandAlreadyRunningException
+import kr.co.jsh.feature.videoedit.TrimmerContract
 import kr.co.jsh.interfaces.OnCompressVideoListener
-import kr.co.jsh.interfaces.OnTrimVideoListener
 
 class VideoOptions(private var ctx: Context) {
     companion object {
         const val TAG = "VideoOptions"
     }
 
-    fun trimVideo(startPosition: String, endPosition: String, inputPath: String, outputPath: String, outputFileUri: Uri, listener: OnTrimVideoListener?) {
+    fun trimVideo(startPosition: String, endPosition: String, inputPath: String, outputPath: String, outputFileUri: Uri, listener: TrimmerContract.View) {
         val ff = FFmpeg.getInstance(ctx)
         ff.loadBinary(object : FFmpegLoadBinaryResponseHandler {
             override fun onFinish() {
@@ -48,11 +48,11 @@ class VideoOptions(private var ctx: Context) {
                             Log.e(TAG, "onStart: ")
                         }
 
-                        override fun onFinish() {
-                            super.onFinish()
-                            listener?.getResult(outputFileUri)
-                            Log.e(TAG, "onFinish: ")
-                        }
+//                        override fun onFinish() {
+//                            super.onFinish()
+//                            listener?.getResult(outputFileUri)
+//                            Log.e(TAG, "onFinish: ")
+//                        }
                     })
                 } catch (e: FFmpegCommandAlreadyRunningException) {
                     listener?.onError(e.toString())
