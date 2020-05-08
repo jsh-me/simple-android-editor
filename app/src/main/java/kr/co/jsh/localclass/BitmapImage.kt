@@ -1,4 +1,4 @@
-package kr.co.jsh.globalconst
+package kr.co.jsh.localclass
 
 import android.graphics.Bitmap
 

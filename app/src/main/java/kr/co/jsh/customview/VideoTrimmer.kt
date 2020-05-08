@@ -8,6 +8,8 @@ import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Environment
+import android.os.Handler
+import android.os.Looper
 import android.util.AttributeSet
 import android.util.Log
 import android.util.LongSparseArray
@@ -24,7 +26,9 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.android.synthetic.main.include_view_trimmer.view.*
+import kotlinx.coroutines.*
 import kr.co.jsh.R
+import kr.co.jsh.localclass.PauseableDispatcher
 import kr.co.jsh.interfaces.OnProgressVideoListener
 import kr.co.jsh.interfaces.OnTrimVideoListener
 import kr.co.jsh.interfaces.OnVideoListener
@@ -42,9 +46,10 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
     : ConstraintLayout(context, attrs, defStyleAttr) {
 
     private var touch_time = ObservableFloat()
-
-    //private var touch_time1 : MutableLiveData<String> = MutableLiveData()
-
+    private var timeposition =0
+    private val dispatcher =
+        PauseableDispatcher(Handler(Looper.getMainLooper()))
+    
     //자른 횟수
     private var crop_count = 0
 
@@ -62,7 +67,7 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
     private var crop_x1 = 0
     private var crop_x2 = 0
 
-    private var thread = ThreadClass()
+    //private var thread = ThreadClass()
 
 
     private lateinit var mSrc: Uri
@@ -114,19 +119,24 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
         //setUpMargins()
         icon_video_play.setOnClickListener {
 
-            Log.i("video_loader.isPlaying","${video_loader.isPlaying}")
+            Log.i("current position","${video_loader.currentPosition}")
             if (video_loader.isPlaying) {
                 //icon_video_play.visibility = View.VISIBLE
                 //mMessageHandler.removeMessages(SHOW_PROGRESS)
+
                 icon_video_play.isSelected = false
+                timeposition = video_loader.currentPosition
+                video_loader.seekTo(timeposition)
                 video_loader.pause()
-                Log.i("video stop","")
+                dispatcher.pause()
+
             } else {
                 icon_video_play.isSelected = true
-                video_loader.seekTo(touch_time.get().toInt())
+                video_loader.seekTo(timeposition)
                 video_loader.start()
-                thread.start()
-                Log.i("video start","")
+               // thread.start()
+                start_thread()
+                dispatcher.resume()
 
             }
 
@@ -136,11 +146,33 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
         }
     }
 
-    inner class ThreadClass:Thread(){
+//    inner class ThreadClass:Thread(){
+//
+//        override fun run() {
+//            while (video_loader.isPlaying) {
+//
+//                context.runOnUiThread {
+//                    textStartTime.text = String.format(
+//                        "%s",
+//                        TrimVideoUtils.stringForTime(video_loader.currentPosition.toFloat())
+//                    )
+//                    //시간 흐를때마다 뷰 옆으로 이동!
+//                    scroll.scrollTo ((video_loader.currentPosition * (timeLineView.width - ScreenSizeUtil(context).widthPixels))/video_loader.duration, 0)
+//                }
+//                sleep(1)
+//            }
+//        }
+//    }
 
-        override fun run() {
-            while (video_loader.isPlaying) {
-
+    fun start_thread(){
+        GlobalScope.launch(dispatcher) {
+            if (this.isActive) {
+                suspendFunc()
+            }
+        }
+    }
+    suspend fun suspendFunc() {
+        while (video_loader.isPlaying) {
                 context.runOnUiThread {
                     textStartTime.text = String.format(
                         "%s",
@@ -149,9 +181,8 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
                     //시간 흐를때마다 뷰 옆으로 이동!
                     scroll.scrollTo ((video_loader.currentPosition * (timeLineView.width - ScreenSizeUtil(context).widthPixels))/video_loader.duration, 0)
                 }
-                sleep(1)
+                delay(1)
             }
-        }
     }
 
 

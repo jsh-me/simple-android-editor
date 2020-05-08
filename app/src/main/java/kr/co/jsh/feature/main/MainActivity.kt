@@ -20,20 +20,16 @@ import kr.co.jsh.feature.videoedit.TrimmerActivity
 
 
 class MainActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+       setupDataBinding()
+    }
+
+    private fun setupDataBinding(){
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.main = this@MainActivity
-
-        //dialog 필요하면 ~
-//        val dialogVew = layoutInflater.inflate(R.layout.dialog_layout, null)
-//        val builder = AlertDialog.Builder(this)
-//        builder.setView(dialogVew)
-//            .setPositiveButton("확인") { dialog, which ->  }
-//            .setNegativeButton("취소") { dialog, which ->  }
-//            .show()
     }
 
     fun pickFromVideo(intentCode: Int) {
@@ -97,23 +93,4 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
 
     }
-
-//    lateinit var doThis: () -> Unit
-//    private fun setupPermissions(doSomething: () -> Unit) {
-//        val writePermission =
-//            ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-//        val readPermission =
-//            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-//        doThis = doSomething
-//        if (writePermission != PackageManager.PERMISSION_GRANTED && readPermission != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(
-//                this,
-//                arrayOf(
-//                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-//                    Manifest.permission.READ_EXTERNAL_STORAGE
-//                ),
-//                101
-//            )
-//        } else doThis()
-//    }
 }
