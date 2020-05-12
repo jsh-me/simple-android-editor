@@ -23,7 +23,6 @@
             android:layout_gravity="center"
             android:layout_margin="10dp"
             android:background="@drawable/back"
-            android:onClick="@{trimmer::back}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.04"
             app:layout_constraintStart_toStartOf="parent"
@@ -38,7 +37,7 @@
             android:layout_gravity="end"
             android:layout_margin="10dp"
             android:background="@drawable/save_button"
-            android:onClick="@{trimmer::save}"
+            android:onClick="@{() -> trimmer.saveVideo()}"
             android:padding="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.93"
@@ -71,11 +70,10 @@
 
         <com.byox.drawview.views.DrawView
             android:id="@+id/video_frame_view"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_centerHorizontal="true"
             android:visibility="invisible"
-            android:layout_marginTop="20dp"
             app:dv_draw_alpha="100"
             app:dv_draw_anti_alias="true"
             app:dv_draw_color="@color/colorAccent"
@@ -91,21 +89,21 @@
             app:dv_draw_zoomregion_minscale="2"
             app:dv_draw_zoomregion_scale="4"
             app:layout_constraintBottom_toBottomOf="@+id/video_loader"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/video_loader"
             app:layout_constraintHorizontal_bias="0.509"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+            app:layout_constraintStart_toStartOf="@+id/video_loader"
+            app:layout_constraintTop_toTopOf="@+id/video_loader" />
 
         <TextView
             android:id="@+id/remove_btn"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_marginStart="10dp"
             android:gravity="center"
             android:onClick="@{() -> trimmer.removeMode()}"
-            android:textColor="@{trimmer.removeColor[0] ? @color/textWhite : @color/textBlack}"
-            android:text="지울 객체 \n그리기"
-            app:layout_constraintBottom_toBottomOf="@+id/child_layout"
+            android:text="그리기"
+            android:textColor="@{trimmer.texteColor[0] ? @color/textWhite : @color/textBlack}"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@+id/scroll"
             app:layout_constraintTop_toBottomOf="@+id/crop_btn"
             app:layout_constraintVertical_bias="0.9" />
@@ -113,10 +111,10 @@
         <TextView
             android:id="@+id/imageButton2"
             android:layout_width="wrap_content"
-            android:layout_height="30dp"
+            android:layout_height="50dp"
             android:layout_marginStart="20dp"
-            android:text="이건 몰랑"
-            android:textColor="@{trimmer.removeColor[1] ? @color/textWhite : @color/textBlack}"
+            android:text="서버로\n보내기"
+            android:textColor="@{trimmer.texteColor[1] ? @color/textWhite : @color/textBlack}"
             app:layout_constraintBottom_toBottomOf="@+id/child_layout"
             app:layout_constraintStart_toEndOf="@+id/remove_btn"
             app:layout_constraintTop_toBottomOf="@+id/crop_btn"
@@ -127,34 +125,35 @@
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:layout_marginStart="20dp"
-            android:layout_marginBottom="8dp"
-            android:onClick="@{trimmer::resetTimeLineView}"
             android:text="자르기 \n초기화"
-            android:textColor="@{trimmer.removeColor[2] ? @color/textWhite : @color/textBlack}"
+            android:onClick="@{() -> trimmer.resetTimeLineView()}"
+            android:textColor="@{trimmer.texteColor[2] ? @color/textWhite : @color/textBlack}"
             app:layout_constraintBottom_toBottomOf="@+id/imageButton2"
             app:layout_constraintStart_toEndOf="@+id/imageButton2"
-            app:layout_constraintTop_toTopOf="@+id/imageButton2" />
+            app:layout_constraintTop_toTopOf="@+id/imageButton2"
+            app:layout_constraintVertical_bias="0.9"/>
 
         <TextView
             android:id="@+id/reset_paint_btn"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:layout_marginStart="20dp"
-            android:layout_marginBottom="8dp"
-            android:gravity="center"
+            android:gravity="center||top"
             android:onClick="@{() -> trimmer.clearDraw()}"
-            android:text="그리기 \n전체 삭제"
-            android:textColor="@{trimmer.removeColor[3] ? @color/textWhite : @color/textBlack}"
+            android:text="그리기\n초기화"
+            android:textColor="@{trimmer.texteColor[3] ? @color/textWhite : @color/textBlack}"
             app:layout_constraintBottom_toBottomOf="@+id/reset"
-            app:layout_constraintStart_toEndOf="@+id/reset" />
+            app:layout_constraintStart_toEndOf="@+id/reset"
+            app:layout_constraintTop_toTopOf="@+id/reset"
+            app:layout_constraintVertical_bias="0.9" />
 
         <ImageView
             android:id="@+id/icon_video_play"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:onClick="@{() -> trimmer.playVideo()}"
             android:layout_alignParentStart="true"
             android:layout_alignParentBottom="true"
+            android:onClick="@{() -> trimmer.playVideo()}"
             android:layout_marginStart="20dp"
             android:layout_marginBottom="8dp"
             android:background="@drawable/video_button_selector"
@@ -169,7 +168,6 @@
             android:layout_height="30dp"
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="8dp"
-            android:onClick="@{ () -> trimmer.fullScreen()}"
             android:background="@drawable/full_screen_button"
             app:layout_constraintBottom_toTopOf="@+id/child_layout"
             app:layout_constraintEnd_toEndOf="parent"
@@ -202,11 +200,26 @@
                 android:layout_width="wrap_content"
                 android:layout_height="50dp">
 
-                <kr.co.jsh.customview.TimeLineView
-                    android:id="@+id/timeLineView"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/timeLineView_recycler"
                     android:layout_width="wrap_content"
                     android:layout_height="50dp"
+                    android:orientation="horizontal"
                     android:adjustViewBounds="true" />
+
+                <View
+                    android:id="@+id/boader1"
+                    android:layout_width="3dp"
+                    android:layout_height="150dp"
+                    android:visibility="invisible"
+                    android:background="@color/backgound_space1" />
+
+                <View
+                    android:id="@+id/boader2"
+                    android:layout_width="3dp"
+                    android:layout_height="150dp"
+                    android:visibility="invisible"
+                    android:background="@color/backgound_space1" />
 
                 <View
                     android:id="@+id/border"

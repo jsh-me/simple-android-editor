@@ -48,11 +48,11 @@ class VideoOptions(private var ctx: Context) {
                             Log.e(TAG, "onStart: ")
                         }
 
-//                        override fun onFinish() {
-//                            super.onFinish()
-//                            listener?.getResult(outputFileUri)
-//                            Log.e(TAG, "onFinish: ")
-//                        }
+                        override fun onFinish() {
+                            super.onFinish()
+                            listener?.getResult(outputFileUri)
+                            Log.e(TAG, "onFinish: ")
+                        }
                     })
                 } catch (e: FFmpegCommandAlreadyRunningException) {
                     listener?.onError(e.toString())

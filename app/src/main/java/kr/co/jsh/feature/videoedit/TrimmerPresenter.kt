@@ -5,28 +5,60 @@ import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.media.MediaExtractor
+import android.media.MediaFormat
 import android.media.MediaMetadataRetriever
 import android.net.Uri
-import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
-import android.util.LongSparseArray
 import android.widget.Toast
 import android.widget.VideoView
-import kr.co.jsh.customview.TimeLineView
+import androidx.recyclerview.widget.RecyclerView
 import kr.co.jsh.globalconst.Consts.Companion.EXTRA_VIDEO_PATH
-import kr.co.jsh.utils.BackgroundExecutor
-import kr.co.jsh.utils.RunOnUiThread
-import kr.co.jsh.utils.ScreenSizeUtil
+import kr.co.jsh.utils.*
 import timber.log.Timber
 import java.io.File
+import java.util.*
+import kotlin.collections.ArrayList
 
 class TrimmerPresenter(override var view: TrimmerContract.View) : TrimmerContract.Presenter{
+   override fun crop(context: Context, cropCount: Int, videoLoader:VideoView,
+                          crop_time: ArrayList<Pair<Int, Int>>, recycler: RecyclerView
+   ){
+        var crop_x1 = 0
+       var crop_x2 = 0
 
-    override fun getResult(progressDialog: VideoProgressIndeterminateDialog, context: Context, uri: Uri) {
+        when(cropCount){
+            1 -> {
+                crop_x1 =
+                    ( videoLoader.currentPosition * (recycler.width - ScreenSizeUtil(context).widthPixels)) /  videoLoader.duration
+
+                crop_time.add(Pair(crop_x1,  videoLoader.currentPosition))//2
+                crop_time.add(Pair(crop_x1,  videoLoader.currentPosition))//3
+                crop_time.add(Pair(recycler.width - ScreenSizeUtil(context).widthPixels,videoLoader.duration)) //4
+                Toast.makeText(context, "${crop_x1} and ${videoLoader.currentPosition}", Toast.LENGTH_LONG).show()
+            }
+             2-> {
+                 crop_x2 =
+                     ( videoLoader.currentPosition * (recycler.width - ScreenSizeUtil(context).widthPixels)) /  videoLoader.duration
+                if(crop_time[1].first > crop_x2) {
+                    crop_time[1] = Pair(crop_x2, videoLoader.currentPosition)
+                }
+                 else crop_time[2] = Pair(crop_x2, videoLoader.currentPosition)
+                 Toast.makeText(context, "${crop_x2} and ${videoLoader.currentPosition}", Toast.LENGTH_LONG).show()
+             }
+
+            else -> {
+                Toast.makeText(context, "두번만 선택 가능", Toast.LENGTH_LONG).show()
+            }
+        }
+       view.setPairList(crop_time)
+
+    }
+
+    override fun getResultUri(uri: Uri, context: Context) {
         RunOnUiThread(context).safely {
-            Timber.i("Video saved at ${uri.path}")
-            progressDialog.dismiss()
+            Toast.makeText(context, "Video saved at ${uri.path}", Toast.LENGTH_SHORT).show()
             val mediaMetadataRetriever = MediaMetadataRetriever()
             mediaMetadataRetriever.setDataSource(context, uri)
             val duration =
@@ -49,51 +81,9 @@ class TrimmerPresenter(override var view: TrimmerContract.View) : TrimmerContrac
                     values
                 )
             )
-            Timber.e(id.toString())
+            Log.e("VIDEO ID", id.toString())
         }
-    }
 
-    override fun crop(context: Context, crop_time: ArrayList<Pair<Int, Int>>, cropCount: Int, mBitmaps: LongSparseArray<Bitmap>, timeLineView: TimeLineView, videoLoader:VideoView) {
-        var bitmapArrayList : LongSparseArray<Bitmap> = mBitmaps
-        var crop_x1 = 0
-        var crop_x2 = 0
-        when (cropCount) {
-            1 -> {
-                bitmapArrayList = mBitmaps
-                crop_x1 =
-                    ( videoLoader.currentPosition * (timeLineView.width - ScreenSizeUtil(context).widthPixels)) /  videoLoader.duration
-                //미리 두번 넣고 추후에 수정하자.
-                crop_time.add(Pair(crop_x1,  videoLoader.currentPosition))//2
-                Log.i("size:", "${crop_time.size}")
-                crop_time.add(Pair(crop_x1,  videoLoader.currentPosition))//3
-                Log.i("size:", "${crop_time.size}")
-
-                timeLineView.cropView(bitmapArrayList, crop_x1, crop_x2, cropCount)
-            }
-            2 -> {
-                crop_x2 =
-                    ( videoLoader.currentPosition * (timeLineView.width - ScreenSizeUtil(context).widthPixels)) /  videoLoader.duration
-
-                //요렇게하면 crop_time은 좌표값이 작은 순부터 큰 순으로 자동정렬 되겠지
-                if (crop_x1 < crop_x2) {
-                    crop_time[2] = Pair(crop_x2,  videoLoader.currentPosition)
-                } else {
-                    crop_time[1] = Pair(crop_x2,  videoLoader.currentPosition)
-                }
-
-                crop_time.add(
-                    Pair(
-                        timeLineView.width - ScreenSizeUtil(context).widthPixels,
-                        videoLoader.duration
-                    )
-                ) //4
-                timeLineView.cropView(bitmapArrayList, crop_x1, crop_x2, cropCount)
-                view.initialBordering(crop_time)
-            }
-            else -> {
-                Toast.makeText(context, "CROP은 두 번만 가능 !", Toast.LENGTH_LONG).show()
-            }
-        }
     }
 
     override fun prepareVideoPath(extraIntent: Intent) {
@@ -107,7 +97,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View) : TrimmerContrac
     override fun resetCrop(context:Context, crop_time: ArrayList<Pair<Int, Int>>) {
         try {
             crop_time.clear()
-            crop_time.add(Pair(0, 0))//1
+            crop_time.add(Pair(0,0))//1
             view.resetCropView()
         } catch (e: Exception) {
             Toast.makeText(context, "잘라진 것이 없어요!", Toast.LENGTH_LONG).show()
@@ -115,7 +105,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View) : TrimmerContrac
     }
 
     override fun getThumbnailList(mSrc: Uri, context:Context) {
-        val thumbnailList = LongSparseArray<Bitmap>()
+        val thumbnailList = ArrayList<Bitmap>()
 
         BackgroundExecutor.execute(object : BackgroundExecutor.Task("", 0L, "") {
             override fun execute() {
@@ -129,16 +119,18 @@ class TrimmerPresenter(override var view: TrimmerContract.View) : TrimmerContrac
                     //initialBitmap = 불러온 비디오 프레임의 bitmap
                     //cropWidth/height = timelineview에 하나씩 붙일 , 리사이즈된 프레임의 너비 높이
                     //numThumbs = 썸네일 보여줄 갯수
+
                     val videoLengthInMs = (Integer.parseInt(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION))).toLong()
-                    var numThumbs = if(videoLengthInMs>=3000) Math.ceil(videoLengthInMs / 3000.0).toInt() else 1
+                    //var numThumbs = if(videoLengthInMs-second >=3000) Math.ceil((videoLengthInMs - second) / 3000.0).toInt() else 1
                     val cropHeight = 150 //timelineview에서 한 프레임의 너비 (동적으로 변경되게끔 코드 수정해야함!)
                     val cropWidth = ScreenSizeUtil(context).widthPixels/4 //timelineview에서 한 프레임의 너비
 
                     //val interval = videoLengthInMs / numThumbs
-                    val interval = if(videoLengthInMs< 3000) videoLengthInMs*1000 else 3000*1000
+                    val interval = if(videoLengthInMs< 3000) videoLengthInMs else 3000
 
-                    for (i in 0 until numThumbs) {
-                        var bitmap = mediaMetadataRetriever.getFrameAtTime(i * interval, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+
+                    for (i in 0 .. videoLengthInMs step interval) {
+                        var bitmap = mediaMetadataRetriever.getFrameAtTime(i, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
                         if (bitmap != null) {
                             try {
                                 //frameWidth, frameHeight 이 0으로 나오는 오류가 발생함.
@@ -151,8 +143,8 @@ class TrimmerPresenter(override var view: TrimmerContract.View) : TrimmerContrac
                             } catch (e: Exception) {
                                 e.printStackTrace()
                             }
-                            thumbnailList.put(i.toLong(), bitmap)
-                            Log.i("1:","${thumbnailList.size()}")
+                            thumbnailList.add(bitmap)
+                            Log.i("1:","${thumbnailList.size}")
 
                         }
                     }
@@ -160,10 +152,48 @@ class TrimmerPresenter(override var view: TrimmerContract.View) : TrimmerContrac
                 } catch (e: Throwable) {
                     Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), e)
                 }
-                Log.i("return 직전:","${thumbnailList.size()}")
+                Log.i("return 직전:","${thumbnailList.size}")
             }
         })
-        view.setThumbnailListView(thumbnailList)
+            view.setThumbnailListView(thumbnailList)
     }
 
+    override fun saveVideo(path: String, context:Context, mSrc: Uri,  start_sec: Int, end_sec: Int) {
+        val mediaMetadataRetriever = MediaMetadataRetriever()
+        mediaMetadataRetriever.setDataSource(context, mSrc)
+
+        val file = File(mSrc.path ?: "")
+
+        val root = File(path)
+        root.mkdirs()
+        val outputFileUri = Uri.fromFile(File(root, "t_${Calendar.getInstance().timeInMillis}_" + file.nameWithoutExtension + ".mp4"))
+        val outPutPath = RealPathUtil.realPathFromUriApi19(context, outputFileUri)
+            ?: File(root, "t_${Calendar.getInstance().timeInMillis}_" + mSrc.path?.substring(mSrc.path!!.lastIndexOf("/") + 1)).absolutePath
+        Log.e("SOURCE", file.path)
+        Log.e("DESTINATION", outPutPath)
+        val extractor = MediaExtractor()
+        var frameRate = 24
+        try {
+            extractor.setDataSource(file.path)
+            val numTracks = extractor.trackCount
+            for (i in 0..numTracks) {
+                val format = extractor.getTrackFormat(i)
+                val mime = format.getString(MediaFormat.KEY_MIME)
+                if (mime.startsWith("video/")) {
+                    if (format.containsKey(MediaFormat.KEY_FRAME_RATE)) {
+                        frameRate = format.getInteger(MediaFormat.KEY_FRAME_RATE)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            extractor.release()
+        }
+        val duration = java.lang.Long.parseLong(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION))
+        Log.e("FRAME RATE", frameRate.toString())
+        Log.e("FRAME COUNT", (duration / 1000 * frameRate).toString())
+        VideoOptions(context).trimVideo(TrimVideoUtils.stringForTime(start_sec.toFloat()), TrimVideoUtils.stringForTime(end_sec.toFloat()), file.path, outPutPath, outputFileUri, view)
+
+    }
 }

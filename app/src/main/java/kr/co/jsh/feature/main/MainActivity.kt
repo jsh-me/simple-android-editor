@@ -14,9 +14,10 @@ import kr.co.jsh.globalconst.Consts.Companion.EXTRA_VIDEO_PATH
 import kr.co.jsh.globalconst.Consts.Companion.REQUEST_VIDEO_CROPPER
 import kr.co.jsh.globalconst.Consts.Companion.REQUEST_VIDEO_TRIMMER
 import kr.co.jsh.feature.photoedit.PhotoActivity
+import kr.co.jsh.feature.videoedit.TrimmerActivity
+import kr.co.jsh.feature.videoedit.TrimmerAdapter
 import kr.co.jsh.utils.FileUtils
 import kr.co.jsh.utils.setupPermissions
-import kr.co.jsh.feature.videoedit.TrimmerActivity
 
 
 class MainActivity : AppCompatActivity() {

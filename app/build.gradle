@@ -63,14 +63,13 @@ dependencies {
     //pinch zoom
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
 
-    //Glide
-    implementation 'com.github.bumptech.glide:glide:4.11.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
-
     //DrawView
     implementation 'com.byox.drawview:drawview:1.3.1'
 
+    //coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5'
 
+    //Exoplayer
+    implementation 'com.google.android.exoplayer:exoplayer:2.11.4'
 
 }
