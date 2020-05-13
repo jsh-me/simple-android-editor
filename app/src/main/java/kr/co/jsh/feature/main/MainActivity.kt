@@ -9,10 +9,10 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityMainBinding
-import kr.co.jsh.globalconst.Consts.Companion.EXTRA_PHOTO_PATH
-import kr.co.jsh.globalconst.Consts.Companion.EXTRA_VIDEO_PATH
-import kr.co.jsh.globalconst.Consts.Companion.REQUEST_VIDEO_CROPPER
-import kr.co.jsh.globalconst.Consts.Companion.REQUEST_VIDEO_TRIMMER
+import kr.co.domain.globalconst.Consts.Companion.EXTRA_PHOTO_PATH
+import kr.co.domain.globalconst.Consts.Companion.EXTRA_VIDEO_PATH
+import kr.co.domain.globalconst.Consts.Companion.REQUEST_VIDEO_CROPPER
+import kr.co.domain.globalconst.Consts.Companion.REQUEST_VIDEO_TRIMMER
 import kr.co.jsh.feature.photoedit.PhotoActivity
 import kr.co.jsh.feature.videoedit.TrimmerActivity
 import kr.co.jsh.feature.videoedit.TrimmerAdapter

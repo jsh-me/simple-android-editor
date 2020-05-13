@@ -13,7 +13,7 @@ import com.byox.drawview.enums.BackgroundType
 import com.byox.drawview.enums.DrawingCapture
 import kr.co.jsh.databinding.ActivityPhotoBinding
 import kr.co.jsh.localclass.BitmapImage
-import kr.co.jsh.globalconst.Consts.Companion.EXTRA_PHOTO_PATH
+import kr.co.domain.globalconst.Consts.Companion.EXTRA_PHOTO_PATH
 import kr.co.jsh.utils.setupPermissions
 import java.io.*
 

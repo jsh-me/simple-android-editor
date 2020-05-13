@@ -1,4 +1,4 @@
-package kr.co.jsh.globalconst
+package kr.co.domain.globalconst
 
 class Consts {
     companion object{

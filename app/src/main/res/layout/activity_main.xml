@@ -9,7 +9,7 @@
 
         <variable
             name="consts"
-            type="kr.co.jsh.globalconst.Consts" />
+            type="kr.co.domain.globalconst.Consts" />
     </data>
 
     <ScrollView

@@ -138,7 +138,7 @@
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:layout_marginStart="20dp"
-            android:gravity="center||top"
+            android:gravity="center"
             android:onClick="@{() -> trimmer.clearDraw()}"
             android:text="그리기\n초기화"
             android:textColor="@{trimmer.texteColor[3] ? @color/textWhite : @color/textBlack}"

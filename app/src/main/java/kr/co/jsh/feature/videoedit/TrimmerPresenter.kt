@@ -14,7 +14,7 @@ import android.util.Log
 import android.widget.Toast
 import android.widget.VideoView
 import androidx.recyclerview.widget.RecyclerView
-import kr.co.jsh.globalconst.Consts.Companion.EXTRA_VIDEO_PATH
+import kr.co.domain.globalconst.Consts.Companion.EXTRA_VIDEO_PATH
 import kr.co.jsh.utils.*
 import timber.log.Timber
 import java.io.File
