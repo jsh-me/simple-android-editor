@@ -114,6 +114,7 @@
             android:layout_height="50dp"
             android:layout_marginStart="20dp"
             android:text="서버로\n보내기"
+            android:onClick="@{() -> trimmer.uploadServer()}"
             android:textColor="@{trimmer.texteColor[1] ? @color/textWhite : @color/textBlack}"
             app:layout_constraintBottom_toBottomOf="@+id/child_layout"
             app:layout_constraintStart_toEndOf="@+id/remove_btn"

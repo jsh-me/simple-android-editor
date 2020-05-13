@@ -1,5 +1,6 @@
 package kr.co.jsh.feature.videoedit
 
+import android.annotation.SuppressLint
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
@@ -13,15 +14,18 @@ import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
 import android.widget.VideoView
+import androidx.core.net.toFile
 import androidx.recyclerview.widget.RecyclerView
+import kr.co.domain.api.usecase.PostFileUploadUseCase
 import kr.co.domain.globalconst.Consts.Companion.EXTRA_VIDEO_PATH
 import kr.co.jsh.utils.*
-import timber.log.Timber
 import java.io.File
+import java.net.URI
 import java.util.*
 import kotlin.collections.ArrayList
 
-class TrimmerPresenter(override var view: TrimmerContract.View) : TrimmerContract.Presenter{
+class TrimmerPresenter(override var view: TrimmerContract.View,
+                       private var postFileUploadUseCase: PostFileUploadUseCase) : TrimmerContract.Presenter{
    override fun crop(context: Context, cropCount: Int, videoLoader:VideoView,
                           crop_time: ArrayList<Pair<Int, Int>>, recycler: RecyclerView
    ){
@@ -194,6 +198,20 @@ class TrimmerPresenter(override var view: TrimmerContract.View) : TrimmerContrac
         Log.e("FRAME RATE", frameRate.toString())
         Log.e("FRAME COUNT", (duration / 1000 * frameRate).toString())
         VideoOptions(context).trimVideo(TrimVideoUtils.stringForTime(start_sec.toFloat()), TrimVideoUtils.stringForTime(end_sec.toFloat()), file.path, outPutPath, outputFileUri, view)
+
+    }
+
+    @SuppressLint("CheckResult")
+    override fun uploadFile(uri: Uri) {
+        val path = "file://" + uri.toString()
+        postFileUploadUseCase.postFile(Uri.parse(path).toFile())
+            .subscribe({
+                if(it.status.toInt() == 200 )
+                    view.uploadSuccess(it.message)
+                else view.uploadFailed(it.message)
+            },{
+                view.uploadFailed(it.localizedMessage)
+            })
 
     }
 }

@@ -1,8 +1,6 @@
 package kr.co.jsh.feature.videoedit
 
 import android.annotation.SuppressLint
-import android.content.ContentUris
-import android.content.ContentValues
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
@@ -32,6 +30,8 @@ import kr.co.jsh.utils.*
 import org.jetbrains.anko.runOnUiThread
 import timber.log.Timber
 import java.io.File
+import org.koin.android.ext.android.get
+
 
 class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     private lateinit var binding: ActivityTrimmerBinding
@@ -72,7 +72,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     }
 
     private fun initView(){
-        presenter = TrimmerPresenter(this)
+        presenter = TrimmerPresenter(this, get())
         screenSize = ObservableField(ScreenSizeUtil(this).widthPixels/2)
         mBitmaps = ArrayList()
         progressDialog = VideoProgressIndeterminateDialog(this, "Cropping Video. Please Wait...")
@@ -352,6 +352,10 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         greyline()
     }
 
+    fun uploadServer(){
+        presenter.uploadFile(mSrc)
+    }
+
     private fun greyline() {
         val param1 = FrameLayout.LayoutParams(7,FrameLayout.LayoutParams.MATCH_PARENT)
         val param2 = FrameLayout.LayoutParams(7,FrameLayout.LayoutParams.MATCH_PARENT)
@@ -426,7 +430,6 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
             layoutManager = LinearLayoutManager(context)
             adapter = TrimmerAdapter(mBitmaps, context)
         }
-        Log.i("check bitmap"," --------------------------------")
     }
 
     fun saveVideo(){
@@ -439,14 +442,23 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
 
     }
 
-//    fun setDestinationPath(path: String): TrimmerActivity2 {
-//        destinationPath = path
-//        return this
-//    }
+    override fun uploadSuccess(msg: String) {
+        Toast.makeText(this, "$msg", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun uploadFailed(msg: String) {
+        Toast.makeText(this, "$msg", Toast.LENGTH_SHORT).show()
+    }
 
     override fun onResume() {
         super.onResume()
         binding.timeLineViewRecycler.adapter?.notifyDataSetChanged()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mBitmaps.clear()
+        finish()
     }
 
     override fun onDestroy() {

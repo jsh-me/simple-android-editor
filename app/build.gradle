@@ -70,6 +70,9 @@ dependencies {
     implementation 'io.reactivex:rxandroid:1.2.1'
     implementation "com.squareup.retrofit2:adapter-rxjava2:2.5.0"
 
+    implementation 'com.github.franmontiel:PersistentCookieJar:v1.0.1'
+
+
     //pinch zoom
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
 
