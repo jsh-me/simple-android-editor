@@ -13,7 +13,6 @@ class ReceivedCookiesInterceptor: Interceptor {
         val cookies = HashSet<String>()
 
         if (!originalResponse.headers("Set-Cookie").isEmpty()) {
-
             for (header in originalResponse.headers("Set-Cookie")) {
                cookies.add(header)
             }

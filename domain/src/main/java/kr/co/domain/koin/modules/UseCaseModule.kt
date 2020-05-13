@@ -6,6 +6,5 @@ import org.koin.dsl.module
 
 val useCaseModule = module{
     factory { PostLoginUseCase(get()) }
-
     factory { PostFileUploadUseCase(get())}
 }

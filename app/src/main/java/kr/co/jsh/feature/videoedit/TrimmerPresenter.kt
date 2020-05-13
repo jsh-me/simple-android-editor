@@ -19,6 +19,10 @@ import androidx.recyclerview.widget.RecyclerView
 import kr.co.domain.api.usecase.PostFileUploadUseCase
 import kr.co.domain.globalconst.Consts.Companion.EXTRA_VIDEO_PATH
 import kr.co.jsh.utils.*
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.Request
+import okhttp3.RequestBody
 import java.io.File
 import java.net.URI
 import java.util.*
@@ -60,9 +64,13 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
 
     }
 
+    //사용자가 자른 동영상이 갤러리와 서버 동시에 저장, 업로드 되는 메소드
     override fun getResultUri(uri: Uri, context: Context) {
         RunOnUiThread(context).safely {
             Toast.makeText(context, "Video saved at ${uri.path}", Toast.LENGTH_SHORT).show()
+            //Todo override 된 함수에 넣어줌 ( 사용자가 자른 동영상 )
+            uploadFile(uri)
+
             val mediaMetadataRetriever = MediaMetadataRetriever()
             mediaMetadataRetriever.setDataSource(context, uri)
             val duration =
@@ -110,19 +118,9 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
 
     override fun getThumbnailList(mSrc: Uri, context:Context) {
         val thumbnailList = ArrayList<Bitmap>()
-
-        BackgroundExecutor.execute(object : BackgroundExecutor.Task("", 0L, "") {
-            override fun execute() {
                 try {
-                    //val threshold = 10
                     val mediaMetadataRetriever = MediaMetadataRetriever()
                     mediaMetadataRetriever.setDataSource(context, mSrc)
-                    //동영상의 총 길이
-
-                    //frameWidth/Height = video_loader 의 너비,높이
-                    //initialBitmap = 불러온 비디오 프레임의 bitmap
-                    //cropWidth/height = timelineview에 하나씩 붙일 , 리사이즈된 프레임의 너비 높이
-                    //numThumbs = 썸네일 보여줄 갯수
 
                     val videoLengthInMs = (Integer.parseInt(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION))).toLong()
                     //var numThumbs = if(videoLengthInMs-second >=3000) Math.ceil((videoLengthInMs - second) / 3000.0).toInt() else 1
@@ -137,8 +135,6 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
                         var bitmap = mediaMetadataRetriever.getFrameAtTime(i, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
                         if (bitmap != null) {
                             try {
-                                //frameWidth, frameHeight 이 0으로 나오는 오류가 발생함.
-//                                bitmap = Bitmap.createScaledBitmap(bitmap, frameWidth, frameHeight, false)
                                 bitmap = Bitmap.createScaledBitmap(bitmap, cropWidth, cropHeight, false)
                                 //bitmap = Bitmap.createBitmap(bitmap,0,0, cropWidth, cropHeight)
                                 Log.i("bitmap111","${bitmap.width}, ${bitmap.height}")
@@ -157,8 +153,6 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
                     Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), e)
                 }
                 Log.i("return 직전:","${thumbnailList.size}")
-            }
-        })
             view.setThumbnailListView(thumbnailList)
     }
 
@@ -201,10 +195,13 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
 
     }
 
+    //Todo 근데 왜 MediaType 이 video 인데도, 사진 동영상 둘다 왜 되는거지?
+    //Todo 동영상과 사진 확장자를 업로드 할 수 있는 메소드
     @SuppressLint("CheckResult")
     override fun uploadFile(uri: Uri) {
         val path = "file://" + uri.toString()
-        postFileUploadUseCase.postFile(Uri.parse(path).toFile())
+        val request = MultipartBody.Part.createFormData("file", path, RequestBody.create(MediaType.parse("video/*"), Uri.parse(path).toFile() ))
+        postFileUploadUseCase.postFile(request)
             .subscribe({
                 if(it.status.toInt() == 200 )
                     view.uploadSuccess(it.message)
@@ -212,6 +209,21 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
             },{
                 view.uploadFailed(it.localizedMessage)
             })
+    }
 
+    //Todo 특정 프레임 서버 업로드
+    @SuppressLint("CheckResult")
+    override fun uploadFrameFile(bitmap: Bitmap, context: Context) {
+        val file = BitmapToFileUtil(bitmap, context)
+        val path = "file://" + file.toString()
+        val request = MultipartBody.Part.createFormData("file", path , RequestBody.create(MediaType.parse("video/*"),Uri.parse(path).toFile()))
+        postFileUploadUseCase.postFile(request)
+            .subscribe({
+                if(it.status.toInt() == 200 )
+                    view.uploadSuccess(it.message)
+                else view.uploadFailed(it.message)
+            },{
+                view.uploadFailed(it.localizedMessage)
+            })
     }
 }

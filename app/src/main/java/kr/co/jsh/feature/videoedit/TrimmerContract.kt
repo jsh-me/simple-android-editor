@@ -35,5 +35,7 @@ interface TrimmerContract {
         //uploadFile
         fun uploadFile(uri: Uri)
 
+        //upload specific Frame
+        fun uploadFrameFile(bitmap: Bitmap, context: Context)
     }
 }

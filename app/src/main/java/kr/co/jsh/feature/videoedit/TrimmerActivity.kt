@@ -47,6 +47,8 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     private var mStartPosition = 0f
     private lateinit var progressDialog : VideoProgressIndeterminateDialog
     val texteColor : ObservableField<Array<Boolean>> = ObservableField(arrayOf(false,false,false,false))
+    private var myPickBitmap : Bitmap? = null
+    val mediaMetadataRetriever = MediaMetadataRetriever()
 
     private val dispatcher =
         PausableDispatcher(Handler(Looper.getMainLooper()))
@@ -164,14 +166,15 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
             binding.iconVideoPlay.isSelected = false
             binding.videoLoader.pause()
             binding.videoFrameView.setBackgroundResource(R.color.background_space)
-            val mediaMetadataRetriever = MediaMetadataRetriever()
+//            val mediaMetadataRetriever = MediaMetadataRetriever()
             mediaMetadataRetriever.setDataSource(this, mSrc)
-            var bitmap = mediaMetadataRetriever.getFrameAtTime(
+            //지울 곳의 프레임위치
+            myPickBitmap = mediaMetadataRetriever.getFrameAtTime(
                 touch_time.get().toLong() * 1000,
                 MediaMetadataRetriever.OPTION_CLOSEST_SYNC
             )
             binding.videoFrameView.setBackgroundImage(
-                bitmap,
+                myPickBitmap as Bitmap,
                 BackgroundType.BITMAP,
                 BackgroundScale.CENTER_INSIDE
             )
@@ -352,9 +355,22 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         greyline()
     }
 
+//Todo UPLOAD SERVER
     fun uploadServer(){
-        presenter.uploadFile(mSrc)
+    mediaMetadataRetriever.setDataSource(this, mSrc)
+    //지울 곳의 프레임위치
+    myPickBitmap = mediaMetadataRetriever.getFrameAtTime(
+        touch_time.get().toLong() * 1000,
+        MediaMetadataRetriever.OPTION_CLOSEST_SYNC
+    )
+
+    myPickBitmap?.let {
+        presenter.uploadFile(mSrc) //video upload
+        presenter.uploadFrameFile(myPickBitmap!!, this) //specific frame
+    }?:run{
+        Toast.makeText(this, "마스크를 먼저 그려주세요", Toast.LENGTH_SHORT).show()
     }
+}
 
     private fun greyline() {
         val param1 = FrameLayout.LayoutParams(7,FrameLayout.LayoutParams.MATCH_PARENT)
@@ -433,13 +449,15 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     }
 
     fun saveVideo(){
-        presenter.saveVideo(destinationPath, this, mSrc, crop_time[1].first, crop_time[2].first)
+        //Todo 갤러리에 저장과, 서버 업로드가 같이 될 함수 (나중에 분리)
+        presenter.saveVideo(destinationPath, this, mSrc, crop_time[1].second, crop_time[2].second)
+
     }
 
     override fun getResult(uri: Uri) {
+        //Todo Trim 된 결과가 여기로 넘어오고 다시 getResultUri로 들어감
         presenter.getResultUri(uri, this)
         progressDialog.dismiss()
-
     }
 
     override fun uploadSuccess(msg: String) {
@@ -452,7 +470,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
 
     override fun onResume() {
         super.onResume()
-        binding.timeLineViewRecycler.adapter?.notifyDataSetChanged()
+      //  binding.timeLineViewRecycler.adapter?.notifyDataSetChanged()
     }
 
     override fun onPause() {
