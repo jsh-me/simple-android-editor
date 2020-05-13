@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     xmlns:bind="http://schemas.android.com/tools">
     <data>
         <variable
             name="trimmer"
-            type="kr.co.jsh.videoedit.TrimmerActivity" />
+            type="kr.co.jsh.feature.videoedit.TrimmerActivity" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -22,7 +23,6 @@
             android:layout_gravity="center"
             android:layout_margin="10dp"
             android:background="@drawable/back"
-            android:onClick="@{trimmer::back}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.04"
             app:layout_constraintStart_toStartOf="parent"
@@ -37,7 +37,7 @@
             android:layout_gravity="end"
             android:layout_margin="10dp"
             android:background="@drawable/save_button"
-            android:onClick="@{trimmer::save}"
+            android:onClick="@{() -> trimmer.saveVideo()}"
             android:padding="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.93"
@@ -45,16 +45,247 @@
             app:layout_constraintTop_toTopOf="parent" />
 
 
-        <kr.co.jsh.customview.VideoTrimmer
-            android:id="@+id/videoTrimmer"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/child_layout"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:background="@color/backgound_space1"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <VideoView
+            android:id="@+id/video_loader"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="20dp"
+            app:layout_constraintBottom_toTopOf="@+id/fullscreen_btn"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.509"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/save"
-            />
+            app:layout_constraintTop_toBottomOf="@+id/imageView3"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <com.byox.drawview.views.DrawView
+            android:id="@+id/video_frame_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_centerHorizontal="true"
+            android:visibility="invisible"
+            app:dv_draw_alpha="100"
+            app:dv_draw_anti_alias="true"
+            app:dv_draw_color="@color/colorAccent"
+            app:dv_draw_corners="round"
+            app:dv_draw_dither="true"
+            app:dv_draw_enable_zoom="true"
+            app:dv_draw_max_zoom_factor="8"
+            app:dv_draw_mode="draw"
+            app:dv_draw_style="stroke"
+            app:dv_draw_tool="pen"
+            app:dv_draw_width="20"
+            app:dv_draw_zoomregion_maxscale="5"
+            app:dv_draw_zoomregion_minscale="2"
+            app:dv_draw_zoomregion_scale="4"
+            app:layout_constraintBottom_toBottomOf="@+id/video_loader"
+            app:layout_constraintEnd_toEndOf="@+id/video_loader"
+            app:layout_constraintHorizontal_bias="0.509"
+            app:layout_constraintStart_toStartOf="@+id/video_loader"
+            app:layout_constraintTop_toTopOf="@+id/video_loader" />
+
+        <TextView
+            android:id="@+id/remove_btn"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="10dp"
+            android:gravity="center"
+            android:onClick="@{() -> trimmer.removeMode()}"
+            android:text="그리기"
+            android:textColor="@{trimmer.texteColor[0] ? @color/textWhite : @color/textBlack}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/scroll"
+            app:layout_constraintTop_toBottomOf="@+id/crop_btn"
+            app:layout_constraintVertical_bias="0.9" />
+
+        <TextView
+            android:id="@+id/imageButton2"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginStart="20dp"
+            android:text="서버로\n보내기"
+            android:textColor="@{trimmer.texteColor[1] ? @color/textWhite : @color/textBlack}"
+            app:layout_constraintBottom_toBottomOf="@+id/child_layout"
+            app:layout_constraintStart_toEndOf="@+id/remove_btn"
+            app:layout_constraintTop_toBottomOf="@+id/crop_btn"
+            app:layout_constraintVertical_bias="0.9" />
+
+        <TextView
+            android:id="@+id/reset"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginStart="20dp"
+            android:text="자르기 \n초기화"
+            android:onClick="@{() -> trimmer.resetTimeLineView()}"
+            android:textColor="@{trimmer.texteColor[2] ? @color/textWhite : @color/textBlack}"
+            app:layout_constraintBottom_toBottomOf="@+id/imageButton2"
+            app:layout_constraintStart_toEndOf="@+id/imageButton2"
+            app:layout_constraintTop_toTopOf="@+id/imageButton2"
+            app:layout_constraintVertical_bias="0.9"/>
+
+        <TextView
+            android:id="@+id/reset_paint_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginStart="20dp"
+            android:gravity="center"
+            android:onClick="@{() -> trimmer.clearDraw()}"
+            android:text="그리기\n초기화"
+            android:textColor="@{trimmer.texteColor[3] ? @color/textWhite : @color/textBlack}"
+            app:layout_constraintBottom_toBottomOf="@+id/reset"
+            app:layout_constraintStart_toEndOf="@+id/reset"
+            app:layout_constraintTop_toTopOf="@+id/reset"
+            app:layout_constraintVertical_bias="0.9" />
+
+        <ImageView
+            android:id="@+id/icon_video_play"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true"
+            android:onClick="@{() -> trimmer.playVideo()}"
+            android:layout_marginStart="20dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/video_button_selector"
+            app:layout_constraintBottom_toTopOf="@+id/child_layout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/video_loader"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <ImageView
+            android:id="@+id/fullscreen_btn"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/full_screen_button"
+            app:layout_constraintBottom_toTopOf="@+id/child_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/icon_video_play" />
+
+        <ImageButton
+            android:id="@+id/crop_btn"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginTop="10dp"
+            android:onClick="@{() -> trimmer.cropVideo()}"
+            android:background="@drawable/ic_cut_button"
+            app:layout_constraintEnd_toEndOf="@+id/scroll"
+            app:layout_constraintStart_toStartOf="@+id/scroll"
+            app:layout_constraintTop_toBottomOf="@+id/scroll" />
+
+        <HorizontalScrollView
+            android:id="@+id/scroll"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:scrollbars="none"
+            app:layout_constraintBottom_toBottomOf="@+id/child_layout"
+            app:layout_constraintEnd_toEndOf="@+id/child_layout"
+            app:layout_constraintStart_toStartOf="@+id/child_layout"
+            app:layout_constraintTop_toTopOf="@+id/child_layout"
+            app:layout_constraintVertical_bias="0.26999998">
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="50dp">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/timeLineView_recycler"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:orientation="horizontal"
+                    android:adjustViewBounds="true" />
+
+                <View
+                    android:id="@+id/boader1"
+                    android:layout_width="3dp"
+                    android:layout_height="150dp"
+                    android:visibility="invisible"
+                    android:background="@color/backgound_space1" />
+
+                <View
+                    android:id="@+id/boader2"
+                    android:layout_width="3dp"
+                    android:layout_height="150dp"
+                    android:visibility="invisible"
+                    android:background="@color/backgound_space1" />
+
+                <View
+                    android:id="@+id/border"
+                    android:visibility="invisible"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/boader_round" />
+
+            </FrameLayout>
+
+        </HorizontalScrollView>
+
+        <TextView
+            android:id="@+id/textStartTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:textColor="#ffffff"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toTopOf="@+id/scroll"
+            app:layout_constraintEnd_toEndOf="@+id/scroll"
+            app:layout_constraintHorizontal_bias="0.496"
+            app:layout_constraintStart_toStartOf="@+id/scroll"
+            app:layout_constraintTop_toTopOf="@+id/child_layout"
+            app:layout_constraintVertical_bias="1.0"
+            tools:text="tetetetet" />
+
+
+        <TextView
+            android:id="@+id/textTimeSelection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_marginBottom="10dp"
+            android:gravity="end"
+            android:textColor="#ffffff"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toTopOf="@+id/scroll"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/textStartTime"
+            app:layout_constraintTop_toTopOf="@+id/child_layout"
+            app:layout_constraintVertical_bias="1.0"
+            tools:text="tetetetet" />
+
+
+        <SeekBar
+            android:id="@+id/handlerTop"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center_vertical"
+            android:max="1000"
+            android:progressDrawable="@android:color/transparent"
+            android:secondaryProgress="0"
+            android:thumb="@drawable/seek_line"
+            app:layout_constraintBottom_toBottomOf="@+id/scroll"
+            app:layout_constraintEnd_toEndOf="@+id/scroll"
+            app:layout_constraintStart_toStartOf="@+id/scroll"
+            app:layout_constraintTop_toTopOf="@+id/scroll" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

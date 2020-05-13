@@ -14,4 +14,8 @@
     <color name="transparent">#FFFFFF</color>
     <color name="background_space">#202020</color>
     <color name="backgound_space1">#282828</color>
+
+
+    <color name="textBlack">#FF000000</color>
+    <color name="textWhite">#FFFFFF</color>
 </resources>

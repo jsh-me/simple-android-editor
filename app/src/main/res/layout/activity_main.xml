@@ -5,11 +5,11 @@
     <data>
         <variable
             name="main"
-            type="kr.co.jsh.main.MainActivity" />
+            type="kr.co.jsh.feature.main.MainActivity" />
 
         <variable
             name="consts"
-            type="kr.co.jsh.globalconst.Consts" />
+            type="kr.co.domain.globalconst.Consts" />
     </data>
 
     <ScrollView
@@ -21,7 +21,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context=".main.MainActivity">
+            tools:context=".feature.main.MainActivity">
 
 
             <ImageView
