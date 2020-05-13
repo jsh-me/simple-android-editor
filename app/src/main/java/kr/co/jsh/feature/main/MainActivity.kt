@@ -15,7 +15,6 @@ import kr.co.domain.globalconst.Consts.Companion.REQUEST_VIDEO_CROPPER
 import kr.co.domain.globalconst.Consts.Companion.REQUEST_VIDEO_TRIMMER
 import kr.co.jsh.feature.photoedit.PhotoActivity
 import kr.co.jsh.feature.videoedit.TrimmerActivity
-import kr.co.jsh.feature.videoedit.TrimmerAdapter
 import kr.co.jsh.utils.FileUtils
 import kr.co.jsh.utils.setupPermissions
 

@@ -10,5 +10,7 @@ import retrofit2.http.POST
 interface LoginService {
     @FormUrlEncoded
     @POST("login/login.do")
-    fun postLogin(@Field("user") user: UserRequest) : Single<UserResponse>
+//    fun postLogin(@Field("user") user: UserRequest) : Single<UserResponse>
+    fun pustLogin(@Field("email") email: String,
+                  @Field("passwd") passwd: String) : Single<UserResponse>
 }

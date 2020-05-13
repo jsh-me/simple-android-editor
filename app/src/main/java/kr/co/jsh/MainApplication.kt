@@ -19,4 +19,5 @@ class MainApplication: Application() {
             modules(mutableListOf(networkModule, usecaseModule))
         }
     }
+
 }

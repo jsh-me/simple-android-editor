@@ -1,13 +1,15 @@
 package kr.co.jsh.feature.photoedit
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.net.Uri
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 class PhotoPresenter(override var view: PhotoContract.View) : PhotoContract.Presenter {
+    @SuppressLint("CheckResult")
     override fun setImageView(context: Context, string: String) {
         val stringToUri = Uri.parse(string)
 

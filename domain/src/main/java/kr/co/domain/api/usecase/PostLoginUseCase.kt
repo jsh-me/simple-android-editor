@@ -13,8 +13,8 @@ class PostLoginUseCase(retrofitRepository: RetrofitRepository) {
         .getRetrofit()
         .create(LoginService::class.java)
 
-    fun postLogin(userRequest: UserRequest) : Single<UserResponse> = loginService
-        .postLogin(userRequest)
+    fun postLogin(id: String, passwd: String) : Single<UserResponse> = loginService
+        .pustLogin(id,passwd)
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
 }
