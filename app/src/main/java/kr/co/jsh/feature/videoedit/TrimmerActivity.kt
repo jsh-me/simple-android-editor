@@ -1,8 +1,6 @@
 package kr.co.jsh.feature.videoedit
 
 import android.annotation.SuppressLint
-import android.content.ContentUris
-import android.content.ContentValues
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
@@ -32,6 +30,8 @@ import kr.co.jsh.utils.*
 import org.jetbrains.anko.runOnUiThread
 import timber.log.Timber
 import java.io.File
+import org.koin.android.ext.android.get
+
 
 class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     private lateinit var binding: ActivityTrimmerBinding
@@ -47,6 +47,8 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     private var mStartPosition = 0f
     private lateinit var progressDialog : VideoProgressIndeterminateDialog
     val texteColor : ObservableField<Array<Boolean>> = ObservableField(arrayOf(false,false,false,false))
+    private var myPickBitmap : Bitmap? = null
+    val mediaMetadataRetriever = MediaMetadataRetriever()
 
     private val dispatcher =
         PausableDispatcher(Handler(Looper.getMainLooper()))
@@ -72,7 +74,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     }
 
     private fun initView(){
-        presenter = TrimmerPresenter(this)
+        presenter = TrimmerPresenter(this, get())
         screenSize = ObservableField(ScreenSizeUtil(this).widthPixels/2)
         mBitmaps = ArrayList()
         progressDialog = VideoProgressIndeterminateDialog(this, "Cropping Video. Please Wait...")
@@ -164,14 +166,15 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
             binding.iconVideoPlay.isSelected = false
             binding.videoLoader.pause()
             binding.videoFrameView.setBackgroundResource(R.color.background_space)
-            val mediaMetadataRetriever = MediaMetadataRetriever()
+//            val mediaMetadataRetriever = MediaMetadataRetriever()
             mediaMetadataRetriever.setDataSource(this, mSrc)
-            var bitmap = mediaMetadataRetriever.getFrameAtTime(
+            //지울 곳의 프레임위치
+            myPickBitmap = mediaMetadataRetriever.getFrameAtTime(
                 touch_time.get().toLong() * 1000,
                 MediaMetadataRetriever.OPTION_CLOSEST_SYNC
             )
             binding.videoFrameView.setBackgroundImage(
-                bitmap,
+                myPickBitmap as Bitmap,
                 BackgroundType.BITMAP,
                 BackgroundScale.CENTER_INSIDE
             )
@@ -352,6 +355,23 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         greyline()
     }
 
+//Todo UPLOAD SERVER
+    fun uploadServer(){
+    mediaMetadataRetriever.setDataSource(this, mSrc)
+    //지울 곳의 프레임위치
+    myPickBitmap = mediaMetadataRetriever.getFrameAtTime(
+        touch_time.get().toLong() * 1000,
+        MediaMetadataRetriever.OPTION_CLOSEST_SYNC
+    )
+
+    myPickBitmap?.let {
+        presenter.uploadFile(mSrc) //video upload
+        presenter.uploadFrameFile(myPickBitmap!!, this) //specific frame
+    }?:run{
+        Toast.makeText(this, "마스크를 먼저 그려주세요", Toast.LENGTH_SHORT).show()
+    }
+}
+
     private fun greyline() {
         val param1 = FrameLayout.LayoutParams(7,FrameLayout.LayoutParams.MATCH_PARENT)
         val param2 = FrameLayout.LayoutParams(7,FrameLayout.LayoutParams.MATCH_PARENT)
@@ -426,27 +446,37 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
             layoutManager = LinearLayoutManager(context)
             adapter = TrimmerAdapter(mBitmaps, context)
         }
-        Log.i("check bitmap"," --------------------------------")
     }
 
     fun saveVideo(){
-        presenter.saveVideo(destinationPath, this, mSrc, crop_time[1].first, crop_time[2].first)
+        //Todo 갤러리에 저장과, 서버 업로드가 같이 될 함수 (나중에 분리)
+        presenter.saveVideo(destinationPath, this, mSrc, crop_time[1].second, crop_time[2].second)
+
     }
 
     override fun getResult(uri: Uri) {
+        //Todo Trim 된 결과가 여기로 넘어오고 다시 getResultUri로 들어감
         presenter.getResultUri(uri, this)
         progressDialog.dismiss()
-
     }
 
-//    fun setDestinationPath(path: String): TrimmerActivity2 {
-//        destinationPath = path
-//        return this
-//    }
+    override fun uploadSuccess(msg: String) {
+        Toast.makeText(this, "$msg", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun uploadFailed(msg: String) {
+        Toast.makeText(this, "$msg", Toast.LENGTH_SHORT).show()
+    }
 
     override fun onResume() {
         super.onResume()
-        binding.timeLineViewRecycler.adapter?.notifyDataSetChanged()
+      //  binding.timeLineViewRecycler.adapter?.notifyDataSetChanged()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mBitmaps.clear()
+        finish()
     }
 
     override fun onDestroy() {

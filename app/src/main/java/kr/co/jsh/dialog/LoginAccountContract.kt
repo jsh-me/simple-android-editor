@@ -1,6 +1,6 @@
-package kr.co.jsh.feature.login
+package kr.co.jsh.dialog
 
-interface LoginContract {
+interface LoginAccountContract {
     interface View{
         fun setUserData(name: String)
         fun onError(error: String)

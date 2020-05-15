@@ -19,6 +19,9 @@ interface TrimmerContract {
         fun setPairList(list : ArrayList<Pair<Int,Int>>)
         fun getResult(uri:Uri)
 
+        //uploadFile result
+        fun uploadSuccess(msg: String)
+        fun uploadFailed(msg: String)
     }
     interface Presenter{
         var view: View
@@ -27,8 +30,12 @@ interface TrimmerContract {
         fun crop(context: Context, cropCount: Int, videoLoader:VideoView, crop_time: ArrayList<Pair<Int, Int>>, recycler: RecyclerView)
         fun getThumbnailList(mSrc: Uri, context: Context)
         fun saveVideo(path: String, context:Context, mSrc: Uri, start_sec: Int, end_sec: Int)
-
         fun getResultUri(uri:Uri, context:Context)
 
+        //uploadFile
+        fun uploadFile(uri: Uri)
+
+        //upload specific Frame
+        fun uploadFrameFile(bitmap: Bitmap, context: Context)
     }
 }

@@ -48,6 +48,10 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
 
+    //circleimageview
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
+
+
     //FFmpeg
     implementation 'com.writingminds:FFmpegAndroid:0.3.2'
 
@@ -69,6 +73,9 @@ dependencies {
     implementation "com.f2prateek.rx.preferences2:rx-preferences:2.0.0"
     implementation 'io.reactivex:rxandroid:1.2.1'
     implementation "com.squareup.retrofit2:adapter-rxjava2:2.5.0"
+
+    implementation 'com.github.franmontiel:PersistentCookieJar:v1.0.1'
+
 
     //pinch zoom
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'

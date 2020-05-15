@@ -2,7 +2,7 @@ package kr.co.jsh
 
 import android.app.Application
 import kr.co.domain.koin.modules.networkModule
-import kr.co.domain.koin.modules.usecaseModule
+import kr.co.domain.koin.modules.useCaseModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -16,7 +16,7 @@ class MainApplication: Application() {
         startKoin{
             androidLogger()
             androidContext(this@MainApplication)
-            modules(mutableListOf(networkModule, usecaseModule))
+            modules(mutableListOf(networkModule, useCaseModule))
         }
     }
 

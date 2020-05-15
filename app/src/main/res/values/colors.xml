@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorAccent">#754CAF50</color>
 
     <color name="background_video_color">#2f3031</color>
     <color name="background_progress_color">#6C6D6D</color>
@@ -15,6 +15,7 @@
     <color name="background_space">#202020</color>
     <color name="backgound_space1">#282828</color>
 
+    <color name="grey">#595959</color>
 
     <color name="textBlack">#FF000000</color>
     <color name="textWhite">#FFFFFF</color>

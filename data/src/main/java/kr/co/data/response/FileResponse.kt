@@ -1,10 +1,10 @@
 package kr.co.data.response
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import kr.co.data.entity.UserDataList
+import kr.co.data.entity.FileDataList
 
-data class UserResponse(
+data class FileResponse(
     @JsonProperty("status") var status:String,
-    @JsonProperty("datas") var datas: UserDataList,
+    @JsonProperty("datas") var datas: FileDataList,
     @JsonProperty("message") var message: String
 )

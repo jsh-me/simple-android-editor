@@ -1,10 +1,11 @@
-package kr.co.jsh.feature.login
+package kr.co.jsh.dialog
 
 import android.annotation.SuppressLint
 import kr.co.domain.api.usecase.PostLoginUseCase
 
-class LoginPresenter(override var view: LoginContract.View,
-                     var postLoginUseCase: PostLoginUseCase) : LoginContract.Presenter{
+class LoginAccountPresenter(override var view: LoginAccountContract.View,
+                            var postLoginUseCase: PostLoginUseCase
+) : LoginAccountContract.Presenter{
     @SuppressLint("CheckResult")
     override fun getUserData(id: String, passwd: String) {
         postLoginUseCase.postLogin(id, passwd)
