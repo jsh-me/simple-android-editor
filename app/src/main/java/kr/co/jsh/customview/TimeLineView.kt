@@ -7,7 +7,9 @@ import android.net.Uri
 import android.util.AttributeSet
 import android.util.Log
 import androidx.appcompat.widget.AppCompatImageView
+import com.joooonho.SelectableRoundedImageView
 import kr.co.jsh.R
+import kr.co.jsh.utils.RoundCornerBitmap
 import kr.co.jsh.utils.ScreenSizeUtil
 
 
@@ -72,6 +74,5 @@ class TimeLineView @JvmOverloads constructor(context: Context, attrs: AttributeS
             }
         }
     }
-
 
 }

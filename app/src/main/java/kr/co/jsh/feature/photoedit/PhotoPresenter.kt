@@ -20,22 +20,15 @@ class PhotoPresenter(override var view: PhotoContract.View,
 ) : PhotoContract.Presenter {
     @SuppressLint("CheckResult")
     override fun setImageView(context: Context, string: String) {
-        val stringToUri = Uri.parse(string)
-
-        Observable.just(stringToUri)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                view.displayPhotoView(BitmapFactory.decodeStream(context.contentResolver.openInputStream(stringToUri)))
-            },{
-                it.localizedMessage
-            })
+        val stringToFile = Uri.parse(string).toFile()
+        view.displayPhotoView(stringToFile)
     }
 
     override fun saveImage() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+    @SuppressLint("CheckResult")
     override fun uploadFile(uri: String) {
         val path = "file://" + uri
         val request = MultipartBody.Part.createFormData("file", path, RequestBody.create(MediaType.parse("image/*"), Uri.parse(path).toFile()))
@@ -45,7 +38,7 @@ class PhotoPresenter(override var view: PhotoContract.View,
                     view.uploadSuccess(it.message)
                 else view.uploadFailed(it.message)
             },{
-                view.uploadFailed(it.localizedMessage)
+                view.uploadFailed("로그인 후 가능")
             })
     }
 
@@ -60,7 +53,7 @@ class PhotoPresenter(override var view: PhotoContract.View,
                     view.uploadSuccess(it.message)
                 else view.uploadFailed(it.message)
             },{
-                view.uploadFailed(it.localizedMessage)
+                view.uploadFailed("로그인 후 가능")
             })
     }
 }

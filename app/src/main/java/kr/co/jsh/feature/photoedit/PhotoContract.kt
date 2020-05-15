@@ -3,10 +3,11 @@ package kr.co.jsh.feature.photoedit
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
+import java.io.File
 
 interface PhotoContract {
     interface View{
-        fun displayPhotoView(bitmap: Bitmap)
+        fun displayPhotoView(file: File)
 
         //uploadFile result
         fun uploadSuccess(msg: String)
