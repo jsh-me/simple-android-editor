@@ -74,9 +74,8 @@
             android:layout_height="0dp"
             android:layout_centerHorizontal="true"
             android:visibility="invisible"
-            app:dv_draw_alpha="100"
             app:dv_draw_anti_alias="true"
-            app:dv_draw_color="@color/colorAccent"
+            app:dv_draw_color="@color/textBlack"
             app:dv_draw_corners="round"
             app:dv_draw_dither="true"
             app:dv_draw_enable_zoom="true"
@@ -227,7 +226,7 @@
                     android:visibility="invisible"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/boader_round" />
+                    android:background="@drawable/border_round" />
 
             </FrameLayout>
 

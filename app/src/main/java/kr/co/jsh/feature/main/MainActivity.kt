@@ -13,6 +13,7 @@ import kr.co.domain.globalconst.Consts.Companion.EXTRA_PHOTO_PATH
 import kr.co.domain.globalconst.Consts.Companion.EXTRA_VIDEO_PATH
 import kr.co.domain.globalconst.Consts.Companion.REQUEST_VIDEO_CROPPER
 import kr.co.domain.globalconst.Consts.Companion.REQUEST_VIDEO_TRIMMER
+import kr.co.jsh.dialog.LoginAccountDialog
 import kr.co.jsh.feature.photoedit.PhotoActivity
 import kr.co.jsh.feature.videoedit.TrimmerActivity
 import kr.co.jsh.utils.FileUtils
@@ -78,7 +79,16 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+        else if(resultCode == 1000 && requestCode == 1000) {
+            binding.accountImg.setImageDrawable(resources.getDrawable(R.drawable.sehee, null))
+        }
+
         super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    fun accountCircleImage(){
+        val intent = Intent(this, LoginAccountDialog::class.java)
+        startActivityForResult(intent, 1000)
     }
 
     private fun startTrimActivity(uri: Uri) {
@@ -91,6 +101,7 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, PhotoActivity::class.java)
         intent.putExtra(EXTRA_PHOTO_PATH, FileUtils.getPath(this, uri))
         startActivity(intent)
-
     }
+
+
 }

@@ -167,7 +167,7 @@
                 android:visibility="invisible"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/boader_round" />
+                android:background="@drawable/border_round" />
 
         </FrameLayout>
 
