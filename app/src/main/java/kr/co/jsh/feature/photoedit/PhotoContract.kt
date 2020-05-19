@@ -16,10 +16,9 @@ interface PhotoContract {
     interface Presenter{
         var view: View
         fun setImageView(context: Context, string: String)
-        fun saveImage()
+        fun saveImage(context: Context, uri: Uri)
 
         fun uploadFile(uri: String)
-
         fun uploadFrameFile(bitmap: Bitmap, context: Context)
     }
 }

@@ -1,19 +1,27 @@
 package kr.co.jsh.feature.photoedit
 
 import android.annotation.SuppressLint
+import android.content.ContentUris
+import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.provider.MediaStore
+import android.util.Log
+import android.widget.Toast
 import androidx.core.net.toFile
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kr.co.domain.api.usecase.PostFileUploadUseCase
 import kr.co.jsh.utils.BitmapToFileUtil
+import kr.co.jsh.utils.RunOnUiThread
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import java.io.File
 
 class PhotoPresenter(override var view: PhotoContract.View,
                      private var postFileUploadUseCase: PostFileUploadUseCase
@@ -24,9 +32,34 @@ class PhotoPresenter(override var view: PhotoContract.View,
         view.displayPhotoView(stringToFile)
     }
 
-    override fun saveImage() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun saveImage(context: Context, uri: Uri) {
+        RunOnUiThread(context).safely {
+            Toast.makeText(context, "Video saved at ${uri.path}", Toast.LENGTH_SHORT).show()
+
+            val mediaMetadataRetriever = MediaMetadataRetriever()
+            mediaMetadataRetriever.setDataSource(context, uri)
+            val duration =
+                mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                    .toLong()
+            val width =
+                mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
+                    .toLong()
+            val height =
+                mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
+                    .toLong()
+            val values = ContentValues()
+            values.put(MediaStore.Video.Media.DATA, uri.path)
+            values.put(MediaStore.Video.VideoColumns.DURATION, duration)
+            values.put(MediaStore.Video.VideoColumns.WIDTH, width)
+            values.put(MediaStore.Video.VideoColumns.HEIGHT, height)
+            val id = ContentUris.parseId(
+                context.contentResolver.insert(
+                    MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                    values
+                )
+            )
+            Log.e("VIDEO ID", id.toString())
+        }    }
 
     @SuppressLint("CheckResult")
     override fun uploadFile(uri: String) {
@@ -56,4 +89,6 @@ class PhotoPresenter(override var view: PhotoContract.View,
                 view.uploadFailed("로그인 후 가능")
             })
     }
+
+
 }

@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -30,6 +31,7 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View{
     var texteColor : ObservableField<Array<Boolean>> = ObservableField(arrayOf(false,false,false))
     var drawCheck : ObservableField<Boolean> = ObservableField(false)
     var path = ""
+    private var destinationPath = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +56,8 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View{
                 Glide.with(this).load(path).into(photoImageView)
             }
         }
+        destinationPath =  Environment.getExternalStorageDirectory().toString() + File.separator + "returnable" + File.separator + "Images" + File.separator
+
 
     }
 
@@ -77,7 +81,11 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View{
     }
 
     fun uploadServer(){
-        presenter.uploadFile("file://"+path)
+        val saveImage = binding.drawPhotoview.createCapture(DrawingCapture.BITMAP)
+        presenter.uploadFrameFile(saveImage[0] as Bitmap, this) //마스크까지 그려진 그림
+
+        presenter.uploadFile("file://"+path) //원본 그림
+
         texteColor.set(arrayOf(false,false,false))
         texteColor.set(arrayOf(false,false,true))
     }
@@ -86,8 +94,7 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View{
     //Unknown URI: content://media/external_primary/images/media
     //오른쪽 위 아이콘
     fun savePhoto(v: View){
-        val saveImage = binding.drawPhotoview.createCapture(DrawingCapture.BITMAP)
-        presenter.uploadFrameFile(saveImage[0] as Bitmap, this)
+        presenter.saveImage(this, Uri.parse("file://" + path))
     }
 
     fun drawPhotoMask(){
