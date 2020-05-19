@@ -37,7 +37,7 @@
             android:layout_gravity="end"
             android:layout_margin="10dp"
             android:background="@drawable/ic_file_download"
-            android:onClick="@{() -> trimmer.saveVideo()}"
+            android:onClick="@{() -> trimmer.sendVideoInfoToServer()}"
             android:padding="10dp"
             app:layout_constraintBottom_toBottomOf="@+id/imageView3"
             app:layout_constraintEnd_toEndOf="parent"
@@ -108,18 +108,6 @@
             app:layout_constraintTop_toBottomOf="@+id/crop_btn"
             app:layout_constraintVertical_bias="0.9" />
 
-        <TextView
-            android:id="@+id/imageButton2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:text="@string/upload_server"
-            android:onClick="@{() -> trimmer.uploadServer()}"
-            android:textColor="@{trimmer.texteColor[1] ? @color/textWhite : @color/textBlack}"
-            app:layout_constraintBottom_toBottomOf="@+id/child_layout"
-            app:layout_constraintStart_toEndOf="@+id/remove_btn"
-            app:layout_constraintTop_toBottomOf="@+id/crop_btn"
-            app:layout_constraintVertical_bias="0.9" />
 
         <TextView
             android:id="@+id/reset"
@@ -129,9 +117,9 @@
             android:text="@string/initialze_cut"
             android:onClick="@{() -> trimmer.resetTimeLineView()}"
             android:textColor="@{trimmer.texteColor[2] ? @color/textWhite : @color/textBlack}"
-            app:layout_constraintBottom_toBottomOf="@+id/imageButton2"
-            app:layout_constraintStart_toEndOf="@+id/imageButton2"
-            app:layout_constraintTop_toTopOf="@+id/imageButton2"
+            app:layout_constraintBottom_toBottomOf="@+id/remove_btn"
+            app:layout_constraintStart_toEndOf="@+id/remove_btn"
+            app:layout_constraintTop_toTopOf="@+id/remove_btn"
             app:layout_constraintVertical_bias="0.9"/>
 
         <TextView

@@ -29,13 +29,21 @@ interface TrimmerContract {
         fun resetCrop(context:Context, crop_time: ArrayList<Pair<Int, Int>>)
         fun crop(context: Context, cropCount: Int, videoLoader:VideoView, crop_time: ArrayList<Pair<Int, Int>>, recycler: RecyclerView)
         fun getThumbnailList(mSrc: Uri, context: Context)
-        fun saveVideo(path: String, context:Context, mSrc: Uri, start_sec: Int, end_sec: Int)
+        fun trimVideo(path: String, context:Context, mSrc: Uri, start_sec: Int, end_sec: Int)
         fun getResultUri(uri:Uri, context:Context)
 
-        //uploadFile
+
+        //파일 정보를 서버로 보내서 객체로 묶어준다.
+       // fun resultUriToServerWithInfo(uri: Uri, currentTime: Float, maskImg: Bitmap)
+
+        //uploadVideoFile
         fun uploadFile(uri: Uri)
 
+        //uploadMaskFile
+        fun uploadMaskFile(bitmap: Bitmap, frameTimeSec: Float, context: Context)
+
+
         //upload specific Frame
-        fun uploadFrameFile(bitmap: Bitmap, context: Context)
+     //   fun uploadFrameFile(bitmap: Bitmap, context: Context)
     }
 }

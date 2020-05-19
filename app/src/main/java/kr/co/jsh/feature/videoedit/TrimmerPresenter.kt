@@ -17,19 +17,21 @@ import android.widget.VideoView
 import androidx.core.net.toFile
 import androidx.recyclerview.widget.RecyclerView
 import kr.co.domain.api.usecase.PostFileUploadUseCase
+import kr.co.domain.api.usecase.PostVideoPidNumberAndInfoUseCase
+import kr.co.domain.globalconst.Consts
 import kr.co.domain.globalconst.Consts.Companion.EXTRA_VIDEO_PATH
+import kr.co.domain.globalconst.PidClass
 import kr.co.jsh.utils.*
 import okhttp3.MediaType
 import okhttp3.MultipartBody
-import okhttp3.Request
 import okhttp3.RequestBody
 import java.io.File
-import java.net.URI
 import java.util.*
 import kotlin.collections.ArrayList
 
 class TrimmerPresenter(override var view: TrimmerContract.View,
-                       private var postFileUploadUseCase: PostFileUploadUseCase) : TrimmerContract.Presenter{
+                       private var postFileUploadUseCase: PostFileUploadUseCase,
+                       private var postPidNumberAndInfoUseCase: PostVideoPidNumberAndInfoUseCase) : TrimmerContract.Presenter{
    override fun crop(context: Context, cropCount: Int, videoLoader:VideoView,
                           crop_time: ArrayList<Pair<Int, Int>>, recycler: RecyclerView
    ){
@@ -69,7 +71,6 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
         RunOnUiThread(context).safely {
             Toast.makeText(context, "Video saved at ${uri.path}", Toast.LENGTH_SHORT).show()
             //Todo override 된 함수에 넣어줌 ( 사용자가 자른 동영상 )
-            uploadFile(uri)
 
             val mediaMetadataRetriever = MediaMetadataRetriever()
             mediaMetadataRetriever.setDataSource(context, uri)
@@ -95,6 +96,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
             )
             Log.e("VIDEO ID", id.toString())
         }
+        uploadFile(uri)
 
     }
 
@@ -156,7 +158,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
             view.setThumbnailListView(thumbnailList)
     }
 
-    override fun saveVideo(path: String, context:Context, mSrc: Uri,  start_sec: Int, end_sec: Int) {
+    override fun trimVideo(path: String, context:Context, mSrc: Uri,  start_sec: Int, end_sec: Int) {
         val mediaMetadataRetriever = MediaMetadataRetriever()
         mediaMetadataRetriever.setDataSource(context, mSrc)
 
@@ -203,27 +205,43 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
         val request = MultipartBody.Part.createFormData("file", path, RequestBody.create(MediaType.parse("video/*"), Uri.parse(path).toFile() ))
         postFileUploadUseCase.postFile(request)
             .subscribe({
-                if(it.status.toInt() == 200 )
+//                if(it.status.toInt() == 200 )
+//                {
                     view.uploadSuccess(it.message)
-                else view.uploadFailed(it.message)
+                    PidClass.videoObjectPid = it.datas.objectPid
+                //}
+                //else view.uploadFailed(it.message)
             },{
                 view.uploadFailed(it.localizedMessage)
             })
     }
 
-    //Todo 특정 프레임 서버 업로드
     @SuppressLint("CheckResult")
-    override fun uploadFrameFile(bitmap: Bitmap, context: Context) {
+    override fun uploadMaskFile(bitmap: Bitmap, frameTimeSec:Float, context: Context) {
         val file = BitmapToFileUtil(bitmap, context)
         val path = "file://" + file.toString()
-        val request = MultipartBody.Part.createFormData("file", path , RequestBody.create(MediaType.parse("video/*"),Uri.parse(path).toFile()))
+        val request = MultipartBody.Part.createFormData("file", path , RequestBody.create(MediaType.parse("image/*"),Uri.parse(path).toFile()))
         postFileUploadUseCase.postFile(request)
             .subscribe({
-                if(it.status.toInt() == 200 )
+                if(it.status.toInt() == 200 ) {
                     view.uploadSuccess(it.message)
+                    PidClass.videoMaskObjectPid = it.datas.objectPid
+                    resultUriToServerWithInfo(PidClass.videoMaskObjectPid, frameTimeSec, PidClass.videoObjectPid)
+                }
                 else view.uploadFailed(it.message)
             },{
-                view.uploadFailed(it.localizedMessage)
+                view.uploadFailed("로그인 후 가능")
+            })
+    }
+
+
+    @SuppressLint("CheckResult")
+    fun resultUriToServerWithInfo(maskPid: String, frameSec: Float, videoPid: String) {
+        postPidNumberAndInfoUseCase.postPidNumberAndInfo(maskPid, frameSec, Consts.DEL_OBJ ,videoPid, "TEST")
+            .subscribe({
+                Log.e("pidNum", it.message)
+            },{
+                it.localizedMessage
             })
     }
 }

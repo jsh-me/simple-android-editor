@@ -18,11 +18,13 @@ import androidx.databinding.ObservableFloat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.byox.drawview.enums.BackgroundScale
 import com.byox.drawview.enums.BackgroundType
+import com.byox.drawview.enums.DrawingCapture
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_video_edit.*
 import kotlinx.coroutines.*
+import kr.co.domain.globalconst.PidClass
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityVideoEditBinding
 import kr.co.jsh.localclass.PausableDispatcher
@@ -50,6 +52,8 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     private var myPickBitmap : Bitmap? = null
     val mediaMetadataRetriever = MediaMetadataRetriever()
 
+    val frameSecToSendServer = ArrayList<Int> ()
+
     private val dispatcher =
         PausableDispatcher(Handler(Looper.getMainLooper()))
 
@@ -74,7 +78,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     }
 
     private fun initView(){
-        presenter = TrimmerPresenter(this, get())
+        presenter = TrimmerPresenter(this, get(), get())
         screenSize = ObservableField(ScreenSizeUtil(this).widthPixels/2)
         mBitmaps = ArrayList()
         progressDialog = VideoProgressIndeterminateDialog(this, "Cropping Video. Please Wait...")
@@ -184,6 +188,9 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
             texteColor.set(arrayOf(true, false, false, false))
 
             hideVideoView()
+            //미리 서버에 올리기
+            presenter.trimVideo(destinationPath, this, mSrc, frameSecToSendServer[0], frameSecToSendServer[1])
+
         }
     }
 
@@ -314,6 +321,12 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
             params.marginStart = ScreenSizeUtil(this).widthPixels/2 + crop_time[1].first
             binding.border.layoutParams = params
             binding.border.visibility = View.VISIBLE
+
+            frameSecToSendServer.apply{
+                clear()
+                add(crop_time[1].second)
+                add(crop_time[2].second)
+            }
         }
         else if(startX > crop_time[2].first){
             binding.border.visibility = View.INVISIBLE
@@ -321,6 +334,13 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
             params.marginStart = ScreenSizeUtil(this).widthPixels/2 + crop_time[2].first
             binding.border.layoutParams = params
             binding.border.visibility = View.VISIBLE
+
+            frameSecToSendServer.apply{
+                clear()
+                add(crop_time[2].second)
+                add(crop_time[3].second)
+            }
+
         }
         else if (startX >= 0 && startX < crop_time[1].first) {
             binding.border.visibility = View.INVISIBLE
@@ -328,6 +348,13 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
             params.marginStart = ScreenSizeUtil(this).widthPixels/2
             binding.border.layoutParams = params
             binding.border.visibility = View.VISIBLE
+
+            frameSecToSendServer.apply{
+                clear()
+                add(crop_time[0].second)
+                add(crop_time[1].second)
+            }
+
         }
         else{
             binding.border.visibility = View.INVISIBLE
@@ -354,23 +381,6 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         presenter.crop(this, crop_count, video_loader, crop_time, binding.timeLineViewRecycler)
         greyline()
     }
-
-//Todo UPLOAD SERVER
-    fun uploadServer(){
-    mediaMetadataRetriever.setDataSource(this, mSrc)
-    //지울 곳의 프레임위치
-    myPickBitmap = mediaMetadataRetriever.getFrameAtTime(
-        touch_time.get().toLong() * 1000,
-        MediaMetadataRetriever.OPTION_CLOSEST_SYNC
-    )
-
-    myPickBitmap?.let {
-        presenter.uploadFile(mSrc) //video upload
-        presenter.uploadFrameFile(myPickBitmap!!, this) //specific frame
-    }?:run{
-        Toast.makeText(this, "마스크를 먼저 그려주세요", Toast.LENGTH_SHORT).show()
-    }
-}
 
     private fun greyline() {
         val param1 = FrameLayout.LayoutParams(7,FrameLayout.LayoutParams.MATCH_PARENT)
@@ -414,7 +424,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     override fun onTrimStarted() {
         RunOnUiThread(this).safely {
             Toast.makeText(this, "Started Trimming", Toast.LENGTH_SHORT).show()
-            progressDialog.show()
+//            progressDialog.show()
         }
     }
 
@@ -448,24 +458,36 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         }
     }
 
-    fun saveVideo(){
+    fun sendVideoInfoToServer(){
         //Todo 갤러리에 저장과, 서버 업로드가 같이 될 함수 (나중에 분리)
-        presenter.saveVideo(destinationPath, this, mSrc, crop_time[1].second, crop_time[2].second)
+       // presenter.trimVideo(destinationPath, this, mSrc, frameSecToSendServer[0], frameSecToSendServer[1])
 
+
+        //Todo 서버로 자른 비디오, frametimesec, maskimg 전송
+        val maskImg =  binding.videoFrameView.createCapture(DrawingCapture.BITMAP)
+        maskImg?.let{
+            //비디오 전송
+            //마스크 전송
+            presenter.uploadMaskFile(maskImg[0] as Bitmap, touch_time.get(), this)
+            //presenter.resultUriToServerWithInfo(uri, touch_time.get(), maskImg[0] as Bitmap)
+            //progressDialog.dismiss()
+        }?:run{
+            Toast.makeText(this, "마스크를 먼저 그려주세요", Toast.LENGTH_SHORT).show()
+
+        }
     }
 
     override fun getResult(uri: Uri) {
         //Todo Trim 된 결과가 여기로 넘어오고 다시 getResultUri로 들어감
         presenter.getResultUri(uri, this)
-        progressDialog.dismiss()
     }
 
     override fun uploadSuccess(msg: String) {
-        Toast.makeText(this, "$msg", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "$msg ", Toast.LENGTH_SHORT).show()
     }
 
     override fun uploadFailed(msg: String) {
-        Toast.makeText(this, "$msg", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "$msg ", Toast.LENGTH_SHORT).show()
     }
 
     override fun onResume() {
@@ -482,6 +504,10 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     override fun onDestroy() {
         super.onDestroy()
         mBitmaps.clear()
+        PidClass.apply{
+            videoMaskObjectPid = ""
+            videoObjectPid = ""
+        }
         finish()
     }
 }

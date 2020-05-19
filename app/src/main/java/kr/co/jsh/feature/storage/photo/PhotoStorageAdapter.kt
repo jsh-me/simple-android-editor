@@ -1,15 +1,15 @@
 package kr.co.jsh.feature.storage.photo
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import kr.co.jsh.databinding.ItemImageStorageListBinding
+import java.net.URL
 
-class PhotoStorageAdapter( val click:( Int) -> Unit, private val imageResult : ArrayList<Bitmap>, private var context: Context)
+class PhotoStorageAdapter(val click:( Int) -> Unit, private val imageResult : ArrayList<URL>, private var context: Context)
     :RecyclerView.Adapter<PhotoStorageAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(

@@ -78,13 +78,13 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View{
     }
 
     fun uploadServer(){
-        val saveImage = binding.drawPhotoview.createCapture(DrawingCapture.BITMAP)
-        presenter.uploadFrameFile(saveImage[0] as Bitmap, this) //마스크까지 그려진 그림
-
-        presenter.uploadFile("file://"+path) //원본 그림
-
-        texteColor.set(arrayOf(false,false,false))
-        texteColor.set(arrayOf(false,false,true))
+//        val saveImage = binding.drawPhotoview.createCapture(DrawingCapture.BITMAP)
+//        presenter.uploadFrameFile(saveImage[0] as Bitmap, this) //마스크까지 그려진 그림
+//
+//        presenter.uploadFile("file://"+path) //원본 그림
+//
+//        texteColor.set(arrayOf(false,false,false))
+//        texteColor.set(arrayOf(false,false,true))
     }
 
     //https://codechacha.com/ko/android-mediastore-insert-media-files/

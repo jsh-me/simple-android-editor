@@ -17,6 +17,7 @@ import org.koin.android.ext.android.get
 class PhotoStorageActivity : AppCompatActivity(), PhotoStorageContract.View {
     lateinit var binding : ActivityPhotoStorageBinding
     lateinit var presenter : PhotoStoragePresenter
+    var imageResult = ArrayList<URL>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +33,7 @@ class PhotoStorageActivity : AppCompatActivity(), PhotoStorageContract.View {
     private fun initRecyclerView() {
         photoStorageRecycler.apply {
             layoutManager = GridLayoutManager(this@PhotoStorageActivity, 3)
-         //   adapter = PhotoStorageAdapter(click(), imageResult)
+            adapter = PhotoStorageAdapter(click(), imageResult, context)
         }
     }
 
