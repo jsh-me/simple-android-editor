@@ -50,6 +50,12 @@
         <activity android:name=".dialog.LoginAccountDialog"
             android:theme="@style/Theme.Transparent" />
 
+        <activity android:name=".feature.storage.photo.PhotoStorageActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".feature.storage.video.VideoStorageActivity"
+            android:screenOrientation="portrait"/>
+
     </application>
 
 </manifest>

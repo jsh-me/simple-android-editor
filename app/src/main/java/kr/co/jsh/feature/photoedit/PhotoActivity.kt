@@ -1,32 +1,29 @@
 package kr.co.jsh.feature.photoedit
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableField
 import com.bumptech.glide.Glide
 import com.byox.drawview.enums.BackgroundScale
 import com.byox.drawview.enums.BackgroundType
 import com.byox.drawview.enums.DrawingCapture
-import kotlinx.android.synthetic.main.activity_photo.*
-import kr.co.jsh.databinding.ActivityPhotoBinding
-import kr.co.jsh.localclass.BitmapImage
+import kotlinx.android.synthetic.main.activity_photo_edit.*
 import kr.co.domain.globalconst.Consts.Companion.EXTRA_PHOTO_PATH
 import kr.co.jsh.R
+import kr.co.jsh.databinding.ActivityPhotoEditBinding
 import kr.co.jsh.utils.setupPermissions
 import org.koin.android.ext.android.get
 import java.io.File
 
 
 class PhotoActivity : AppCompatActivity() , PhotoContract.View{
-    private lateinit var binding: ActivityPhotoBinding
+    private lateinit var binding: ActivityPhotoEditBinding
     private lateinit var presenter : PhotoPresenter
     var texteColor : ObservableField<Array<Boolean>> = ObservableField(arrayOf(false,false,false))
     var drawCheck : ObservableField<Boolean> = ObservableField(false)
@@ -41,7 +38,7 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View{
     }
 
     private fun setupDataBinding() {
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_photo)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_photo_edit)
         binding.photo = this@PhotoActivity
     }
 

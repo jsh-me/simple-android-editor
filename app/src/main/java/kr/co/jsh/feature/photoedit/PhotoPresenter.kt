@@ -16,6 +16,7 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kr.co.domain.api.usecase.PostFileUploadUseCase
+import kr.co.domain.globalconst.PidClass
 import kr.co.jsh.utils.BitmapToFileUtil
 import kr.co.jsh.utils.RunOnUiThread
 import okhttp3.MediaType
@@ -67,8 +68,10 @@ class PhotoPresenter(override var view: PhotoContract.View,
         val request = MultipartBody.Part.createFormData("file", path, RequestBody.create(MediaType.parse("image/*"), Uri.parse(path).toFile()))
         postFileUploadUseCase.postFile(request)
             .subscribe({
-                if(it.status.toInt() == 200 )
+                if(it.status.toInt() == 200 ) {
                     view.uploadSuccess(it.message)
+                    PidClass.imageObjectPid = it.datas.objectPid //file pid 저장
+                }
                 else view.uploadFailed(it.message)
             },{
                 view.uploadFailed("로그인 후 가능")

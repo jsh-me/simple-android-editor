@@ -21,10 +21,10 @@ import com.byox.drawview.enums.BackgroundType
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_trimmer.*
+import kotlinx.android.synthetic.main.activity_video_edit.*
 import kotlinx.coroutines.*
 import kr.co.jsh.R
-import kr.co.jsh.databinding.ActivityTrimmerBinding
+import kr.co.jsh.databinding.ActivityVideoEditBinding
 import kr.co.jsh.localclass.PausableDispatcher
 import kr.co.jsh.utils.*
 import org.jetbrains.anko.runOnUiThread
@@ -34,7 +34,7 @@ import org.koin.android.ext.android.get
 
 
 class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
-    private lateinit var binding: ActivityTrimmerBinding
+    private lateinit var binding: ActivityVideoEditBinding
     private lateinit var presenter : TrimmerPresenter
     private var screenSize = ObservableField<Int>()
     private lateinit var mSrc: Uri
@@ -96,7 +96,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     }
 
     private fun setupDataBinding(){
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_trimmer)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_video_edit)
         binding.trimmer = this@TrimmerActivity
     }
 
