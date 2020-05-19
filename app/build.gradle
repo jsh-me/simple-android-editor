@@ -50,6 +50,7 @@ dependencies {
 
     //circleimageview
     implementation 'de.hdodenhof:circleimageview:3.1.0'
+    implementation 'com.joooonho:selectableroundedimageview:1.0.1'
 
 
     //FFmpeg

@@ -5,8 +5,10 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.databinding.ObservableField
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityMainBinding
 import kr.co.domain.globalconst.Consts.Companion.EXTRA_PHOTO_PATH
@@ -22,6 +24,7 @@ import kr.co.jsh.utils.setupPermissions
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    var loginCheck : ObservableField<Boolean> = ObservableField(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,6 +84,7 @@ class MainActivity : AppCompatActivity() {
         }
         else if(resultCode == 1000 && requestCode == 1000) {
             binding.accountImg.setImageDrawable(resources.getDrawable(R.drawable.sehee, null))
+            loginCheck.set(true)
         }
 
         super.onActivityResult(requestCode, resultCode, data)

@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import kr.co.jsh.R
 import kr.co.jsh.customview.TimeLineView
 import kr.co.jsh.databinding.ItemPhotoViewBinding
 

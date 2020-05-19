@@ -6,6 +6,9 @@
     xmlns:tools="http://schemas.android.com/tools">
     <data>
         <variable
+            name="view"
+            type="android.view.View" />
+        <variable
             name="photo"
             type="kr.co.jsh.feature.photoedit.PhotoActivity" />
     </data>
@@ -18,52 +21,53 @@
     android:layout_height="match_parent">
 
     <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:id="@+id/photoBackBtn"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_gravity="center"
         android:layout_margin="10dp"
-        android:background="@drawable/back"
+        android:background="@drawable/ic_back"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.04"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/save"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:id="@+id/photoSaveBtn"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:layout_gravity="end"
         android:layout_margin="10dp"
-        android:background="@drawable/save_button"
-        android:padding="10dp"
+        android:background="@drawable/ic_file_download"
         android:onClick="@{photo::savePhoto}"
+        android:padding="10dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.93"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/image"
+        android:id="@+id/photoImageView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="20dp"
         android:layout_centerHorizontal="true"
+        android:layout_margin="20dp"
+        android:visibility="@{photo.drawCheck ? view.INVISIBLE : view.VISIBLE}"
         app:layout_constraintBottom_toTopOf="@+id/child_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView3"
-        app:layout_constraintVertical_bias="0.49" />
+        app:layout_constraintTop_toBottomOf="@+id/photoBackBtn"
+        app:layout_constraintVertical_bias="0.57" />
 
 
     <com.byox.drawview.views.DrawView
-        android:id="@+id/photoview"
+        android:id="@+id/drawPhotoview"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
+        android:visibility="@{photo.drawCheck ? view.VISIBLE : view.INVISIBLE}"
         app:dv_draw_anti_alias="true"
         app:dv_draw_color="@color/textBlack"
         app:dv_draw_corners="round"
@@ -77,17 +81,17 @@
         app:dv_draw_zoomregion_maxscale="5"
         app:dv_draw_zoomregion_minscale="2"
         app:dv_draw_zoomregion_scale="4"
-        app:layout_constraintBottom_toTopOf="@+id/child_layout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView3"
+        app:layout_constraintBottom_toBottomOf="@+id/photoImageView"
+        app:layout_constraintEnd_toEndOf="@+id/photoImageView"
+        app:layout_constraintStart_toStartOf="@+id/photoImageView"
+        app:layout_constraintTop_toTopOf="@+id/photoImageView"
         app:layout_constraintVertical_bias="0.49" />
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/child_layout"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="180dp"
         android:layout_marginBottom="50dp"
         android:background="@color/backgound_space1"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -95,49 +99,44 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <ImageButton
+    <TextView
         android:id="@+id/remove_btn"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginStart="32dp"
-        android:background="@drawable/remove_button_selector"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:text="@string/draw"
+        android:onClick="@{() -> photo.drawPhotoMask()}"
+        android:textColor="@{photo.texteColor[1] ? @color/textWhite : @color/textBlack}"
         app:layout_constraintBottom_toBottomOf="@+id/child_layout"
         app:layout_constraintStart_toStartOf="@+id/child_layout"
         app:layout_constraintTop_toTopOf="@+id/child_layout"
         app:layout_constraintVertical_bias="0.3" />
 
-    <ImageButton
-        android:id="@+id/improve_btn"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginStart="16dp"
-        android:background="@drawable/brush_button_selector"
+    <TextView
+        android:id="@+id/reset_paint_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:onClick="@{photo::resetButton}"
+        android:text="@string/initialize_draw"
+        android:textColor="@{photo.texteColor[0] ? @color/textWhite : @color/textBlack}"
         app:layout_constraintBottom_toBottomOf="@+id/child_layout"
         app:layout_constraintStart_toEndOf="@+id/remove_btn"
         app:layout_constraintTop_toTopOf="@+id/child_layout"
         app:layout_constraintVertical_bias="0.3" />
 
-    <ImageButton
-        android:id="@+id/reset_paint_btn"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="16dp"
-        android:onClick="@{photo::resetButton}"
-        app:layout_constraintBottom_toBottomOf="@+id/child_layout"
-        app:layout_constraintStart_toEndOf="@+id/improve_btn"
-        app:layout_constraintTop_toBottomOf="@+id/image"
-        app:layout_constraintVertical_bias="0.3" />
 
     <TextView
         android:id="@+id/server_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="서버로\n보내기"
         android:onClick="@{() -> photo.uploadServer()}"
+        android:text="@string/upload_server"
+        android:textColor="@{photo.texteColor[2] ? @color/textWhite : @color/textBlack}"
         app:layout_constraintBottom_toBottomOf="@+id/reset_paint_btn"
         app:layout_constraintStart_toEndOf="@+id/reset_paint_btn"
-        app:layout_constraintTop_toBottomOf="@+id/image"
+        app:layout_constraintTop_toTopOf="@+id/child_layout"
         app:layout_constraintVertical_bias="1.0" />
 
 

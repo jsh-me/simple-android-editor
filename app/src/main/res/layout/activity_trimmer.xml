@@ -18,31 +18,32 @@
 
         <ImageView
             android:id="@+id/imageView3"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_gravity="center"
             android:layout_margin="10dp"
-            android:background="@drawable/back"
+            android:background="@drawable/ic_back"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.04"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/save"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_gravity="end"
             android:layout_margin="10dp"
-            android:background="@drawable/save_button"
+            android:background="@drawable/ic_file_download"
             android:onClick="@{() -> trimmer.saveVideo()}"
             android:padding="10dp"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView3"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.93"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="@+id/imageView3" />
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -96,11 +97,11 @@
         <TextView
             android:id="@+id/remove_btn"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:gravity="center"
             android:onClick="@{() -> trimmer.removeMode()}"
-            android:text="그리기"
+            android:text="@string/draw"
             android:textColor="@{trimmer.texteColor[0] ? @color/textWhite : @color/textBlack}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@+id/scroll"
@@ -110,9 +111,9 @@
         <TextView
             android:id="@+id/imageButton2"
             android:layout_width="wrap_content"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:text="서버로\n보내기"
+            android:text="@string/upload_server"
             android:onClick="@{() -> trimmer.uploadServer()}"
             android:textColor="@{trimmer.texteColor[1] ? @color/textWhite : @color/textBlack}"
             app:layout_constraintBottom_toBottomOf="@+id/child_layout"
@@ -123,9 +124,9 @@
         <TextView
             android:id="@+id/reset"
             android:layout_width="wrap_content"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:text="자르기 \n초기화"
+            android:text="@string/initialze_cut"
             android:onClick="@{() -> trimmer.resetTimeLineView()}"
             android:textColor="@{trimmer.texteColor[2] ? @color/textWhite : @color/textBlack}"
             app:layout_constraintBottom_toBottomOf="@+id/imageButton2"
@@ -136,11 +137,11 @@
         <TextView
             android:id="@+id/reset_paint_btn"
             android:layout_width="wrap_content"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:gravity="center"
             android:onClick="@{() -> trimmer.clearDraw()}"
-            android:text="그리기\n초기화"
+            android:text="@string/initialize_draw"
             android:textColor="@{trimmer.texteColor[3] ? @color/textWhite : @color/textBlack}"
             app:layout_constraintBottom_toBottomOf="@+id/reset"
             app:layout_constraintStart_toEndOf="@+id/reset"
@@ -149,14 +150,13 @@
 
         <ImageView
             android:id="@+id/icon_video_play"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentBottom="true"
-            android:onClick="@{() -> trimmer.playVideo()}"
-            android:layout_marginStart="20dp"
             android:layout_marginBottom="8dp"
             android:background="@drawable/video_button_selector"
+            android:onClick="@{() -> trimmer.playVideo()}"
             app:layout_constraintBottom_toTopOf="@+id/child_layout"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/video_loader"
@@ -166,9 +166,9 @@
             android:id="@+id/fullscreen_btn"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
-            android:background="@drawable/full_screen_button"
+            android:background="@drawable/ic_full_screen"
             app:layout_constraintBottom_toTopOf="@+id/child_layout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
@@ -203,6 +203,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/timeLineView_recycler"
                     android:layout_width="wrap_content"
+                    android:paddingBottom="5dp"
                     android:layout_height="50dp"
                     android:orientation="horizontal"
                     android:adjustViewBounds="true" />
@@ -227,6 +228,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/border_round" />
+
 
             </FrameLayout>
 
@@ -253,6 +255,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
+            android:layout_marginEnd="8dp"
             android:layout_marginBottom="10dp"
             android:gravity="end"
             android:textColor="#ffffff"
@@ -274,7 +277,7 @@
             android:max="1000"
             android:progressDrawable="@android:color/transparent"
             android:secondaryProgress="0"
-            android:thumb="@drawable/seek_line"
+            android:background="@drawable/seekbar_line"
             app:layout_constraintBottom_toBottomOf="@+id/scroll"
             app:layout_constraintEnd_toEndOf="@+id/scroll"
             app:layout_constraintStart_toStartOf="@+id/scroll"

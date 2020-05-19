@@ -1,5 +1,8 @@
 package kr.co.domain.globalconst
 
+import android.os.Environment
+import java.io.File
+
 class Consts {
     companion object{
         const val REQUEST_VIDEO_TRIMMER = 0x01
@@ -7,6 +10,5 @@ class Consts {
         const val EXTRA_VIDEO_PATH = "EXTRA_VIDEO_PATH"
         const val EXTRA_PHOTO_PATH = "EXTRA_PHOTO_PATH"
         const val MIN_TIME_FRAME = 1000
-
     }
 }

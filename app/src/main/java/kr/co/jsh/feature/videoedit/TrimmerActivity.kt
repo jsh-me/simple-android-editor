@@ -310,21 +310,21 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         if(startX >= crop_time[1].first && startX <= crop_time[2].first){
             binding.border.visibility = View.INVISIBLE
             //7은 TimeLintView 에서 그려줄 때 만든 margin 값
-            params = FrameLayout.LayoutParams(crop_time[2].first - crop_time[1].first, binding.timeLineViewRecycler.height)
+            params = FrameLayout.LayoutParams(crop_time[2].first - crop_time[1].first, binding.timeLineViewRecycler.height-10)
             params.marginStart = ScreenSizeUtil(this).widthPixels/2 + crop_time[1].first
             binding.border.layoutParams = params
             binding.border.visibility = View.VISIBLE
         }
         else if(startX > crop_time[2].first){
             binding.border.visibility = View.INVISIBLE
-            params = FrameLayout.LayoutParams(crop_time[3].first - crop_time[2].first,  binding.timeLineViewRecycler.height)
+            params = FrameLayout.LayoutParams(crop_time[3].first - crop_time[2].first,  binding.timeLineViewRecycler.height-10)
             params.marginStart = ScreenSizeUtil(this).widthPixels/2 + crop_time[2].first
             binding.border.layoutParams = params
             binding.border.visibility = View.VISIBLE
         }
         else if (startX >= 0 && startX < crop_time[1].first) {
             binding.border.visibility = View.INVISIBLE
-            params = FrameLayout.LayoutParams(crop_time[1].first - crop_time[0].first,  binding.timeLineViewRecycler.height)
+            params = FrameLayout.LayoutParams(crop_time[1].first - crop_time[0].first,  binding.timeLineViewRecycler.height-10)
             params.marginStart = ScreenSizeUtil(this).widthPixels/2
             binding.border.layoutParams = params
             binding.border.visibility = View.VISIBLE
