@@ -131,7 +131,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:onClick="@{() -> photo.uploadServer()}"
         android:text="@string/upload_server"
         android:textColor="@{photo.texteColor[2] ? @color/textWhite : @color/textBlack}"
         app:layout_constraintBottom_toBottomOf="@+id/reset_paint_btn"

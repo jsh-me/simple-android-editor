@@ -226,7 +226,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
                 if(it.status.toInt() == 200 ) {
                     view.uploadSuccess(it.message)
                     PidClass.videoMaskObjectPid = it.datas.objectPid
-                    resultUriToServerWithInfo(PidClass.videoMaskObjectPid, frameTimeSec, PidClass.videoObjectPid)
+                    sendVideoResultToServerWithInfo(PidClass.videoMaskObjectPid, frameTimeSec, PidClass.videoObjectPid)
                 }
                 else view.uploadFailed(it.message)
             },{
@@ -236,10 +236,10 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
 
 
     @SuppressLint("CheckResult")
-    fun resultUriToServerWithInfo(maskPid: String, frameSec: Float, videoPid: String) {
+    fun sendVideoResultToServerWithInfo(maskPid: String, frameSec: Float, videoPid: String) {
         postPidNumberAndInfoUseCase.postPidNumberAndInfo(maskPid, frameSec, Consts.DEL_OBJ ,videoPid, "TEST")
             .subscribe({
-                Log.e("pidNum", it.message)
+                Log.e("Video Send Result", it.message)
             },{
                 it.localizedMessage
             })

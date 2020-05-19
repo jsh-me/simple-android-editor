@@ -45,7 +45,7 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View{
     private fun initView() {
         val extraIntent = intent
 
-        presenter = PhotoPresenter(this, get())
+        presenter = PhotoPresenter(this, get(), get())
         setupPermissions(this) {
             extraIntent?.let {
                 path = extraIntent.getStringExtra(EXTRA_PHOTO_PATH)
@@ -54,8 +54,6 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View{
             }
         }
         destinationPath =  Environment.getExternalStorageDirectory().toString() + File.separator + "returnable" + File.separator + "Images" + File.separator
-
-
     }
 
     override fun displayPhotoView(file: File) {
@@ -77,27 +75,25 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View{
         initView()
     }
 
-    fun uploadServer(){
-//        val saveImage = binding.drawPhotoview.createCapture(DrawingCapture.BITMAP)
-//        presenter.uploadFrameFile(saveImage[0] as Bitmap, this) //마스크까지 그려진 그림
-//
-//        presenter.uploadFile("file://"+path) //원본 그림
-//
-//        texteColor.set(arrayOf(false,false,false))
-//        texteColor.set(arrayOf(false,false,true))
-    }
-
     //https://codechacha.com/ko/android-mediastore-insert-media-files/
     //Unknown URI: content://media/external_primary/images/media
     //오른쪽 위 아이콘
     fun savePhoto(v: View){
-        presenter.saveImage(this, Uri.parse("file://" + path))
+        val saveImage = binding.drawPhotoview.createCapture(DrawingCapture.BITMAP)
+        saveImage?.let {
+            presenter.uploadFrameFile(saveImage[0] as Bitmap, this) //마스크까지 그려진 그림
+        }?:run{
+            Toast.makeText(this, "마스크를 그려주세요", Toast.LENGTH_SHORT).show()
+        }
+        //presenter.saveImage(this, Uri.parse("file://" + path))
     }
 
     fun drawPhotoMask(){
         texteColor.set(arrayOf(false,false,false))
         texteColor.set(arrayOf(false,true,false))
         drawCheck.set(true)
+        presenter.uploadFile("file://" + path) //원본 그림
+
     }
 
 
