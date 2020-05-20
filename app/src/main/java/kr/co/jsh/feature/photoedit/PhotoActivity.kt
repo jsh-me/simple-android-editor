@@ -25,8 +25,7 @@ import kotlinx.android.synthetic.main.activity_photo_edit.*
 import kr.co.domain.globalconst.Consts.Companion.EXTRA_PHOTO_PATH
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityPhotoEditBinding
-import kr.co.jsh.utils.CropBitmapImage
-import kr.co.jsh.utils.setupPermissions
+import kr.co.jsh.utils.*
 import org.koin.android.ext.android.get
 import timber.log.Timber
 import java.io.File
@@ -39,6 +38,7 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View{
     var drawCheck : ObservableField<Boolean> = ObservableField(false)
     var path = ""
     private var destinationPath = ""
+    private var realImageSize = ArrayList<Int>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,6 +81,7 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View{
                         val h = resource?.height
                         Timber.e("$w and $h")
 
+
                         ConstraintLayout.LayoutParams(w!!, h!!).apply {
                             leftToLeft = R.id.photo_edit_layout
                             rightToRight = R.id.photo_edit_layout
@@ -105,7 +106,8 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View{
                 setBackgroundImage(file, BackgroundType.FILE, BackgroundScale.FIT_START)
             }
         }
-
+        realImageSize = FileToBitmapSize(file)
+        Timber.e("${realImageSize[0]} and ${realImageSize[1]}")
     }
 
     fun resetButton(v: View){
@@ -120,11 +122,24 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View{
     //https://codechacha.com/ko/android-mediastore-insert-media-files/
     //Unknown URI: content://media/external_primary/images/media
     //오른쪽 위 아이콘
+
+    //서버로 보내기 전에 background image를 흰 바탕으로 변경 후 보내면 되지 않을까...
     fun savePhoto(v: View){
+
         val saveImage = binding.drawPhotoview.createCapture(DrawingCapture.BITMAP)
         saveImage?.let {
+
+            // 불러온 resource 크기만큼 crop한다.
+            val cropBitmap = CropBitmapImage(saveImage[0] as Bitmap, binding.drawPhotoview.width, binding.drawPhotoview.height)
+
+            // crop된 이미지를 원본 이미지 크기로 resize 해준다.
+            val resizeBitmap = ResizeBitmapImage(cropBitmap, realImageSize[0], realImageSize[1])
+
+            //binary mask
+            val binaryMask = CreateBinaryMask(resizeBitmap)
+
            //마스크까지 그려진 그림
-            presenter.uploadFrameFile(CropBitmapImage(saveImage[0] as Bitmap, binding.drawPhotoview.width, binding.drawPhotoview.height), this)
+            presenter.uploadFrameFile(binaryMask, this)
             Timber.e("마스크 결과 : ${(saveImage[0] as Bitmap).width} and ${(saveImage[0] as Bitmap).height}")
         }?:run{
             Toast.makeText(this, "마스크를 그려주세요", Toast.LENGTH_SHORT).show()

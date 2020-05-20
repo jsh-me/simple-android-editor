@@ -26,6 +26,7 @@ import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -236,7 +237,11 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
 
     @SuppressLint("CheckResult")
     fun sendVideoResultToServerWithInfo(maskPid: String, frameSec: Float, videoPid: String) {
-        postPidNumberAndInfoUseCase.postPidNumberAndInfo(maskPid, frameSec, Consts.DEL_OBJ ,videoPid, "TEST")
+        val time = System.currentTimeMillis()
+        val dateFormat = SimpleDateFormat("yyyy-mm-dd hh:mm:ss")
+        val curTime = dateFormat.format(Date(time))
+
+        postPidNumberAndInfoUseCase.postPidNumberAndInfo(maskPid, frameSec, Consts.DEL_OBJ ,videoPid, curTime)
             .subscribe({
                 Log.e("Video Send Result", it.message)
             },{

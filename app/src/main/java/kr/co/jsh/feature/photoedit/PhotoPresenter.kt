@@ -26,6 +26,10 @@ import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.util.*
 
 class PhotoPresenter(override var view: PhotoContract.View,
                      private var postFileUploadUseCase: PostFileUploadUseCase,
@@ -101,7 +105,12 @@ class PhotoPresenter(override var view: PhotoContract.View,
     }
     @SuppressLint("CheckResult")
     private fun sendImageResultToServerWithInfo(maskPid: String, imagePid: String){
-        postImagePidNumberAndInfoUseCase.postImagePidNumberAndInfo(maskPid, Consts.DEL_OBJ, imagePid, "TEST_IMAGE")
+        //title 구분을 위해 현재 시간을 넣음
+        val time = System.currentTimeMillis()
+        val dateFormat = SimpleDateFormat("yyyy-mm-dd hh:mm:ss")
+        val curTime = dateFormat.format(Date(time))
+
+        postImagePidNumberAndInfoUseCase.postImagePidNumberAndInfo(maskPid, Consts.DEL_OBJ, imagePid, curTime)
             .subscribe({
                 Log.e("Image Send Result", it.message)
             },{

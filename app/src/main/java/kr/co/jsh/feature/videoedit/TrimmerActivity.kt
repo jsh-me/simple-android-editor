@@ -52,8 +52,8 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     val texteColor : ObservableField<Array<Boolean>> = ObservableField(arrayOf(false,false,false,false))
     private var myPickBitmap : Bitmap? = null
     val mediaMetadataRetriever = MediaMetadataRetriever()
-
     val frameSecToSendServer = ArrayList<Int> ()
+    private var realVideoSize = ArrayList<Int>()
 
     private val dispatcher =
         PausableDispatcher(Handler(Looper.getMainLooper()))
@@ -115,6 +115,8 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         binding.handlerTop.visibility=View.VISIBLE
         binding.videoLoader.layoutParams = lp
         mDuration = binding.videoLoader.duration.toFloat()
+        realVideoSize.add(mp.videoWidth)
+        realVideoSize.add(mp.videoHeight)
 
         setTimeFrames()
         onVideoPrepared()
@@ -413,7 +415,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     }
 
 
-    fun destroy() {
+    private fun destroy() {
         BackgroundExecutor.cancelAll("", true)
         UiThreadExecutor.cancelAll("")
     }
@@ -465,8 +467,13 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         //Todo 서버로 자른 비디오, frametimesec, maskimg 전송
         val maskImg =  binding.videoFrameView.createCapture(DrawingCapture.BITMAP)
         maskImg?.let{
+            //자세한 코드설명은 PhotoActivity에 있음.
+            val cropBitmap = CropBitmapImage(maskImg[0] as Bitmap, binding.videoFrameView.width, binding.videoFrameView.height)
+            val resizeBitmap = ResizeBitmapImage(cropBitmap, realVideoSize[0], realVideoSize[1])
+            val binaryMask = CreateBinaryMask(resizeBitmap)
+
             //마스크 전송
-             presenter.uploadMaskFile(CropBitmapImage(maskImg[0] as Bitmap, binding.videoFrameView.width, binding.videoFrameView.height) , touch_time.get(), this)
+             presenter.uploadMaskFile(binaryMask , touch_time.get(), this)
             //progressDialog.dismiss()
         }?:run{
             Toast.makeText(this, "마스크를 먼저 그려주세요", Toast.LENGTH_SHORT).show()
