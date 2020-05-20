@@ -20,11 +20,11 @@ class HttpClientRepositoryImpl : HttpClientRepository{
             chain.proceed(request) //Log
         }
 
-//        if (BuildConfig.DEBUG) {
-//            val loggingInterceptor = HttpLoggingInterceptor()
-//            loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
-//            httpClient.addInterceptor(loggingInterceptor)
-//        }
+        if (BuildConfig.DEBUG) {
+            val loggingInterceptor = HttpLoggingInterceptor()
+            loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+            httpClient.addInterceptor(loggingInterceptor)
+        }
         httpClient.readTimeout(1, TimeUnit.MINUTES)
         httpClient.connectTimeout(30, TimeUnit.SECONDS)
 

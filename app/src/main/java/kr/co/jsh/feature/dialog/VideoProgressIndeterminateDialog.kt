@@ -1,4 +1,4 @@
-package kr.co.jsh.feature.videoedit
+package kr.co.jsh.feature.dialog
 
 import android.app.Dialog
 import android.content.Context

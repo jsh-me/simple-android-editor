@@ -17,6 +17,8 @@ import kr.co.domain.globalconst.Consts.Companion.REQUEST_VIDEO_CROPPER
 import kr.co.domain.globalconst.Consts.Companion.REQUEST_VIDEO_TRIMMER
 import kr.co.jsh.dialog.LoginAccountDialog
 import kr.co.jsh.feature.photoedit.PhotoActivity
+import kr.co.jsh.feature.storage.photo.PhotoStorageActivity
+import kr.co.jsh.feature.storage.video.VideoStorageActivity
 import kr.co.jsh.feature.videoedit.TrimmerActivity
 import kr.co.jsh.utils.FileUtils
 import kr.co.jsh.utils.setupPermissions
@@ -93,6 +95,16 @@ class MainActivity : AppCompatActivity() {
     fun accountCircleImage(){
         val intent = Intent(this, LoginAccountDialog::class.java)
         startActivityForResult(intent, 1000)
+    }
+
+    fun photoStorageBtn(){
+        val intent = Intent(this, PhotoStorageActivity::class.java)
+        startActivity(intent)
+    }
+
+    fun videoStorageBtn(){
+        val intent = Intent(this, VideoStorageActivity::class.java)
+        startActivity(intent)
     }
 
     private fun startTrimActivity(uri: Uri) {

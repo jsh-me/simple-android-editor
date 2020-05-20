@@ -117,17 +117,18 @@
                 android:text="MY PROJECT"
                 android:textStyle="bold"
                 android:visibility="@{main.loginCheck ? view.VISIBLE : view.GONE }"
-                app:layout_constraintBottom_toBottomOf="@+id/videoStrageBtn"
+                app:layout_constraintBottom_toBottomOf="@+id/videoStorageBtn"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/imageView" />
 
             <Button
-                android:id="@+id/videoStrageBtn"
+                android:id="@+id/videoStorageBtn"
                 android:layout_width="0dp"
                 android:layout_height="100dp"
                 android:layout_margin="20dp"
                 android:background="#7DF3D1"
+                android:onClick="@{() -> main.videoStorageBtn()}"
                 android:text="Video Storage"
                 android:visibility="@{main.loginCheck ? view.VISIBLE : view.GONE }"
                 app:layout_constraintEnd_toStartOf="@+id/guideline2"
@@ -149,6 +150,7 @@
                 android:text="Photo Storage"
                 android:layout_margin="20dp"
                 android:background="#7DF3D1"
+                android:onClick="@{() -> main.photoStorageBtn()}"
                 android:visibility="@{main.loginCheck ? view.VISIBLE : view.GONE }"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/imageView"

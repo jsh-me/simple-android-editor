@@ -15,16 +15,25 @@ import androidx.core.net.toFile
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kr.co.data.response.ImagePidNumberResponse
 import kr.co.domain.api.usecase.PostFileUploadUseCase
+import kr.co.domain.api.usecase.PostImagePidNumberAndInfoUseCase
+import kr.co.domain.globalconst.Consts
+import kr.co.domain.globalconst.PidClass
 import kr.co.jsh.utils.BitmapToFileUtil
 import kr.co.jsh.utils.RunOnUiThread
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.util.*
 
 class PhotoPresenter(override var view: PhotoContract.View,
-                     private var postFileUploadUseCase: PostFileUploadUseCase
+                     private var postFileUploadUseCase: PostFileUploadUseCase,
+                     private var postImagePidNumberAndInfoUseCase: PostImagePidNumberAndInfoUseCase
 ) : PhotoContract.Presenter {
     @SuppressLint("CheckResult")
     override fun setImageView(context: Context, string: String) {
@@ -34,7 +43,7 @@ class PhotoPresenter(override var view: PhotoContract.View,
 
     override fun saveImage(context: Context, uri: Uri) {
         RunOnUiThread(context).safely {
-            Toast.makeText(context, "Video saved at ${uri.path}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Image saved at ${uri.path}", Toast.LENGTH_SHORT).show()
 
             val mediaMetadataRetriever = MediaMetadataRetriever()
             mediaMetadataRetriever.setDataSource(context, uri)
@@ -48,17 +57,17 @@ class PhotoPresenter(override var view: PhotoContract.View,
                 mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
                     .toLong()
             val values = ContentValues()
-            values.put(MediaStore.Video.Media.DATA, uri.path)
-            values.put(MediaStore.Video.VideoColumns.DURATION, duration)
-            values.put(MediaStore.Video.VideoColumns.WIDTH, width)
-            values.put(MediaStore.Video.VideoColumns.HEIGHT, height)
+            values.put(MediaStore.Images.Media.DATA, uri.path)
+            values.put(MediaStore.Images.ImageColumns.DURATION, duration)
+            values.put(MediaStore.Images.ImageColumns.WIDTH, width)
+            values.put(MediaStore.Images.ImageColumns.HEIGHT, height)
             val id = ContentUris.parseId(
                 context.contentResolver.insert(
-                    MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                     values
                 )
             )
-            Log.e("VIDEO ID", id.toString())
+            Log.e("IMAGE ID", id.toString())
         }    }
 
     @SuppressLint("CheckResult")
@@ -67,8 +76,10 @@ class PhotoPresenter(override var view: PhotoContract.View,
         val request = MultipartBody.Part.createFormData("file", path, RequestBody.create(MediaType.parse("image/*"), Uri.parse(path).toFile()))
         postFileUploadUseCase.postFile(request)
             .subscribe({
-                if(it.status.toInt() == 200 )
+                if(it.status.toInt() == 200 ) {
                     view.uploadSuccess(it.message)
+                    PidClass.imageObjectPid = it.datas.objectPid //file pid 저장
+                }
                 else view.uploadFailed(it.message)
             },{
                 view.uploadFailed("로그인 후 가능")
@@ -82,13 +93,29 @@ class PhotoPresenter(override var view: PhotoContract.View,
         val request = MultipartBody.Part.createFormData("file", path , RequestBody.create(MediaType.parse("image/*"),Uri.parse(path).toFile()))
         postFileUploadUseCase.postFile(request)
             .subscribe({
-                if(it.status.toInt() == 200 )
+                if(it.status.toInt() == 200 ) {
                     view.uploadSuccess(it.message)
+                    PidClass.imageMaskObjectPiad = it.datas.objectPid
+                    sendImageResultToServerWithInfo(PidClass.imageMaskObjectPiad, PidClass.imageObjectPid)
+                }
                 else view.uploadFailed(it.message)
             },{
                 view.uploadFailed("로그인 후 가능")
             })
     }
+    @SuppressLint("CheckResult")
+    private fun sendImageResultToServerWithInfo(maskPid: String, imagePid: String){
+        //title 구분을 위해 현재 시간을 넣음
+        val time = System.currentTimeMillis()
+        val dateFormat = SimpleDateFormat("yyyy-mm-dd hh:mm:ss")
+        val curTime = dateFormat.format(Date(time))
 
+        postImagePidNumberAndInfoUseCase.postImagePidNumberAndInfo(maskPid, Consts.DEL_OBJ, imagePid, curTime)
+            .subscribe({
+                Log.e("Image Send Result", it.message)
+            },{
+                it.localizedMessage
+            })
+    }
 
 }

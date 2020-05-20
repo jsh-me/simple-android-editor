@@ -15,6 +15,7 @@
 
 
 <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/photo_edit_layout"
     android:orientation="vertical"
     android:background="@color/background_space"
     android:layout_width="match_parent"
@@ -54,6 +55,7 @@
         android:layout_height="0dp"
         android:layout_centerHorizontal="true"
         android:layout_margin="20dp"
+        android:adjustViewBounds="true"
         android:visibility="@{photo.drawCheck ? view.INVISIBLE : view.VISIBLE}"
         app:layout_constraintBottom_toTopOf="@+id/child_layout"
         app:layout_constraintEnd_toEndOf="parent"
@@ -124,21 +126,6 @@
         app:layout_constraintStart_toEndOf="@+id/remove_btn"
         app:layout_constraintTop_toTopOf="@+id/child_layout"
         app:layout_constraintVertical_bias="0.3" />
-
-
-    <TextView
-        android:id="@+id/server_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:onClick="@{() -> photo.uploadServer()}"
-        android:text="@string/upload_server"
-        android:textColor="@{photo.texteColor[2] ? @color/textWhite : @color/textBlack}"
-        app:layout_constraintBottom_toBottomOf="@+id/reset_paint_btn"
-        app:layout_constraintStart_toEndOf="@+id/reset_paint_btn"
-        app:layout_constraintTop_toTopOf="@+id/child_layout"
-        app:layout_constraintVertical_bias="1.0" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
