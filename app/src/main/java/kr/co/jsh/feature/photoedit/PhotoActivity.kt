@@ -1,5 +1,6 @@
 package kr.co.jsh.feature.photoedit
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
@@ -22,23 +23,28 @@ import com.byox.drawview.enums.BackgroundType
 import com.byox.drawview.enums.DrawingCapture
 import com.byox.drawview.views.DrawView
 import kotlinx.android.synthetic.main.activity_photo_edit.*
+import kotlinx.coroutines.*
 import kr.co.domain.globalconst.Consts.Companion.EXTRA_PHOTO_PATH
+import kr.co.domain.globalconst.PidClass
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityPhotoEditBinding
+import kr.co.jsh.dialog.DialogActivity
 import kr.co.jsh.utils.*
 import org.koin.android.ext.android.get
 import timber.log.Timber
 import java.io.File
 
 
-class PhotoActivity : AppCompatActivity() , PhotoContract.View{
+class PhotoActivity : AppCompatActivity() , PhotoContract.View {
     private lateinit var binding: ActivityPhotoEditBinding
-    private lateinit var presenter : PhotoPresenter
-    var texteColor : ObservableField<Array<Boolean>> = ObservableField(arrayOf(false,false,false))
-    var drawCheck : ObservableField<Boolean> = ObservableField(false)
+    private lateinit var presenter: PhotoPresenter
+    var texteColor: ObservableField<Array<Boolean>> = ObservableField(arrayOf(false, false, false))
+    var drawCheck: ObservableField<Boolean> = ObservableField(false)
     var path = ""
     private var destinationPath = ""
     private var realImageSize = ArrayList<Int>()
+    private lateinit var job: Job
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +66,7 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View{
             extraIntent?.let {
                 path = extraIntent.getStringExtra(EXTRA_PHOTO_PATH)
                 presenter.setImageView(this, "file://" + path)
-                Glide.with(this).asBitmap().load(path).listener(object : RequestListener<Bitmap>{
+                Glide.with(this).asBitmap().load(path).listener(object : RequestListener<Bitmap> {
                     override fun onLoadFailed(
                         e: GlideException?,
                         model: Any?,
@@ -95,7 +101,8 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View{
                     .into(photoImageView)
             }
         }
-        destinationPath =  Environment.getExternalStorageDirectory().toString() + File.separator + "returnable" + File.separator + "Images" + File.separator
+        destinationPath =
+            Environment.getExternalStorageDirectory().toString() + File.separator + "returnable" + File.separator + "Images" + File.separator
 
     }
 
@@ -110,12 +117,12 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View{
         Timber.e("${realImageSize[0]} and ${realImageSize[1]}")
     }
 
-    fun resetButton(v: View){
-        binding.drawPhotoview.apply{
+    fun resetButton(v: View) {
+        binding.drawPhotoview.apply {
             restartDrawing()
         }
-        texteColor.set(arrayOf(false,false,false))
-        texteColor.set(arrayOf(true,false,false))
+        texteColor.set(arrayOf(false, false, false))
+        texteColor.set(arrayOf(true, false, false))
         initView()
     }
 
@@ -123,28 +130,46 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View{
     //Unknown URI: content://media/external_primary/images/media
     //오른쪽 위 아이콘
 
-    //서버로 보내기 전에 background image를 흰 바탕으로 변경 후 보내면 되지 않을까...
-    fun savePhoto(v: View){
+    fun savePhoto(v: View) {
+        job = CoroutineScope(Dispatchers.Main).launch {
+            showProgressbar()
 
-        val saveImage = binding.drawPhotoview.createCapture(DrawingCapture.BITMAP)
-        saveImage?.let {
+            CoroutineScope(Dispatchers.Default).async {
+                val saveImage = binding.drawPhotoview.createCapture(DrawingCapture.BITMAP)
+                saveImage?.let {
 
-            // 불러온 resource 크기만큼 crop한다.
-            val cropBitmap = CropBitmapImage(saveImage[0] as Bitmap, binding.drawPhotoview.width, binding.drawPhotoview.height)
+                    // 불러온 resource 크기만큼 crop한다.
+                    val cropBitmap = CropBitmapImage(
+                        saveImage[0] as Bitmap,
+                        binding.drawPhotoview.width,
+                        binding.drawPhotoview.height
+                    )
 
-            // crop된 이미지를 원본 이미지 크기로 resize 해준다.
-            val resizeBitmap = ResizeBitmapImage(cropBitmap, realImageSize[0], realImageSize[1])
+                    // crop된 이미지를 원본 이미지 크기로 resize 해준다.
+                    val resizeBitmap =
+                        ResizeBitmapImage(cropBitmap, realImageSize[0], realImageSize[1])
 
-            //binary mask
-            val binaryMask = CreateBinaryMask(resizeBitmap)
+                    //binary mask
+                    val binaryMask = CreateBinaryMask(resizeBitmap)
 
-           //마스크까지 그려진 그림
-            presenter.uploadFrameFile(binaryMask, this)
-            Timber.e("마스크 결과 : ${(saveImage[0] as Bitmap).width} and ${(saveImage[0] as Bitmap).height}")
-        }?:run{
-            Toast.makeText(this, "마스크를 그려주세요", Toast.LENGTH_SHORT).show()
+                    //마스크까지 그려진 그림
+                    presenter.uploadFrameFile(binaryMask, applicationContext)
+                    Timber.e("마스크 결과 : ${(saveImage[0] as Bitmap).width} and ${(saveImage[0] as Bitmap).height}")
+                } ?: run {
+                    Toast.makeText(applicationContext, "마스크를 그려주세요", Toast.LENGTH_SHORT).show()
+                }
+            }.await()
         }
-        //presenter.saveImage(this, Uri.parse("file://" + path))
+        if (PidClass.ResponseCode == 200) job.start()
+        else {
+            Toast.makeText(applicationContext, "로그인을 먼저 해주세요.", Toast.LENGTH_SHORT).show()
+            cancelJob()
+        }
+    }
+
+    private fun showProgressbar() {
+        val intent = Intent(this, DialogActivity::class.java)
+        startActivity(intent)
     }
 
     fun drawPhotoMask(){
@@ -155,6 +180,9 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View{
 
     }
 
+    override fun cancelJob() {
+        job.cancel()
+    }
 
     override fun uploadSuccess(msg: String) {
         Toast.makeText(this, "$msg", Toast.LENGTH_SHORT).show()

@@ -47,7 +47,7 @@
             android:parentActivityName="kr.co.jsh.feature.main.MainActivity"
             android:screenOrientation="portrait"/>
 
-        <activity android:name=".dialog.LoginAccountDialog"
+        <activity android:name=".login.LoginAccountDialog"
             android:theme="@style/Theme.Transparent" />
 
         <activity android:name=".feature.storage.photo.PhotoStorageActivity"
@@ -55,6 +55,10 @@
 
         <activity android:name=".feature.storage.video.VideoStorageActivity"
             android:screenOrientation="portrait"/>
+
+        <activity android:name=".dialog.DialogActivity"
+            android:theme="@style/Theme.Transparent" />
+
 
     </application>
 

@@ -12,6 +12,9 @@ interface PhotoContract {
         //uploadFile result
         fun uploadSuccess(msg: String)
         fun uploadFailed(msg: String)
+
+        //suspend thread
+        fun cancelJob()
     }
     interface Presenter{
         var view: View

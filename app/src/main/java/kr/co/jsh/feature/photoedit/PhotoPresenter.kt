@@ -79,8 +79,13 @@ class PhotoPresenter(override var view: PhotoContract.View,
                 if(it.status.toInt() == 200 ) {
                     view.uploadSuccess(it.message)
                     PidClass.imageObjectPid = it.datas.objectPid //file pid 저장
+                    PidClass.ResponseCode = it.status.toInt()
+
                 }
-                else view.uploadFailed(it.message)
+                else {
+                    view.uploadFailed(it.message)
+                    PidClass.ResponseCode = it.status.toInt()
+                }
             },{
                 view.uploadFailed("로그인 후 가능")
             })
@@ -95,12 +100,18 @@ class PhotoPresenter(override var view: PhotoContract.View,
             .subscribe({
                 if(it.status.toInt() == 200 ) {
                     view.uploadSuccess(it.message)
+                    PidClass.ResponseCode = it.status.toInt()
                     PidClass.imageMaskObjectPiad = it.datas.objectPid
                     sendImageResultToServerWithInfo(PidClass.imageMaskObjectPiad, PidClass.imageObjectPid)
                 }
-                else view.uploadFailed(it.message)
+                else {
+                    view.uploadFailed(it.message)
+                    PidClass.ResponseCode = it.status.toInt()
+                }
             },{
                 view.uploadFailed("로그인 후 가능")
+                view.cancelJob()
+
             })
     }
     @SuppressLint("CheckResult")
