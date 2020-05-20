@@ -27,6 +27,7 @@ import kotlinx.coroutines.*
 import kr.co.domain.globalconst.PidClass
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityVideoEditBinding
+import kr.co.jsh.feature.dialog.VideoProgressIndeterminateDialog
 import kr.co.jsh.localclass.PausableDispatcher
 import kr.co.jsh.utils.*
 import org.jetbrains.anko.runOnUiThread
@@ -81,7 +82,10 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         presenter = TrimmerPresenter(this, get(), get())
         screenSize = ObservableField(ScreenSizeUtil(this).widthPixels/2)
         mBitmaps = ArrayList()
-        progressDialog = VideoProgressIndeterminateDialog(this, "Cropping Video. Please Wait...")
+        progressDialog = VideoProgressIndeterminateDialog(
+            this,
+            "Cropping Video. Please Wait..."
+        )
 
         setupPermissions(this) {
             val extraIntent = intent
@@ -170,7 +174,6 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
             binding.iconVideoPlay.isSelected = false
             binding.videoLoader.pause()
             binding.videoFrameView.setBackgroundResource(R.color.background_space)
-//            val mediaMetadataRetriever = MediaMetadataRetriever()
             mediaMetadataRetriever.setDataSource(this, mSrc)
             //지울 곳의 프레임위치
             myPickBitmap = mediaMetadataRetriever.getFrameAtTime(
@@ -180,8 +183,9 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
             binding.videoFrameView.setBackgroundImage(
                 myPickBitmap as Bitmap,
                 BackgroundType.BITMAP,
-                BackgroundScale.CENTER_INSIDE
+                BackgroundScale.FIT_START
             )
+
             Toast.makeText(this, "지울 곳을 칠해주세요", Toast.LENGTH_LONG).show()
 
             texteColor.set(arrayOf(false, false, false, false))
@@ -433,11 +437,6 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         binding.videoLoader.setVideoURI(mSrc)
         binding.videoLoader.requestFocus()
         presenter.getThumbnailList(mSrc, this)
-
-//        setVideoInformationVisibility(true)
-//                .setDestinationPath("/document/" + File.separator + "returnable" + File.separator + "Videos" + File.separator)
-
-        //setDestinationPath(Environment.getExternalStorageDirectory().toString() + File.separator + "returnable" + File.separator + "Videos" + File.separator)
         destinationPath = Environment.getExternalStorageDirectory().toString() + File.separator + "returnable" + File.separator + "Videos" + File.separator
     }
 
@@ -466,10 +465,8 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         //Todo 서버로 자른 비디오, frametimesec, maskimg 전송
         val maskImg =  binding.videoFrameView.createCapture(DrawingCapture.BITMAP)
         maskImg?.let{
-            //비디오 전송
             //마스크 전송
-            presenter.uploadMaskFile(maskImg[0] as Bitmap, touch_time.get(), this)
-            //presenter.resultUriToServerWithInfo(uri, touch_time.get(), maskImg[0] as Bitmap)
+             presenter.uploadMaskFile(CropBitmapImage(maskImg[0] as Bitmap, binding.videoFrameView.width, binding.videoFrameView.height) , touch_time.get(), this)
             //progressDialog.dismiss()
         }?:run{
             Toast.makeText(this, "마스크를 먼저 그려주세요", Toast.LENGTH_SHORT).show()

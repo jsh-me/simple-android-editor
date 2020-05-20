@@ -4,21 +4,31 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableField
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.byox.drawview.enums.BackgroundScale
 import com.byox.drawview.enums.BackgroundType
 import com.byox.drawview.enums.DrawingCapture
+import com.byox.drawview.views.DrawView
 import kotlinx.android.synthetic.main.activity_photo_edit.*
 import kr.co.domain.globalconst.Consts.Companion.EXTRA_PHOTO_PATH
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityPhotoEditBinding
+import kr.co.jsh.utils.CropBitmapImage
 import kr.co.jsh.utils.setupPermissions
 import org.koin.android.ext.android.get
+import timber.log.Timber
 import java.io.File
 
 
@@ -50,21 +60,53 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View{
             extraIntent?.let {
                 path = extraIntent.getStringExtra(EXTRA_PHOTO_PATH)
                 presenter.setImageView(this, "file://" + path)
-                Glide.with(this).load(path).into(photoImageView)
+                Glide.with(this).asBitmap().load(path).listener(object : RequestListener<Bitmap>{
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any?,
+                        target: Target<Bitmap>?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                    }
+
+                    override fun onResourceReady(
+                        resource: Bitmap?,
+                        model: Any?,
+                        target: Target<Bitmap>?,
+                        dataSource: DataSource?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        val w = resource?.width
+                        val h = resource?.height
+                        Timber.e("$w and $h")
+
+                        ConstraintLayout.LayoutParams(w!!, h!!).apply {
+                            leftToLeft = R.id.photo_edit_layout
+                            rightToRight = R.id.photo_edit_layout
+                            bottomToTop = R.id.child_layout
+                            topToBottom = R.id.photoBackBtn
+                            binding.drawPhotoview.layoutParams = this
+                        }
+                        return false
+                    }
+                })
+                    .into(photoImageView)
             }
         }
         destinationPath =  Environment.getExternalStorageDirectory().toString() + File.separator + "returnable" + File.separator + "Images" + File.separator
+
     }
 
     override fun displayPhotoView(file: File) {
         binding.drawPhotoview.post {
             binding.drawPhotoview.apply {
                 setBackgroundResource(R.color.background_space)
-                setBackgroundImage(file, BackgroundType.FILE, BackgroundScale.CENTER_INSIDE)
+                setBackgroundImage(file, BackgroundType.FILE, BackgroundScale.FIT_START)
             }
         }
-    }
 
+    }
 
     fun resetButton(v: View){
         binding.drawPhotoview.apply{
@@ -81,7 +123,9 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View{
     fun savePhoto(v: View){
         val saveImage = binding.drawPhotoview.createCapture(DrawingCapture.BITMAP)
         saveImage?.let {
-            presenter.uploadFrameFile(saveImage[0] as Bitmap, this) //마스크까지 그려진 그림
+           //마스크까지 그려진 그림
+            presenter.uploadFrameFile(CropBitmapImage(saveImage[0] as Bitmap, binding.drawPhotoview.width, binding.drawPhotoview.height), this)
+            Timber.e("마스크 결과 : ${(saveImage[0] as Bitmap).width} and ${(saveImage[0] as Bitmap).height}")
         }?:run{
             Toast.makeText(this, "마스크를 그려주세요", Toast.LENGTH_SHORT).show()
         }

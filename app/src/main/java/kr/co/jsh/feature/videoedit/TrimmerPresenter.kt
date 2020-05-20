@@ -125,7 +125,6 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
                     mediaMetadataRetriever.setDataSource(context, mSrc)
 
                     val videoLengthInMs = (Integer.parseInt(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION))).toLong()
-                    //var numThumbs = if(videoLengthInMs-second >=3000) Math.ceil((videoLengthInMs - second) / 3000.0).toInt() else 1
                     val cropHeight = 150 //timelineview에서 한 프레임의 너비 (동적으로 변경되게끔 코드 수정해야함!)
                     val cropWidth = ScreenSizeUtil(context).widthPixels/4 //timelineview에서 한 프레임의 너비
 
