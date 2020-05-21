@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.databinding.DataBindingUtil
+import androidx.databinding.Observable
 import androidx.databinding.ObservableField
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -33,6 +34,7 @@ import kr.co.jsh.utils.*
 import org.koin.android.ext.android.get
 import timber.log.Timber
 import java.io.File
+import java.lang.IndexOutOfBoundsException
 
 
 class PhotoActivity : AppCompatActivity() , PhotoContract.View {
@@ -44,6 +46,8 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
     private var destinationPath = ""
     private var realImageSize = ArrayList<Int>()
     private lateinit var job: Job
+    var canUndo : ObservableField<Boolean> = ObservableField(false)
+    var canRedo : ObservableField<Boolean> = ObservableField(false)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,6 +55,7 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
 
         setupDataBinding()
         initView()
+        setupDrawView()
     }
 
     private fun setupDataBinding() {
@@ -104,6 +109,30 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
         destinationPath =
             Environment.getExternalStorageDirectory().toString() + File.separator + "returnable" + File.separator + "Images" + File.separator
 
+    }
+
+    private fun setupDrawView(){
+        binding.drawPhotoview.setOnDrawViewListener(object : DrawView.OnDrawViewListener {
+            override fun onEndDrawing() {
+                canUndoRedo()
+            }
+
+            override fun onStartDrawing() {
+                canUndoRedo()
+            }
+
+            override fun onClearDrawing() {
+                canUndoRedo()
+            }
+
+            override fun onAllMovesPainted() {
+                canUndoRedo()
+            }
+
+            override fun onRequestText() {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+        })
     }
 
     override fun displayPhotoView(file: File) {
@@ -178,6 +207,31 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
         drawCheck.set(true)
         presenter.uploadFile("file://" + path) //원본 그림
 
+    }
+
+    fun undoButton(){
+        binding.drawPhotoview.undo()
+        canUndoRedo()
+    }
+
+    fun redoButton(){
+        binding.drawPhotoview.redo()
+        canUndoRedo()
+    }
+
+    private fun canUndoRedo(){
+        if(binding.drawPhotoview.canUndo()) {
+            canUndo.set(true)
+        } else {
+            canUndo.set(false)
+        }
+
+        if(binding.drawPhotoview.canRedo()) {
+            canRedo.set(true)
+        }
+        else {
+            canRedo.set(false)
+        }
     }
 
     fun backButton(){

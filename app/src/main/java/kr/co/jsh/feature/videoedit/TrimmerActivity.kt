@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.byox.drawview.enums.BackgroundScale
 import com.byox.drawview.enums.BackgroundType
 import com.byox.drawview.enums.DrawingCapture
+import com.byox.drawview.views.DrawView
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -67,6 +68,10 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
 
     private lateinit var mBitmaps: ArrayList<ArrayList<Bitmap>>
 
+    var canUndo : ObservableField<Boolean> = ObservableField(false)
+    var canRedo : ObservableField<Boolean> = ObservableField(false)
+
+
     private var destinationPath: String
         get() {
             if (mFinalPath == null) {
@@ -83,6 +88,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         super.onCreate(savedInstanceState)
         setupDataBinding()
         initView()
+        setupDrawView()
     }
 
     private fun initView(){
@@ -108,6 +114,30 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     private fun setupDataBinding(){
         binding = DataBindingUtil.setContentView(this, R.layout.activity_video_edit)
         binding.trimmer = this@TrimmerActivity
+    }
+
+    private fun setupDrawView(){
+        binding.videoFrameView.setOnDrawViewListener(object : DrawView.OnDrawViewListener {
+            override fun onEndDrawing() {
+                canUndoRedo()
+            }
+
+            override fun onStartDrawing() {
+                canUndoRedo()
+            }
+
+            override fun onClearDrawing() {
+                canUndoRedo()
+            }
+
+            override fun onAllMovesPainted() {
+                canUndoRedo()
+            }
+
+            override fun onRequestText() {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+        })
     }
 
 
@@ -519,6 +549,31 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode == 1000 && resultCode == 1000 ){
             dispatcher.resume()
+        }
+    }
+
+    fun undoButton(){
+            binding.videoFrameView.undo()
+            canUndoRedo()
+    }
+
+    fun redoButton(){
+            binding.videoFrameView.redo()
+            canUndoRedo()
+    }
+
+    private fun canUndoRedo(){
+        if(binding.videoFrameView.canUndo()) {
+            canUndo.set(true)
+        } else {
+            canUndo.set(false)
+        }
+
+        if(binding.videoFrameView.canRedo()) {
+            canRedo.set(true)
+        }
+        else {
+            canRedo.set(false)
         }
     }
 

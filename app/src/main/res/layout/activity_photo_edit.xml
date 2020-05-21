@@ -107,13 +107,13 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:text="@string/draw"
         android:onClick="@{() -> photo.drawPhotoMask()}"
+        android:text="@string/draw"
         android:textColor="@{photo.texteColor[1] ? @color/textWhite : @color/textBlack}"
         app:layout_constraintBottom_toBottomOf="@+id/child_layout"
         app:layout_constraintStart_toStartOf="@+id/child_layout"
         app:layout_constraintTop_toTopOf="@+id/child_layout"
-        app:layout_constraintVertical_bias="0.3" />
+        app:layout_constraintVertical_bias="0.39" />
 
     <TextView
         android:id="@+id/reset_paint_btn"
@@ -125,8 +125,31 @@
         android:textColor="@{photo.texteColor[0] ? @color/textWhite : @color/textBlack}"
         app:layout_constraintBottom_toBottomOf="@+id/child_layout"
         app:layout_constraintStart_toEndOf="@+id/remove_btn"
-        app:layout_constraintTop_toTopOf="@+id/child_layout"
-        app:layout_constraintVertical_bias="0.3" />
+        app:layout_constraintTop_toTopOf="@+id/remove_btn"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ImageButton
+        android:id="@+id/image_undo_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:onClick="@{() -> photo.undoButton()}"
+        android:enabled = "@{photo.canUndo ? true : false}"
+        android:background="@{photo.canUndo ? @drawable/ic_undo_white_24dp : @drawable/ic_undo_grey_24dp}"
+        app:layout_constraintStart_toStartOf="@+id/remove_btn"
+        app:layout_constraintTop_toTopOf="@+id/child_layout" />
+
+    <ImageButton
+        android:id="@+id/image_redo_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:onClick="@{() -> photo.redoButton()}"
+        android:enabled = "@{photo.canRedo ? true : false}"
+        android:background="@{photo.canRedo? @drawable/ic_redo_white_24dp : @drawable/ic_redo_grey_24dp}"
+        app:layout_constraintBottom_toBottomOf="@+id/image_undo_btn"
+        app:layout_constraintStart_toEndOf="@+id/image_undo_btn"
+        app:layout_constraintTop_toTopOf="@+id/image_undo_btn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

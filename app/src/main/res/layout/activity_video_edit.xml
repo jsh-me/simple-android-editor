@@ -96,6 +96,27 @@
             app:layout_constraintStart_toStartOf="@+id/video_loader"
             app:layout_constraintTop_toTopOf="@+id/video_loader" />
 
+
+        <ImageButton
+            android:id="@+id/video_redo_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:onClick="@{() -> trimmer.redoButton()}"
+            android:background="@{trimmer.canRedo? @drawable/ic_redo_white_24dp : @drawable/ic_redo_grey_24dp}"
+            app:layout_constraintBottom_toBottomOf="@+id/video_undo_btn"
+            app:layout_constraintStart_toEndOf="@+id/video_undo_btn"
+            app:layout_constraintTop_toTopOf="@+id/video_undo_btn" />
+
+        <ImageButton
+            android:id="@+id/video_undo_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:onClick="@{() -> trimmer.undoButton()}"
+            android:background="@{trimmer.canUndo ? @drawable/ic_undo_white_24dp : @drawable/ic_undo_grey_24dp}"
+            app:layout_constraintBottom_toBottomOf="@+id/crop_btn"
+            app:layout_constraintStart_toStartOf="@+id/remove_btn" />
+
         <TextView
             android:id="@+id/remove_btn"
             android:layout_width="0dp"
