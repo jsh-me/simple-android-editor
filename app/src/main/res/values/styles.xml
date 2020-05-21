@@ -23,7 +23,12 @@
         <item name="android:backgroundDimEnabled">true</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:fontFamily">@font/font</item>
+    </style>
 
+    <style name="Theme.AppCompat.VideoViewScreen" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowContentOverlay">@null</item>
     </style>
 
 </resources>

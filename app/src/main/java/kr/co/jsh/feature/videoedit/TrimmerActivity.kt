@@ -3,14 +3,16 @@ package kr.co.jsh.feature.videoedit
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.*
+import android.text.Layout
+import android.util.DisplayMetrics
 import android.util.Log
-import android.view.MotionEvent
-import android.view.View
+import android.view.*
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -27,10 +29,12 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_video_edit.*
 import kotlinx.android.synthetic.main.progress_loading.*
 import kotlinx.coroutines.*
+import kr.co.domain.globalconst.Consts
 import kr.co.domain.globalconst.PidClass
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityVideoEditBinding
 import kr.co.jsh.dialog.DialogActivity
+import kr.co.jsh.feature.fullscreen.VideoViewActivity
 import kr.co.jsh.localclass.PausableDispatcher
 import kr.co.jsh.utils.*
 import org.jetbrains.anko.runOnUiThread
@@ -211,7 +215,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     }
 
     private fun startThread() {
-        GlobalScope.launch(dispatcher) {
+      GlobalScope.launch(dispatcher) {
             if (this.isActive) {
                 suspendFunc()
             }
@@ -481,6 +485,14 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
        }
     }
 
+    fun fullScreen(){
+        val intent = Intent(this, VideoViewActivity::class.java).apply{
+            putExtra(Consts.VIDEO_URI, mSrc.toString())
+            putExtra(Consts.VIDEO_CURRENT_POSITION, binding.videoLoader.currentPosition)
+        }
+        startActivityForResult(intent, 1000)
+    }
+
     private fun showProgressbar(){
         val intent = Intent(this, DialogActivity::class.java)
         startActivity(intent)
@@ -501,6 +513,29 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
 
     override fun cancelJob() {
         job.cancel()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(requestCode == 1000 && resultCode == 1000 ){
+            dispatcher.resume()
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Timber.e("onStop")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Timber.e("onResume")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Timber.e("onPause")
+        dispatcher.pause()
     }
 
     override fun onDestroy() {

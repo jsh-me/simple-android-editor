@@ -11,5 +11,8 @@ class Consts {
         const val DEL_RECT = "DEL_RECT"
         const val DEL_OBJ = "DEL_OBJ"
         const val SUPER_RESOL = "SUPER_RESOL"
+
+        const val VIDEO_URI = "VIDEO_URI"
+        const val VIDEO_CURRENT_POSITION = " VIDEO_CURRENT_POSITION"
     }
 }
