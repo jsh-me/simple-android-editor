@@ -180,6 +180,10 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
 
     }
 
+    fun backButton(){
+        finish()
+    }
+
     override fun cancelJob() {
         job.cancel()
     }

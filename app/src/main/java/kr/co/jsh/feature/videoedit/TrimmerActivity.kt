@@ -444,6 +444,10 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         }
     }
 
+    fun backButton(){
+        finish()
+    }
+
     fun sendVideoInfoToServer(){
         job = CoroutineScope(Dispatchers.Main).launch {
             showProgressbar()

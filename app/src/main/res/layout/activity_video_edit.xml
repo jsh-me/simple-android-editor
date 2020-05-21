@@ -17,11 +17,12 @@
 
 
         <ImageView
-            android:id="@+id/imageView3"
+            android:id="@+id/backBtn"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_gravity="center"
             android:layout_margin="10dp"
+            android:onClick="@{() -> trimmer.backButton()}"
             android:background="@drawable/ic_back"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -39,11 +40,11 @@
             android:background="@drawable/ic_file_download"
             android:onClick="@{() -> trimmer.sendVideoInfoToServer()}"
             android:padding="10dp"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView3"
+            app:layout_constraintBottom_toBottomOf="@+id/backBtn"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/imageView3" />
+            app:layout_constraintTop_toTopOf="@+id/backBtn" />
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -66,7 +67,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.509"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView3"
+            app:layout_constraintTop_toBottomOf="@+id/backBtn"
             app:layout_constraintVertical_bias="0.0" />
 
         <com.byox.drawview.views.DrawView

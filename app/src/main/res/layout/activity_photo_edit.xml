@@ -27,6 +27,7 @@
         android:layout_height="30dp"
         android:layout_gravity="center"
         android:layout_margin="10dp"
+        android:onClick="@{()->photo.backButton()}"
         android:background="@drawable/ic_back"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
