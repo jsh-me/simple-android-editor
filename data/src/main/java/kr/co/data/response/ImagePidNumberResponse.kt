@@ -1,7 +1,7 @@
 package kr.co.data.response
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import kr.co.data.entity.ImagePidDataList
+import kr.co.data.entity.local.ImagePidDataList
 
 data class ImagePidNumberResponse(
     @JsonProperty("status") var status:String,

@@ -44,4 +44,8 @@ class PhotoStorageActivity : AppCompatActivity(), PhotoStorageContract.View {
 
     private fun click() = { id:Int ->
     }
+
+    fun backButton(){
+        finish()
+    }
 }

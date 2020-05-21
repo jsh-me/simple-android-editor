@@ -1,4 +1,4 @@
-package kr.co.domain.koin.repositoryimpl
+package kr.co.domain.koin.repositoryimpl.remote
 import kr.co.domain.globalconst.CookieClass
 import okhttp3.Cookie
 import okhttp3.Interceptor

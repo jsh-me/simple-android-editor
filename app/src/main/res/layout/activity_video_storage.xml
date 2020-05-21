@@ -31,6 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/ic_back"
+            android:onClick="@{() -> videoStorage.backButton()}"
             app:layout_constraintBottom_toBottomOf="@+id/photo_title"
             app:layout_constraintStart_toStartOf="@+id/photo_title"
             app:layout_constraintTop_toTopOf="parent" />

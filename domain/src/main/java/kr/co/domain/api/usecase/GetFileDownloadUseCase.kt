@@ -5,7 +5,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kr.co.data.response.FileDownloadResponse
 import kr.co.domain.api.service.FileService
-import kr.co.domain.koin.repository.RetrofitRepository
+import kr.co.domain.koin.repository.remote.RetrofitRepository
 
 class GetFileDownloadUseCase(retrofitRepository: RetrofitRepository) {
     private val fileService = retrofitRepository
