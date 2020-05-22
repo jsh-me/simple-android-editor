@@ -24,6 +24,11 @@ interface FileService{
                            @Query("videoFile.objectPid") videoFileObjectPid : String,
                              @Query("title") title: String): Single<VideoPidNumberResponse>
 
+    @POST("cVideoEdit/create.do")
+    fun postImproveVideoPidNumber(@Query("reqEditType") reqEditType: String,
+                                  @Query("videoFile.objectPid") videoFileObjectPid : String,
+                                  @Query("title") title: String): Single<VideoPidNumberResponse>
+
     @POST("cImageEdit/create.do")
     fun postImagePidNumberAndInfo(@Query("maskImg.objectPid") maskImgObjectPid: String,
                                   @Query("reqEditType") reqEditType: String,

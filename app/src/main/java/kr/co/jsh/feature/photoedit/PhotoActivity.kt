@@ -30,6 +30,7 @@ import kr.co.domain.globalconst.PidClass
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityPhotoEditBinding
 import kr.co.jsh.dialog.DialogActivity
+import kr.co.jsh.singleton.UserObject
 import kr.co.jsh.utils.*
 import org.koin.android.ext.android.get
 import timber.log.Timber
@@ -189,9 +190,9 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
                 }
             }.await()
         }
-        if (PidClass.ResponseCode == 200) job.start()
+        if (UserObject.loginResponse == 200) job.start()
         else {
-            Toast.makeText(applicationContext, "로그인을 먼저 해주세요.", Toast.LENGTH_SHORT).show()
+           // Toast.makeText(applicationContext, "로그인을 먼저 해주세요.", Toast.LENGTH_SHORT).show()
             cancelJob()
         }
     }
@@ -243,10 +244,10 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
     }
 
     override fun uploadSuccess(msg: String) {
-        Toast.makeText(this, "$msg", Toast.LENGTH_SHORT).show()
+       // Toast.makeText(this, "$msg", Toast.LENGTH_SHORT).show()
     }
 
     override fun uploadFailed(msg: String) {
-        Toast.makeText(this, "$msg", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(this, "$msg", Toast.LENGTH_SHORT).show()
     }
 }

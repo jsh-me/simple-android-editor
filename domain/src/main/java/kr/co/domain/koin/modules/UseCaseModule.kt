@@ -9,4 +9,5 @@ val useCaseModule = module{
     factory { GetFileDownloadUseCase(get()) }
     factory { PostVideoPidNumberAndInfoUseCase(get())}
     factory { PostImagePidNumberAndInfoUseCase(get()) }
+    factory { PostImproveVideoPidNumber(get()) }
 }

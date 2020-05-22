@@ -8,17 +8,20 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableField
+import kr.co.domain.globalconst.Consts
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityMainBinding
 import kr.co.domain.globalconst.Consts.Companion.EXTRA_PHOTO_PATH
 import kr.co.domain.globalconst.Consts.Companion.EXTRA_VIDEO_PATH
 import kr.co.domain.globalconst.Consts.Companion.REQUEST_VIDEO_CROPPER
 import kr.co.domain.globalconst.Consts.Companion.REQUEST_VIDEO_TRIMMER
+import kr.co.domain.globalconst.PidClass
 import kr.co.jsh.login.LoginAccountDialog
 import kr.co.jsh.feature.photoedit.PhotoActivity
 import kr.co.jsh.feature.storage.photo.PhotoStorageActivity
 import kr.co.jsh.feature.storage.video.VideoStorageActivity
 import kr.co.jsh.feature.videoedit.TrimmerActivity
+import kr.co.jsh.singleton.UserObject
 import kr.co.jsh.utils.FileUtils
 import kr.co.jsh.utils.setupPermissions
 
@@ -86,14 +89,18 @@ class MainActivity : AppCompatActivity() {
         else if(resultCode == 1000 && requestCode == 1000) {
             binding.accountImg.setImageDrawable(resources.getDrawable(R.drawable.sehee, null))
             loginCheck.set(true)
+            UserObject.loginResponse = 200
         }
 
         super.onActivityResult(requestCode, resultCode, data)
     }
 
     fun accountCircleImage(){
-        val intent = Intent(this, LoginAccountDialog::class.java)
-        startActivityForResult(intent, 1000)
+        if(UserObject.loginResponse == 200) { Toast.makeText(this, "이미 로그인되어 있습니다.", Toast.LENGTH_SHORT).show() }
+        else {
+            val intent = Intent(this, LoginAccountDialog::class.java)
+            startActivityForResult(intent, 1000)
+        }
     }
 
     fun photoStorageBtn(){
