@@ -1,14 +1,18 @@
 package kr.co.jsh.feature.videoedit
 
 import android.annotation.SuppressLint
+import android.app.Dialog
+import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.*
+import android.text.Layout
+import android.util.DisplayMetrics
 import android.util.Log
-import android.view.MotionEvent
-import android.view.View
+import android.view.*
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -19,15 +23,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.byox.drawview.enums.BackgroundScale
 import com.byox.drawview.enums.BackgroundType
 import com.byox.drawview.enums.DrawingCapture
+import com.byox.drawview.views.DrawView
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_video_edit.*
+import kotlinx.android.synthetic.main.progress_loading.*
 import kotlinx.coroutines.*
+import kr.co.domain.globalconst.Consts
 import kr.co.domain.globalconst.PidClass
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityVideoEditBinding
-import kr.co.jsh.feature.dialog.VideoProgressIndeterminateDialog
+import kr.co.jsh.dialog.DialogActivity
+import kr.co.jsh.feature.fullscreen.VideoViewActivity
 import kr.co.jsh.localclass.PausableDispatcher
 import kr.co.jsh.utils.*
 import org.jetbrains.anko.runOnUiThread
@@ -48,17 +56,21 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     private var mDuration : Float = 0f
     private var touch_time = ObservableFloat()
     private var mStartPosition = 0f
-    private lateinit var progressDialog : VideoProgressIndeterminateDialog
     val texteColor : ObservableField<Array<Boolean>> = ObservableField(arrayOf(false,false,false,false))
     private var myPickBitmap : Bitmap? = null
     val mediaMetadataRetriever = MediaMetadataRetriever()
     val frameSecToSendServer = ArrayList<Int> ()
     private var realVideoSize = ArrayList<Int>()
+    private lateinit var job: Job
 
     private val dispatcher =
         PausableDispatcher(Handler(Looper.getMainLooper()))
 
     private lateinit var mBitmaps: ArrayList<ArrayList<Bitmap>>
+
+    var canUndo : ObservableField<Boolean> = ObservableField(false)
+    var canRedo : ObservableField<Boolean> = ObservableField(false)
+
 
     private var destinationPath: String
         get() {
@@ -76,17 +88,13 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         super.onCreate(savedInstanceState)
         setupDataBinding()
         initView()
+        setupDrawView()
     }
 
     private fun initView(){
         presenter = TrimmerPresenter(this, get(), get())
         screenSize = ObservableField(ScreenSizeUtil(this).widthPixels/2)
         mBitmaps = ArrayList()
-        progressDialog = VideoProgressIndeterminateDialog(
-            this,
-            "Cropping Video. Please Wait..."
-        )
-
         setupPermissions(this) {
             val extraIntent = intent
             presenter.prepareVideoPath(extraIntent)
@@ -108,6 +116,30 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         binding.trimmer = this@TrimmerActivity
     }
 
+    private fun setupDrawView(){
+        binding.videoFrameView.setOnDrawViewListener(object : DrawView.OnDrawViewListener {
+            override fun onEndDrawing() {
+                canUndoRedo()
+            }
+
+            override fun onStartDrawing() {
+                canUndoRedo()
+            }
+
+            override fun onClearDrawing() {
+                canUndoRedo()
+            }
+
+            override fun onAllMovesPainted() {
+                canUndoRedo()
+            }
+
+            override fun onRequestText() {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+        })
+    }
+
 
     private fun onVideoPrepared(mp: MediaPlayer) {
         val lp = binding.videoLoader.layoutParams
@@ -125,19 +157,6 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     private fun onVideoCompleted() {
         binding.videoLoader.seekTo(mStartPosition.toInt())
     }
-
-//    private fun updateVideoProgress(time: Float) {
-//        if (binding.videoLoader == null) return
-//        binding.handlerTop.visibility = View.VISIBLE
-//        if (time >= mDuration) {
-//            //mMessageHandler.removeMessages(SHOW_PROGRESS)
-//            binding.videoLoader.pause()
-//            binding.iconVideoPlay.visibility = View.VISIBLE
-////            mResetSeekBar = true
-//            return
-//        }
-//    }
-
 
     fun playVideo() {
         binding.videoLoader.setOnCompletionListener{
@@ -226,7 +245,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     }
 
     private fun startThread() {
-        GlobalScope.launch(dispatcher) {
+      GlobalScope.launch(dispatcher) {
             if (this.isActive) {
                 suspendFunc()
             }
@@ -459,26 +478,54 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         }
     }
 
+    fun backButton(){
+        finish()
+    }
+
     fun sendVideoInfoToServer(){
-        //Todo 갤러리에 저장과, 서버 업로드가 같이 될 함수 (나중에 분리)
-       // presenter.trimVideo(destinationPath, this, mSrc, frameSecToSendServer[0], frameSecToSendServer[1])
+        job = CoroutineScope(Dispatchers.Main).launch {
+            showProgressbar()
 
+            CoroutineScope(Dispatchers.Default).async {
+                //Todo 서버로 자른 비디오, frametimesec, maskimg 전송
+                val maskImg = binding.videoFrameView.createCapture(DrawingCapture.BITMAP)
+                maskImg?.let {
+                    //자세한 코드설명은 PhotoActivity에 있음.
+                    val cropBitmap = CropBitmapImage(
+                        maskImg[0] as Bitmap,
+                        binding.videoFrameView.width,
+                        binding.videoFrameView.height
+                    )
+                    val resizeBitmap =
+                        ResizeBitmapImage(cropBitmap, realVideoSize[0], realVideoSize[1])
+                    val binaryMask = CreateBinaryMask(resizeBitmap)
 
-        //Todo 서버로 자른 비디오, frametimesec, maskimg 전송
-        val maskImg =  binding.videoFrameView.createCapture(DrawingCapture.BITMAP)
-        maskImg?.let{
-            //자세한 코드설명은 PhotoActivity에 있음.
-            val cropBitmap = CropBitmapImage(maskImg[0] as Bitmap, binding.videoFrameView.width, binding.videoFrameView.height)
-            val resizeBitmap = ResizeBitmapImage(cropBitmap, realVideoSize[0], realVideoSize[1])
-            val binaryMask = CreateBinaryMask(resizeBitmap)
-
-            //마스크 전송
-             presenter.uploadMaskFile(binaryMask , touch_time.get(), this)
-            //progressDialog.dismiss()
-        }?:run{
-            Toast.makeText(this, "마스크를 먼저 그려주세요", Toast.LENGTH_SHORT).show()
-
+                    //마스크 전송
+                    presenter.uploadMaskFile(binaryMask, touch_time.get(), applicationContext)
+                    //progressDialog.dismiss()
+                } ?: run {
+                    Toast.makeText(applicationContext, "마스크를 먼저 그려주세요", Toast.LENGTH_SHORT).show()
+                }
+            }.await()
         }
+       if(PidClass.ResponseCode == 200) job.start()
+       else {
+           Toast.makeText(this, "로그인을 먼저 해주세요.", Toast.LENGTH_SHORT).show()
+           cancelJob()
+       }
+    }
+
+    fun fullScreen(){
+        val intent = Intent(this, VideoViewActivity::class.java).apply{
+            putExtra(Consts.VIDEO_URI, mSrc.toString())
+            putExtra(Consts.VIDEO_CURRENT_POSITION, binding.videoLoader.currentPosition)
+        }
+        startActivityForResult(intent, 1000)
+    }
+
+    private fun showProgressbar(){
+        val intent = Intent(this, DialogActivity::class.java)
+        startActivity(intent)
     }
 
     override fun getResult(uri: Uri) {
@@ -494,15 +541,56 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         Toast.makeText(this, "$msg ", Toast.LENGTH_SHORT).show()
     }
 
+    override fun cancelJob() {
+        job.cancel()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(requestCode == 1000 && resultCode == 1000 ){
+            dispatcher.resume()
+        }
+    }
+
+    fun undoButton(){
+            binding.videoFrameView.undo()
+            canUndoRedo()
+    }
+
+    fun redoButton(){
+            binding.videoFrameView.redo()
+            canUndoRedo()
+    }
+
+    private fun canUndoRedo(){
+        if(binding.videoFrameView.canUndo()) {
+            canUndo.set(true)
+        } else {
+            canUndo.set(false)
+        }
+
+        if(binding.videoFrameView.canRedo()) {
+            canRedo.set(true)
+        }
+        else {
+            canRedo.set(false)
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Timber.e("onStop")
+    }
+
     override fun onResume() {
         super.onResume()
-      //  binding.timeLineViewRecycler.adapter?.notifyDataSetChanged()
+        Timber.e("onResume")
     }
 
     override fun onPause() {
         super.onPause()
-        mBitmaps.clear()
-        finish()
+        Timber.e("onPause")
+        dispatcher.pause()
     }
 
     override fun onDestroy() {
@@ -512,6 +600,5 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
             videoMaskObjectPid = ""
             videoObjectPid = ""
         }
-        finish()
     }
 }

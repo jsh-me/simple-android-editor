@@ -1,13 +1,13 @@
-package kr.co.domain.koin.repositoryimpl
+package kr.co.domain.koin.repositoryimpl.remote
 
 import kr.co.domain.BuildConfig
-import kr.co.domain.koin.repository.HttpClientRepository
+import kr.co.domain.koin.repository.remote.HttpClientRepository
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
 
-class HttpClientRepositoryImpl : HttpClientRepository{
+class HttpClientRepositoryImpl : HttpClientRepository {
 
     override fun getOkHttp(): OkHttpClient {
         val httpClient = OkHttpClient.Builder()

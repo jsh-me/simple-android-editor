@@ -1,6 +1,8 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
@@ -80,4 +82,13 @@ dependencies {
     implementation "com.f2prateek.rx.preferences2:rx-preferences:2.0.0"
     implementation 'io.reactivex:rxandroid:1.2.1'
     implementation "com.squareup.retrofit2:adapter-rxjava2:2.5.0"
+
+    // Room
+    implementation "androidx.room:room-runtime:$room_version"
+    implementation "androidx.room:room-rxjava2:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+
+    //Timber
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+
 }

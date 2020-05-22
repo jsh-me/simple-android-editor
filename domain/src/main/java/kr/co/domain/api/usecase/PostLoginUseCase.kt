@@ -5,7 +5,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kr.co.data.response.UserResponse
 import kr.co.domain.api.service.LoginService
-import kr.co.domain.koin.repository.RetrofitRepository
+import kr.co.domain.koin.repository.remote.RetrofitRepository
 
 class PostLoginUseCase(retrofitRepository: RetrofitRepository) {
     private val loginService = retrofitRepository

@@ -5,7 +5,7 @@
     <data>
         <variable
             name="loginDialog"
-            type="kr.co.jsh.dialog.LoginAccountDialog" />
+            type="kr.co.jsh.login.LoginAccountDialog" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

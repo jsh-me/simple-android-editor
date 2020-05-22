@@ -205,12 +205,16 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
         val request = MultipartBody.Part.createFormData("file", path, RequestBody.create(MediaType.parse("video/*"), Uri.parse(path).toFile() ))
         postFileUploadUseCase.postFile(request)
             .subscribe({
-//                if(it.status.toInt() == 200 )
-//                {
+                if(it.status.toInt() == 200 )
+                {
+                    PidClass.ResponseCode = it.status.toInt()
                     view.uploadSuccess(it.message)
                     PidClass.videoObjectPid = it.datas.objectPid
-                //}
-                //else view.uploadFailed(it.message)
+                }
+                else {
+                    view.uploadFailed(it.message)
+                    PidClass.videoObjectPid = it.datas.objectPid
+                }
             },{
                 view.uploadFailed(it.localizedMessage)
             })
@@ -224,13 +228,14 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
         postFileUploadUseCase.postFile(request)
             .subscribe({
                 if(it.status.toInt() == 200 ) {
-                    view.uploadSuccess(it.message)
                     PidClass.videoMaskObjectPid = it.datas.objectPid
                     sendVideoResultToServerWithInfo(PidClass.videoMaskObjectPid, frameTimeSec, PidClass.videoObjectPid)
                 }
                 else view.uploadFailed(it.message)
             },{
                 view.uploadFailed("로그인 후 가능")
+                view.cancelJob()
+
             })
     }
 

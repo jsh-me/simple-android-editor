@@ -1,14 +1,12 @@
-package kr.co.jsh.dialog
+package kr.co.jsh.login
 
 import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.view.Window
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import kr.co.jsh.R
 import kr.co.jsh.databinding.DialogLayoutBinding
-import kr.co.jsh.feature.main.MainActivity
 import org.koin.android.ext.android.get
 
 

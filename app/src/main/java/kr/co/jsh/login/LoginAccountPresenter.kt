@@ -1,4 +1,4 @@
-package kr.co.jsh.dialog
+package kr.co.jsh.login
 
 import android.annotation.SuppressLint
 import kr.co.domain.api.usecase.PostLoginUseCase

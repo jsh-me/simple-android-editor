@@ -6,4 +6,7 @@ object PidClass {
     var videoMaskObjectPid = String()
     var imageObjectPid = String()
     var imageMaskObjectPiad = String()
+
+    //---------
+    var ResponseCode = 0
 }

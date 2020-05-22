@@ -1,4 +1,4 @@
-package kr.co.domain.koin.repositoryimpl
+package kr.co.domain.koin.repositoryimpl.remote
 
 import android.util.Log
 import kr.co.domain.globalconst.CookieClass
