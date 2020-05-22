@@ -16,6 +16,8 @@ import android.view.*
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat.startActivityForResult
+import androidx.core.content.ContextCompat.startActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableField
 import androidx.databinding.ObservableFloat
@@ -37,6 +39,7 @@ import kr.co.jsh.databinding.ActivityVideoEditBinding
 import kr.co.jsh.dialog.DialogActivity
 import kr.co.jsh.feature.fullscreen.VideoViewActivity
 import kr.co.jsh.localclass.PausableDispatcher
+import kr.co.jsh.singleton.UserObject
 import kr.co.jsh.utils.*
 import org.jetbrains.anko.runOnUiThread
 import timber.log.Timber
@@ -56,7 +59,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     private var mDuration : Float = 0f
     private var touch_time = ObservableFloat()
     private var mStartPosition = 0f
-    val texteColor : ObservableField<Array<Boolean>> = ObservableField(arrayOf(false,false,false,false))
+    val texteColor : ObservableField<Array<Boolean>> = ObservableField(arrayOf(false,false,false,false,false))
     private var myPickBitmap : Bitmap? = null
     val mediaMetadataRetriever = MediaMetadataRetriever()
     val frameSecToSendServer = ArrayList<Int> ()
@@ -71,6 +74,8 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     var canUndo : ObservableField<Boolean> = ObservableField(false)
     var canRedo : ObservableField<Boolean> = ObservableField(false)
 
+    private var videoOption = ""
+    private var drawMaskCheck = false
 
     private var destinationPath: String
         get() {
@@ -92,7 +97,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     }
 
     private fun initView(){
-        presenter = TrimmerPresenter(this, get(), get())
+        presenter = TrimmerPresenter(this, get(), get(), get())
         screenSize = ObservableField(ScreenSizeUtil(this).widthPixels/2)
         mBitmaps = ArrayList()
         setupPermissions(this) {
@@ -189,6 +194,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
 
     //지울 객체 그리기
     fun removeMode(){
+        drawMaskCheck = true
         if(crop_count < 2) {
             Toast.makeText(this, "구간을 먼저 잘라주세요", Toast.LENGTH_LONG).show()
         } else {
@@ -209,8 +215,8 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
 
             Toast.makeText(this, "지울 곳을 칠해주세요", Toast.LENGTH_LONG).show()
 
-            texteColor.set(arrayOf(false, false, false, false))
-            texteColor.set(arrayOf(true, false, false, false))
+            texteColor.set(arrayOf(false, false, false, false, false))
+            texteColor.set(arrayOf(true, false, false, false, false))
 
             hideVideoView()
             //미리 서버에 올리기
@@ -234,8 +240,8 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         binding.boader1.visibility = View.INVISIBLE
         binding.boader2.visibility = View.INVISIBLE
 
-        texteColor.set(arrayOf(false,false,false,false))
-        texteColor.set(arrayOf(false,false,true,false))
+        texteColor.set(arrayOf(false,false,false,false, false))
+        texteColor.set(arrayOf(false,true,false,false, false))
     }
 
 
@@ -395,8 +401,8 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
             binding.iconVideoPlay.isSelected = false
             binding.videoFrameView.restartDrawing()
             removeMode()
-            texteColor.set(arrayOf(false, false, false, false))
-            texteColor.set(arrayOf(false, false, false, true))
+            texteColor.set(arrayOf(false, false, false, false, false))
+            texteColor.set(arrayOf(false, false, true, false, false))
         }
     }
 
@@ -429,7 +435,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
 
     override fun onVideoPrepared() {
         RunOnUiThread(this).safely {
-            Toast.makeText(this, "onVideoPrepared", Toast.LENGTH_SHORT).show()
+           // Toast.makeText(this, "onVideoPrepared", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -448,8 +454,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
 
     override fun onTrimStarted() {
         RunOnUiThread(this).safely {
-            Toast.makeText(this, "Started Trimming", Toast.LENGTH_SHORT).show()
-//            progressDialog.show()
+           Timber.i("Started Trimming")
         }
     }
 
@@ -482,38 +487,70 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         finish()
     }
 
-    fun sendVideoInfoToServer(){
-        job = CoroutineScope(Dispatchers.Main).launch {
-            showProgressbar()
+    fun sendRemoveVideoInfoToServer(){
+        videoOption = Consts.DEL_OBJ
+        if(drawMaskCheck && frameSecToSendServer.isNotEmpty()) {
+            texteColor.set(arrayOf(false, false, false, false, false))
+            texteColor.set(arrayOf(false, false, false, true, false))
 
-            CoroutineScope(Dispatchers.Default).async {
-                //Todo 서버로 자른 비디오, frametimesec, maskimg 전송
-                val maskImg = binding.videoFrameView.createCapture(DrawingCapture.BITMAP)
-                maskImg?.let {
-                    //자세한 코드설명은 PhotoActivity에 있음.
-                    val cropBitmap = CropBitmapImage(
-                        maskImg[0] as Bitmap,
-                        binding.videoFrameView.width,
-                        binding.videoFrameView.height
-                    )
-                    val resizeBitmap =
-                        ResizeBitmapImage(cropBitmap, realVideoSize[0], realVideoSize[1])
-                    val binaryMask = CreateBinaryMask(resizeBitmap)
+            job = CoroutineScope(Dispatchers.Main).launch {
+                showProgressbar()
+                CoroutineScope(Dispatchers.Default).async {
+                    //Todo 서버로 자른 비디오, frametimesec, maskimg 전송
+                    val maskImg = binding.videoFrameView.createCapture(DrawingCapture.BITMAP)
+                    maskImg?.let {
+                        //자세한 코드설명은 PhotoActivity에 있음.
+                        val cropBitmap = CropBitmapImage(
+                            maskImg[0] as Bitmap,
+                            binding.videoFrameView.width,
+                            binding.videoFrameView.height
+                        )
+                        val resizeBitmap =
+                            ResizeBitmapImage(cropBitmap, realVideoSize[0], realVideoSize[1])
+                        val binaryMask = CreateBinaryMask(resizeBitmap)
 
-                    //마스크 전송
-                    presenter.uploadMaskFile(binaryMask, touch_time.get(), applicationContext)
-                    //progressDialog.dismiss()
-                } ?: run {
-                    Toast.makeText(applicationContext, "마스크를 먼저 그려주세요", Toast.LENGTH_SHORT).show()
-                }
-            }.await()
+                        //마스크 전송
+                        presenter.uploadMaskFile(binaryMask, touch_time.get(), applicationContext)
+                        //progressDialog.dismiss()
+                    }
+                }.await()
+            }
+            if(UserObject.loginResponse == 200) job.start()
+            else {
+                Toast.makeText(this, "로그인을 먼저 해주세요.", Toast.LENGTH_SHORT).show()
+                cancelJob()
+            }
         }
-       if(PidClass.ResponseCode == 200) job.start()
-       else {
-           Toast.makeText(this, "로그인을 먼저 해주세요.", Toast.LENGTH_SHORT).show()
-           cancelJob()
-       }
+        else {
+            Toast.makeText(applicationContext, "마스크를 먼저 그려주세요", Toast.LENGTH_SHORT)
+                .show()
+        }
+
     }
+
+    fun sendImproveVideoInfoToServer(){
+        videoOption = Consts.SUPER_RESOL
+        if(crop_count < 2) {
+            Toast.makeText(this, "구간을 먼저 잘라주세요", Toast.LENGTH_LONG).show()
+        } else {
+            texteColor.set(arrayOf(false, false, false, false, false))
+            texteColor.set(arrayOf(false, false, false, false, true))
+            //미리 서버에 올리기
+            job = CoroutineScope(Dispatchers.Main).launch {
+                showProgressbar()
+                CoroutineScope(Dispatchers.Default).async {
+                    presenter.trimVideo(
+                        destinationPath,
+                        applicationContext,
+                        mSrc,
+                        frameSecToSendServer[0],
+                        frameSecToSendServer[1]
+                    )
+                }.await()
+            }
+        }
+    }
+
 
     fun fullScreen(){
         val intent = Intent(this, VideoViewActivity::class.java).apply{
@@ -530,15 +567,15 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
 
     override fun getResult(uri: Uri) {
         //Todo Trim 된 결과가 여기로 넘어오고 다시 getResultUri로 들어감
-        presenter.getResultUri(uri, this)
+        presenter.getResultUri(uri, this, videoOption)
     }
 
     override fun uploadSuccess(msg: String) {
-        Toast.makeText(this, "$msg ", Toast.LENGTH_SHORT).show()
+       Timber.e(msg)
     }
 
     override fun uploadFailed(msg: String) {
-        Toast.makeText(this, "$msg ", Toast.LENGTH_SHORT).show()
+        Timber.e(msg)
     }
 
     override fun cancelJob() {

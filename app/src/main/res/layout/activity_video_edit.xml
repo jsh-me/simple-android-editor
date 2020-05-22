@@ -39,7 +39,7 @@
             android:layout_gravity="end"
             android:layout_margin="10dp"
             android:background="@drawable/ic_file_download"
-            android:onClick="@{() -> trimmer.sendVideoInfoToServer()}"
+            android:onClick="@{() -> trimmer.sendRemoveVideoInfoToServer()}"
             android:padding="10dp"
             app:layout_constraintBottom_toBottomOf="@+id/backBtn"
             app:layout_constraintEnd_toEndOf="parent"
@@ -139,7 +139,7 @@
             android:layout_marginStart="20dp"
             android:text="@string/initialze_cut"
             android:onClick="@{() -> trimmer.resetTimeLineView()}"
-            android:textColor="@{trimmer.texteColor[2] ? @color/textWhite : @color/textBlack}"
+            android:textColor="@{trimmer.texteColor[1] ? @color/textWhite : @color/textBlack}"
             app:layout_constraintBottom_toBottomOf="@+id/remove_btn"
             app:layout_constraintStart_toEndOf="@+id/remove_btn"
             app:layout_constraintTop_toTopOf="@+id/remove_btn"
@@ -153,11 +153,34 @@
             android:gravity="center"
             android:onClick="@{() -> trimmer.clearDraw()}"
             android:text="@string/initialize_draw"
-            android:textColor="@{trimmer.texteColor[3] ? @color/textWhite : @color/textBlack}"
+            android:textColor="@{trimmer.texteColor[2] ? @color/textWhite : @color/textBlack}"
             app:layout_constraintBottom_toBottomOf="@+id/reset"
             app:layout_constraintStart_toEndOf="@+id/reset"
             app:layout_constraintTop_toTopOf="@+id/reset"
             app:layout_constraintVertical_bias="0.9" />
+
+        <TextView
+            android:id="@+id/remove_ppt_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Remove"
+            android:onClick="@{() -> trimmer.sendRemoveVideoInfoToServer()}"
+            android:textColor="@{trimmer.texteColor[3] ? @color/textWhite : @color/textBlack}"
+            app:layout_constraintBottom_toBottomOf="@+id/improve_ppt_btn"
+            app:layout_constraintStart_toStartOf="@+id/video_undo_btn" />
+
+        <TextView
+            android:id="@+id/improve_ppt_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Improve"
+            android:onClick="@{() -> trimmer.sendImproveVideoInfoToServer()}"
+            android:textColor="@{trimmer.texteColor[4] ? @color/textWhite : @color/textBlack}"
+            app:layout_constraintBottom_toBottomOf="@+id/reset_paint_btn"
+            app:layout_constraintStart_toEndOf="@+id/remove_ppt_btn"
+            app:layout_constraintTop_toBottomOf="@+id/video_redo_btn"
+            app:layout_constraintVertical_bias="0.2" />
 
         <ImageView
             android:id="@+id/icon_video_play"

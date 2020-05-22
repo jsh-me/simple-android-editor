@@ -17,14 +17,17 @@ import android.widget.VideoView
 import androidx.core.net.toFile
 import androidx.recyclerview.widget.RecyclerView
 import kr.co.domain.api.usecase.PostFileUploadUseCase
+import kr.co.domain.api.usecase.PostImproveVideoPidNumber
 import kr.co.domain.api.usecase.PostVideoPidNumberAndInfoUseCase
 import kr.co.domain.globalconst.Consts
 import kr.co.domain.globalconst.Consts.Companion.EXTRA_VIDEO_PATH
 import kr.co.domain.globalconst.PidClass
+import kr.co.jsh.singleton.UserObject
 import kr.co.jsh.utils.*
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import timber.log.Timber
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -32,7 +35,8 @@ import kotlin.collections.ArrayList
 
 class TrimmerPresenter(override var view: TrimmerContract.View,
                        private var postFileUploadUseCase: PostFileUploadUseCase,
-                       private var postPidNumberAndInfoUseCase: PostVideoPidNumberAndInfoUseCase) : TrimmerContract.Presenter{
+                       private var postPidNumberAndInfoUseCase: PostVideoPidNumberAndInfoUseCase,
+                       private var postImproveVideoPidNumber: PostImproveVideoPidNumber) : TrimmerContract.Presenter{
    override fun crop(context: Context, cropCount: Int, videoLoader:VideoView,
                           crop_time: ArrayList<Pair<Int, Int>>, recycler: RecyclerView
    ){
@@ -47,7 +51,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
                 crop_time.add(Pair(crop_x1,  videoLoader.currentPosition))//2
                 crop_time.add(Pair(crop_x1,  videoLoader.currentPosition))//3
                 crop_time.add(Pair(recycler.width - ScreenSizeUtil(context).widthPixels,videoLoader.duration)) //4
-                Toast.makeText(context, "${crop_x1} and ${videoLoader.currentPosition}", Toast.LENGTH_LONG).show()
+               // Toast.makeText(context, "${crop_x1} and ${videoLoader.currentPosition}", Toast.LENGTH_LONG).show()
             }
              2-> {
                  crop_x2 =
@@ -56,7 +60,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
                     crop_time[1] = Pair(crop_x2, videoLoader.currentPosition)
                 }
                  else crop_time[2] = Pair(crop_x2, videoLoader.currentPosition)
-                 Toast.makeText(context, "${crop_x2} and ${videoLoader.currentPosition}", Toast.LENGTH_LONG).show()
+               //  Toast.makeText(context, "${crop_x2} and ${videoLoader.currentPosition}", Toast.LENGTH_LONG).show()
              }
 
             else -> {
@@ -68,9 +72,9 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
     }
 
     //사용자가 자른 동영상이 갤러리와 서버 동시에 저장, 업로드 되는 메소드
-    override fun getResultUri(uri: Uri, context: Context) {
+    override fun getResultUri(uri: Uri, context: Context, option: String) {
         RunOnUiThread(context).safely {
-            Toast.makeText(context, "Video saved at ${uri.path}", Toast.LENGTH_SHORT).show()
+           // Toast.makeText(context, "Video saved at ${uri.path}", Toast.LENGTH_SHORT).show()
             //Todo override 된 함수에 넣어줌 ( 사용자가 자른 동영상 )
 
             val mediaMetadataRetriever = MediaMetadataRetriever()
@@ -97,7 +101,8 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
             )
             Log.e("VIDEO ID", id.toString())
         }
-        uploadFile(uri)
+        if(option.equals(Consts.SUPER_RESOL)) { improveFile(uri) }
+        else { uploadFile(uri) }
 
     }
 
@@ -134,7 +139,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
 
 
                     for (i in 0 .. videoLengthInMs step interval) {
-                        var bitmap = mediaMetadataRetriever.getFrameAtTime(i, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+                        var bitmap = mediaMetadataRetriever.getFrameAtTime(i * 1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
                         if (bitmap != null) {
                             try {
                                 bitmap = Bitmap.createScaledBitmap(bitmap, cropWidth, cropHeight, false)
@@ -207,7 +212,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
             .subscribe({
                 if(it.status.toInt() == 200 )
                 {
-                    PidClass.ResponseCode = it.status.toInt()
+                    UserObject.ResponseCode = it.status.toInt()
                     view.uploadSuccess(it.message)
                     PidClass.videoObjectPid = it.datas.objectPid
                 }
@@ -239,6 +244,24 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
             })
     }
 
+    @SuppressLint("CheckResult")
+    fun improveFile(uri: Uri){
+        val path = "file://" + uri.toString()
+        val request = MultipartBody.Part.createFormData("file", path, RequestBody.create(MediaType.parse("video/*"), Uri.parse(path).toFile() ))
+        postFileUploadUseCase.postFile(request)
+            .subscribe({
+                if(it.status.toInt() == 200 ) {
+                    PidClass.videoObjectPid = it.datas.objectPid
+                    requestImproveVideo(PidClass.videoObjectPid)
+                }
+                else view.uploadFailed(it.message)
+            },{
+                view.uploadFailed("로그인 후 가능")
+                view.cancelJob()
+
+            })
+    }
+
 
     @SuppressLint("CheckResult")
     fun sendVideoResultToServerWithInfo(maskPid: String, frameSec: Float, videoPid: String) {
@@ -248,7 +271,23 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
 
         postPidNumberAndInfoUseCase.postPidNumberAndInfo(maskPid, frameSec, Consts.DEL_OBJ ,videoPid, curTime)
             .subscribe({
-                Log.e("Video Send Result", it.message)
+               if(it.status.toInt() == 200) Timber.e("Complete Video Remove Request")
+               else Timber.e("ERROR ${it.status}")
+            },{
+                it.localizedMessage
+            })
+    }
+
+    @SuppressLint("CheckResult")
+    private fun requestImproveVideo(videoPid:String){
+        val time = System.currentTimeMillis()
+        val dateFormat = SimpleDateFormat("yyyy-mm-dd hh:mm:ss")
+        val curTime = dateFormat.format(Date(time))
+
+        postImproveVideoPidNumber.PostImproveVideoPidNumber(Consts.SUPER_RESOL, videoPid, curTime)
+            .subscribe({
+               if(it.status.toInt() == 200) Timber.e("Complete Video Improve Request")
+                else Timber.e("ERROR ${it.status}")
             },{
                 it.localizedMessage
             })

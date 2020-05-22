@@ -8,6 +8,7 @@ import androidx.databinding.DataBindingUtil
 import kr.co.jsh.R
 import kr.co.jsh.databinding.DialogLayoutBinding
 import org.koin.android.ext.android.get
+import timber.log.Timber
 
 
 class LoginAccountDialog: Activity(), LoginAccountContract.View{
@@ -36,7 +37,6 @@ class LoginAccountDialog: Activity(), LoginAccountContract.View{
     fun loginBtn(){
         inputId = mBinding.idText.text.toString()
         inputPasswd = mBinding.passwdText.text.toString()
-//        Toast.makeText(this, "$inputId and $inputPasswd", Toast.LENGTH_LONG).show()
         presenter.getUserData(inputId, inputPasswd)
     }
 
@@ -51,7 +51,7 @@ class LoginAccountDialog: Activity(), LoginAccountContract.View{
     }
 
     override fun onError(error: String) {
-        Toast.makeText(this, error, Toast.LENGTH_LONG).show()
+        Timber.e(error)
     }
 
 }

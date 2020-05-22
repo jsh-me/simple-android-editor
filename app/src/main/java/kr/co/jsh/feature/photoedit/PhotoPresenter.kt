@@ -20,6 +20,7 @@ import kr.co.domain.api.usecase.PostFileUploadUseCase
 import kr.co.domain.api.usecase.PostImagePidNumberAndInfoUseCase
 import kr.co.domain.globalconst.Consts
 import kr.co.domain.globalconst.PidClass
+import kr.co.jsh.singleton.UserObject
 import kr.co.jsh.utils.BitmapToFileUtil
 import kr.co.jsh.utils.RunOnUiThread
 import okhttp3.MediaType
@@ -43,7 +44,7 @@ class PhotoPresenter(override var view: PhotoContract.View,
 
     override fun saveImage(context: Context, uri: Uri) {
         RunOnUiThread(context).safely {
-            Toast.makeText(context, "Image saved at ${uri.path}", Toast.LENGTH_SHORT).show()
+          //  Toast.makeText(context, "Image saved at ${uri.path}", Toast.LENGTH_SHORT).show()
 
             val mediaMetadataRetriever = MediaMetadataRetriever()
             mediaMetadataRetriever.setDataSource(context, uri)
@@ -79,12 +80,12 @@ class PhotoPresenter(override var view: PhotoContract.View,
                 if(it.status.toInt() == 200 ) {
                     view.uploadSuccess(it.message)
                     PidClass.imageObjectPid = it.datas.objectPid //file pid 저장
-                    PidClass.ResponseCode = it.status.toInt()
+                    UserObject.ResponseCode = it.status.toInt()
 
                 }
                 else {
                     view.uploadFailed(it.message)
-                    PidClass.ResponseCode = it.status.toInt()
+                    UserObject.ResponseCode = it.status.toInt()
                 }
             },{
                 view.uploadFailed("로그인 후 가능")
@@ -100,13 +101,13 @@ class PhotoPresenter(override var view: PhotoContract.View,
             .subscribe({
                 if(it.status.toInt() == 200 ) {
                     view.uploadSuccess(it.message)
-                    PidClass.ResponseCode = it.status.toInt()
-                    PidClass.imageMaskObjectPiad = it.datas.objectPid
-                    sendImageResultToServerWithInfo(PidClass.imageMaskObjectPiad, PidClass.imageObjectPid)
+                    UserObject.ResponseCode = it.status.toInt()
+                    PidClass.imageMaskObjectPid = it.datas.objectPid
+                    sendImageResultToServerWithInfo(PidClass.imageMaskObjectPid, PidClass.imageObjectPid)
                 }
                 else {
                     view.uploadFailed(it.message)
-                    PidClass.ResponseCode = it.status.toInt()
+                    UserObject.ResponseCode = it.status.toInt()
                 }
             },{
                 view.uploadFailed("로그인 후 가능")
