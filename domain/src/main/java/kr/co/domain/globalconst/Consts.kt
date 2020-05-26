@@ -14,5 +14,8 @@ class Consts {
 
         const val VIDEO_URI = "VIDEO_URI"
         const val VIDEO_CURRENT_POSITION = " VIDEO_CURRENT_POSITION"
+
+        const val DETAIL_PHOTO = "DETAIL_PHOTO"
+        const val DETAIL_VIDEO = "DETAIL_VIDEO"
     }
 }

@@ -6,8 +6,7 @@ import kr.co.domain.api.usecase.GetVideoResultIUseCase
 import timber.log.Timber
 
 class VideoStoragePresenter(override var view: VideoStorageContract.View,
-                            var getVideoResultIUseCase: GetVideoResultIUseCase,
-                            var getFileDownloadUseCase: GetFileDownloadUseCase)
+                            var getVideoResultIUseCase: GetVideoResultIUseCase)
     :VideoStorageContract.Presenter{
     @SuppressLint("CheckResult")
     override fun getVideoResultFile(objectPid: String) {
@@ -21,11 +20,6 @@ class VideoStoragePresenter(override var view: VideoStorageContract.View,
 
     @SuppressLint("CheckResult")
     private fun resultFileDownload(objectPid: String){
-        getFileDownloadUseCase.getFileDownload(objectPid)
-            .subscribe({
-                view.setVideoResultView(it.file)
-            },{
-                Timber.e(it.localizedMessage)
-            })
+        view.setVideoResultView("http://192.168.0.188:8080/file/fileDownload.do?objectPid=${objectPid}")
     }
 }

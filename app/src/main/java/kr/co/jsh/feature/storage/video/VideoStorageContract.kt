@@ -4,7 +4,7 @@ import java.io.File
 
 interface VideoStorageContract {
     interface View{
-        fun setVideoResultView(result: File)
+        fun setVideoResultView(url: String)
     }
     interface Presenter{
         var view: View
