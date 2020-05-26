@@ -1,8 +1,7 @@
 package kr.co.data.response
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import kr.co.data.entity.local.AllVideoResultList
-import kr.co.data.entity.local.FileDataList
+import kr.co.data.entity.server.AllVideoResultList
 
 data class AllVideoResultResponse(
     @JsonProperty("status") var status:String,

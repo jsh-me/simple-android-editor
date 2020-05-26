@@ -23,7 +23,7 @@ class VideoDetailActivity : AppCompatActivity(){
     }
     private fun initView(){
         val result = intent.getStringExtra(Consts.DETAIL_VIDEO)
-        
+
     }
 
     fun backButton(){

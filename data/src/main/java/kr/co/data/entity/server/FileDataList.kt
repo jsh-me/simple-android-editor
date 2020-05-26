@@ -1,4 +1,4 @@
-package kr.co.data.entity.local
+package kr.co.data.entity.server
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
