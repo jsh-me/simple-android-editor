@@ -1,4 +1,4 @@
-package kr.co.jsh.utils
+package kr.co.jsh.utils.permission
 
 import android.content.ContentUris
 import android.content.Context
@@ -21,7 +21,12 @@ object FileUtils {
             } else if (isDownloadsDocument(uri)) {
                 val id = DocumentsContract.getDocumentId(uri)
                 val contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), java.lang.Long.valueOf(id))
-                return getDataColumn(context, contentUri, null, null)
+                return getDataColumn(
+                    context,
+                    contentUri,
+                    null,
+                    null
+                )
             } else if (isMediaDocument(uri)) {
                 val docId = DocumentsContract.getDocumentId(uri)
                 val split = docId.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
@@ -34,10 +39,20 @@ object FileUtils {
                 }
                 val selection = "_id=?"
                 val selectionArgs = arrayOf(split[1])
-                return getDataColumn(context, contentUri, selection, selectionArgs)
+                return getDataColumn(
+                    context,
+                    contentUri,
+                    selection,
+                    selectionArgs
+                )
             }
         } else if ("content".equals(uri.scheme!!, ignoreCase = true)) {
-            return if (isGooglePhotosUri(uri)) uri.lastPathSegment else getDataColumn(context, uri, null, null)
+            return if (isGooglePhotosUri(uri)) uri.lastPathSegment else getDataColumn(
+                context,
+                uri,
+                null,
+                null
+            )
         } else if ("file".equals(uri.scheme!!, ignoreCase = true)) {
             return uri.path
         }

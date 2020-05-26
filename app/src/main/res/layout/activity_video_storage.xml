@@ -38,7 +38,7 @@
 
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/photoStorageRecycler"
+            android:id="@+id/videoStorageRecycler"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"

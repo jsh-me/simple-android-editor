@@ -1,4 +1,4 @@
-package kr.co.jsh.utils
+package kr.co.jsh.utils.videoUtil
 
 import android.content.Context
 import android.net.Uri
@@ -22,6 +22,7 @@ class VideoOptions(private var ctx: Context) {
                 Log.e("FFmpegLoad", "onFinish")
             }
 
+            //outputPath : 출력 파일 명
             override fun onSuccess() {
                 Log.e("FFmpegLoad", "onSuccess")
                 val command = arrayOf("-y", "-i", inputPath, "-ss", startPosition, "-to", endPosition, "-c", "copy", outputPath)

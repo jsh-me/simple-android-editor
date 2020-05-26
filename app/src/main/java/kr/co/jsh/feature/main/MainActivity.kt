@@ -8,22 +8,20 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableField
-import kr.co.domain.globalconst.Consts
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityMainBinding
 import kr.co.domain.globalconst.Consts.Companion.EXTRA_PHOTO_PATH
 import kr.co.domain.globalconst.Consts.Companion.EXTRA_VIDEO_PATH
 import kr.co.domain.globalconst.Consts.Companion.REQUEST_VIDEO_CROPPER
 import kr.co.domain.globalconst.Consts.Companion.REQUEST_VIDEO_TRIMMER
-import kr.co.domain.globalconst.PidClass
 import kr.co.jsh.login.LoginAccountDialog
 import kr.co.jsh.feature.photoedit.PhotoActivity
 import kr.co.jsh.feature.storage.photo.PhotoStorageActivity
 import kr.co.jsh.feature.storage.video.VideoStorageActivity
 import kr.co.jsh.feature.videoedit.TrimmerActivity
 import kr.co.jsh.singleton.UserObject
-import kr.co.jsh.utils.FileUtils
-import kr.co.jsh.utils.setupPermissions
+import kr.co.jsh.utils.permission.FileUtils
+import kr.co.jsh.utils.permission.setupPermissions
 
 
 class MainActivity : AppCompatActivity() {
@@ -42,21 +40,31 @@ class MainActivity : AppCompatActivity() {
 
     fun pickFromVideo(intentCode: Int) {
         setupPermissions(this) {
-            val intent = Intent()
-            intent.setTypeAndNormalize("video/*")
-            intent.action = Intent.ACTION_GET_CONTENT
+            //            val intent = Intent()
+//            intent.setTypeAndNormalize("video/*")
+//            intent.action = Intent.ACTION_GET_CONTENT
+//            intent.addCategory(Intent.CATEGORY_OPENABLE)
+//            startActivityForResult(Intent.createChooser(intent, "label_select_video"), intentCode)
+
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
-            startActivityForResult(Intent.createChooser(intent, "label_select_video"), intentCode)
+            intent.type = "*/*"
+            startActivityForResult(intent, intentCode)
+
         }
     }
 
     fun pickFromPicture(intentCode: Int) {
         setupPermissions(this) {
-            val intent = Intent()
-            intent.setTypeAndNormalize("image/*")
-            intent.action = Intent.ACTION_GET_CONTENT
+            //            val intent = Intent()
+//            intent.setTypeAndNormalize("image/*")
+//            intent.action = Intent.ACTION_GET_CONTENT
+//            intent.addCategory(Intent.CATEGORY_OPENABLE)
+//            startActivityForResult(Intent.createChooser(intent, "label_select_picture"), intentCode)
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
-            startActivityForResult(Intent.createChooser(intent, "label_select_picture"), intentCode)
+            intent.type = "*/*"
+            startActivityForResult(intent, intentCode)
         }
     }
 

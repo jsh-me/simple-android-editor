@@ -1,10 +1,7 @@
 package kr.co.domain.api.service
 
 import io.reactivex.Single
-import kr.co.data.response.FileDownloadResponse
-import kr.co.data.response.FileUploadResponse
-import kr.co.data.response.ImagePidNumberResponse
-import kr.co.data.response.VideoPidNumberResponse
+import kr.co.data.response.*
 import okhttp3.MultipartBody
 import retrofit2.http.*
 
@@ -34,4 +31,7 @@ interface FileService{
                                   @Query("reqEditType") reqEditType: String,
                                   @Query("targetImg.objectPid") targetImgObjectPid: String,
                                   @Query("title") title: String) : Single<ImagePidNumberResponse>
+
+    @GET("cVideoEdit/get.do")
+    fun getVideoResult(@Query("objectPid") objectPid: String) : Single<VideoResultResponse>
 }

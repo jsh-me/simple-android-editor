@@ -1,4 +1,4 @@
-package kr.co.jsh.utils
+package kr.co.jsh.utils.bitmapUtil
 
 import android.graphics.Bitmap
 

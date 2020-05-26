@@ -6,6 +6,6 @@ interface PhotoStorageContract {
     }
     interface Presenter{
         var view: View
-        fun getResultFile(objectPid : String)
+        fun getImageResultFile(objectPid : String)
     }
 }
