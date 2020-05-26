@@ -1,13 +1,12 @@
 package kr.co.jsh.feature.storage.video
 
-import java.io.File
-
 interface VideoStorageContract {
     interface View{
-        fun setVideoResultView(url: String)
+        fun setAllVideoResultView(url: ArrayList<String>, name: ArrayList<String>)
     }
     interface Presenter{
         var view: View
-        fun getVideoResultFile(objectPid: String)
+       // fun getVideoResultFile(objectPid: String)
+        fun getAllVideoResultFile()
     }
 }

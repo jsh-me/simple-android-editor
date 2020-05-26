@@ -34,4 +34,10 @@ interface FileService{
 
     @GET("cVideoEdit/get.do")
     fun getVideoResult(@Query("objectPid") objectPid: String) : Single<VideoResultResponse>
+
+    @GET("cVideoEdit/list.do")
+    fun getAllVideoResultList() : Single<AllVideoResultResponse>
+
+    @GET("cImageEdit/list.do")
+    fun getAllImageResultList() : Single<AllImageResultResponse>
 }

@@ -6,6 +6,6 @@ import kr.co.data.entity.local.VideoResultList
 
 data class VideoPidNumberResponse(
     @JsonProperty("status") var status:String,
-    @JsonProperty("datas") var datas: VideoResultList,
+    @JsonProperty("datas") var datas: VideoPidDataList,
     @JsonProperty("message") var message: String
 )

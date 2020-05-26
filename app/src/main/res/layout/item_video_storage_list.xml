@@ -1,12 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
-    <ImageView
-        android:id="@+id/result_video_storage_view"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        xmlns:tools="http://schemas.android.com/tools"
-        tools:src="@drawable/ic_launcher_background">
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    </ImageView>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/result_video_storage_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:padding="5dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/ic_launcher_background">
+        </ImageView>
+
+        <ImageView
+            android:id="@+id/video_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/ic_videocam_white_24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/result_video_name"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:gravity="center|center_horizontal"
+            android:maxLines="1"
+            android:background="@color/name_background"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/result_video_storage_view"
+            app:layout_constraintVertical_bias="1.0"
+            tools:text="name.jpg" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

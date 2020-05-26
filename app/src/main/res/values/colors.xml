@@ -19,4 +19,6 @@
 
     <color name="textBlack">#FF000000</color>
     <color name="textWhite">#FFFFFF</color>
+
+    <color name="name_background">#7EA09898</color>
 </resources>
