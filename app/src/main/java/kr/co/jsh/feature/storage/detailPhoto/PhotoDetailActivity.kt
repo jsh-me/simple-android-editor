@@ -27,6 +27,10 @@ class PhotoDetailActivity :AppCompatActivity(){
         Glide.with(this).asBitmap().load(result).into(binding.resultImageDetail)
     }
 
+    fun savePhoto(){
+
+    }
+
     fun backButton(){
         finish()
     }

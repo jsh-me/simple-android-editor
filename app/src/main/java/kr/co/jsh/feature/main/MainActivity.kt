@@ -6,8 +6,10 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.core.content.ContextCompat.startActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableField
+import kr.co.domain.globalconst.Consts
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityMainBinding
 import kr.co.domain.globalconst.Consts.Companion.EXTRA_PHOTO_PATH
@@ -22,11 +24,11 @@ import kr.co.jsh.feature.videoedit.TrimmerActivity
 import kr.co.jsh.singleton.UserObject
 import kr.co.jsh.utils.permission.FileUtils
 import kr.co.jsh.utils.permission.setupPermissions
+import timber.log.Timber
 
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    var loginCheck : ObservableField<Boolean> = ObservableField(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +38,7 @@ class MainActivity : AppCompatActivity() {
     private fun setupDataBinding(){
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.main = this@MainActivity
+        Timber.e("${UserObject.loginResponse}")
     }
 
     fun pickFromVideo(intentCode: Int) {
@@ -95,9 +98,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
         else if(resultCode == 1000 && requestCode == 1000) {
-            binding.accountImg.setImageDrawable(resources.getDrawable(R.drawable.sehee, null))
-            loginCheck.set(true)
+            binding.accountImg.apply{
+                setImageDrawable(resources.getDrawable(R.drawable.sehee, null))
+                isClickable = false
+            }
             UserObject.loginResponse = 200
+
         }
 
         super.onActivityResult(requestCode, resultCode, data)
@@ -112,26 +118,31 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun photoStorageBtn(){
-        val intent = Intent(this, PhotoStorageActivity::class.java)
+        val intent = Intent(this, PhotoStorageActivity::class.java).apply{
+            putExtra(Consts.LOGIN_RESPONSE, UserObject.loginResponse)
+        }
         startActivity(intent)
     }
 
     fun videoStorageBtn(){
-        val intent = Intent(this, VideoStorageActivity::class.java)
+        val intent = Intent(this, VideoStorageActivity::class.java).apply{
+            putExtra(Consts.LOGIN_RESPONSE, UserObject.loginResponse)
+        }
         startActivity(intent)
     }
 
     private fun startTrimActivity(uri: Uri) {
-        val intent = Intent(this, TrimmerActivity::class.java)
-        intent.putExtra(EXTRA_VIDEO_PATH, FileUtils.getPath(this, uri))
-        startActivity(intent)
+        val intent = Intent(this, TrimmerActivity::class.java).apply{
+            putExtra(EXTRA_VIDEO_PATH, FileUtils.getPath(this@MainActivity, uri))
+        }
+            startActivity(intent)
     }
 
     private fun startPhotoActivity(uri: Uri) {
-        val intent = Intent(this, PhotoActivity::class.java)
-        intent.putExtra(EXTRA_PHOTO_PATH, FileUtils.getPath(this, uri))
+        val intent = Intent(this, PhotoActivity::class.java).apply{
+            putExtra(EXTRA_PHOTO_PATH, FileUtils.getPath(this@MainActivity, uri))
+        }
         startActivity(intent)
+
     }
-
-
 }

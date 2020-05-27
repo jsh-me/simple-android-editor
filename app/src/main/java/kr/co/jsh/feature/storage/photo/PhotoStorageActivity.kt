@@ -2,6 +2,7 @@ package kr.co.jsh.feature.storage.photo
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.GridLayoutManager
@@ -19,6 +20,7 @@ import java.io.File
 class PhotoStorageActivity : AppCompatActivity(), PhotoStorageContract.View {
     lateinit var binding : ActivityPhotoStorageBinding
     lateinit var presenter : PhotoStoragePresenter
+    private var response = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,15 +33,26 @@ class PhotoStorageActivity : AppCompatActivity(), PhotoStorageContract.View {
     }
 
     private fun initPresenter(){
-        presenter = PhotoStoragePresenter(this, get())
-        presenter.getAllVideoResultFile()
+        presenter = PhotoStoragePresenter(this, get(), get(), get(), get())
+        response = intent.getIntExtra(Consts.LOGIN_RESPONSE, -1)
+
+        when(response){
+            200 -> {presenter.getServerImageResult()}
+            500 -> {presenter.getLocalImageResult()}
+        }
     }
 
-    override fun setAllImageResultView(url: ArrayList<String>, name: ArrayList<String>) {
-        binding.photoStorageRecycler.apply {
-            layoutManager = GridLayoutManager(this@PhotoStorageActivity, 2)
-            adapter = PhotoStorageAdapter(click(), url, name, context)
-        }    }
+    override fun setImageResult(list: ArrayList<List<String>>) {
+        if (list.isNullOrEmpty()) {
+            binding.noResultText.visibility = View.VISIBLE
+        } else {
+            binding.noResultText.visibility = View.GONE
+            binding.photoStorageRecycler.apply {
+                layoutManager = GridLayoutManager(this@PhotoStorageActivity, 2)
+                adapter = PhotoStorageAdapter(click(), list, context)
+            }
+        }
+    }
 
     private fun click() = { _:Int, url: String ->
         val intent = Intent(this, PhotoDetailActivity::class.java).apply{

@@ -17,5 +17,7 @@ class Consts {
 
         const val DETAIL_PHOTO = "DETAIL_PHOTO"
         const val DETAIL_VIDEO = "DETAIL_VIDEO"
+
+        const val LOGIN_RESPONSE = "LOGIN_RESPONSE"
     }
 }

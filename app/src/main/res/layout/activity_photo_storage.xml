@@ -18,7 +18,7 @@
         android:background="@color/background_space"
         android:gravity="center"
         android:padding="10dp"
-        android:text="사진 결과함"
+        android:text="@string/photo_storage"
         android:textColor="@color/white"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -38,12 +38,26 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/photoStorageRecycler"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/photo_title"
         app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/noResultText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:visibility="gone"
+        android:text="@string/no_result"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/photoStorageRecycler"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/photo_title" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

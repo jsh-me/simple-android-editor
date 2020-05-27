@@ -12,8 +12,7 @@ import java.io.File
 import java.net.URL
 
 class PhotoStorageAdapter(val click:( Int, String) -> Unit,
-                          private var resultImageList : ArrayList<String>,
-                          private var resultImageName: ArrayList<String>,
+                          private var list: ArrayList<List<String>>,
                           private var context: Context)
     :RecyclerView.Adapter<PhotoStorageAdapter.ViewHolder>() {
 
@@ -26,12 +25,12 @@ class PhotoStorageAdapter(val click:( Int, String) -> Unit,
         return ViewHolder(binding, binding.resultImageStorageView, binding.resultImageName)
     }
 
-    override fun getItemCount(): Int = resultImageList.size
+    override fun getItemCount(): Int = list.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        Glide.with(context).load(resultImageList[position]).into(holder.resultImageView)
-        holder.resultImageName.text = resultImageName[position]
-        holder.resultImageView.setOnClickListener { click(position,  resultImageList[position]) }
+        Glide.with(context).load(list[position][0]).into(holder.resultImageView)
+        holder.resultImageName.text = list[position][1]
+        holder.resultImageView.setOnClickListener { click(position,  list[position][0]) }
     }
 
     inner class ViewHolder(

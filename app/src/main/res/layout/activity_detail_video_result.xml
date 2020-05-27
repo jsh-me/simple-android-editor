@@ -5,6 +5,10 @@
         <variable
             name="resultVideo"
             type="kr.co.jsh.feature.storage.detailVideo.VideoDetailActivity" />
+
+        <variable
+            name="view"
+            type="android.view.View" />
     </data>
 
 <androidx.constraintlayout.widget.ConstraintLayout
@@ -19,7 +23,6 @@
         android:background="@color/background_space"
         android:gravity="center"
         android:padding="10dp"
-        android:text="비디오 결과함"
         android:textColor="@color/white"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -36,7 +39,7 @@
         app:layout_constraintStart_toStartOf="@+id/photo_title"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <VideoView
+    <com.google.android.exoplayer2.ui.PlayerView
         android:id="@+id/result_video_detail"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -45,6 +48,19 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/photo_title" />
+
+    <TextView
+        android:id="@+id/video_save_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:textSize="18sp"
+        android:text="@string/save"
+        android:textColor="@color/white"
+        android:onClick="@{() -> resultVideo.saveVideo()}"
+        app:layout_constraintBottom_toBottomOf="@+id/photo_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

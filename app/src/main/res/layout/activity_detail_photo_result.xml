@@ -19,7 +19,6 @@
         android:background="@color/background_space"
         android:gravity="center"
         android:padding="10dp"
-        android:text="사진 결과함"
         android:textColor="@color/white"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -45,6 +44,19 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/photo_title" />
+
+    <TextView
+        android:id="@+id/image_save_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:textSize="18sp"
+        android:text="@string/save"
+        android:textColor="@color/white"
+        android:onClick="@{() -> resultPhoto.savePhoto()}"
+        app:layout_constraintBottom_toBottomOf="@+id/photo_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
