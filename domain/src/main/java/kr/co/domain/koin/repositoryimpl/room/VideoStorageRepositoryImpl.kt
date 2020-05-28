@@ -14,41 +14,56 @@ class VideoStorageRepositoryImpl(private val videoDao: VideoStorageDao)
     :VideoStorageRepository {
 
     @SuppressLint("CheckResult")
+    override fun insert(videoStorage: VideoStorage) {
+        videoDao.insert(videoStorage)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                Timber.e("insert success")
+            },{
+                Timber.e(it.localizedMessage)
+
+            })
+
+    }
+
+    @SuppressLint("CheckResult")
     override fun update(videoStorage: VideoStorage) {
         videoDao.update(videoStorage)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                Timber.i("update success")
+                Timber.e("update success")
             }, {
-                Timber.i("error")
+                Timber.e(it.localizedMessage)
             })
     }
 
     @SuppressLint("CheckResult")
     override fun delete(videoStorage: VideoStorage) {
         videoDao.delete(videoStorage)
-            .observeOn(Schedulers.io())
+            .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                Timber.i("delete success")
+                Timber.e("delete success")
             }, {
-                Timber.i("error")
+                Timber.e(it.localizedMessage)
             })
     }
 
     @SuppressLint("CheckResult")
     override fun deleteAllVideoStorage() {
         Completable.fromAction { videoDao.deleteAllVideoStorage() }
-            .observeOn(Schedulers.io())
+            .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                Timber.i("delete all success")
+                Timber.e("delete all success")
             }, {
-                Timber.i("error")
+                Timber.e(it.localizedMessage)
             })
     }
 
     override fun getAllVideoStorage(): Observable<List<VideoStorage>> =
         videoDao.getAllVideoStorage()
+
 }

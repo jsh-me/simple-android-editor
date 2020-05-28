@@ -7,5 +7,7 @@ object PidClass {
     var imageObjectPid = String()
     var imageMaskObjectPid = String()
 
-
+    //------
+    var topVideoObjectPid = ArrayList<String>()
+    var topImageObjectPid = ArrayList<String>()
 }

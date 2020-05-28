@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Bundle
 import android.os.Handler
 import androidx.databinding.DataBindingUtil
+import androidx.databinding.ObservableField
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ProgressLoadingBinding
 
@@ -26,8 +27,8 @@ class DialogActivity : Activity() {
         for ( i in 0.. 1000) {
             handler.postDelayed({
                 binding.pieProgress.setProgress(i.toFloat())
-            }, 10 * i.toLong())
+            }, 100 *i.toLong())
         }
-        //finish()
     }
+
 }

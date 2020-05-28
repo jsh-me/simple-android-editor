@@ -1,23 +1,17 @@
 package kr.co.jsh.feature.videoedit
 
 import android.annotation.SuppressLint
-import android.app.Dialog
 import android.content.Intent
-import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.*
-import android.text.Layout
-import android.util.DisplayMetrics
 import android.util.Log
 import android.view.*
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat.startActivityForResult
-import androidx.core.content.ContextCompat.startActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableField
 import androidx.databinding.ObservableFloat
@@ -41,6 +35,11 @@ import kr.co.jsh.feature.fullscreen.VideoViewActivity
 import kr.co.jsh.localclass.PausableDispatcher
 import kr.co.jsh.singleton.UserObject
 import kr.co.jsh.utils.*
+import kr.co.jsh.utils.bitmapUtil.CreateBinaryMask
+import kr.co.jsh.utils.bitmapUtil.CropBitmapImage
+import kr.co.jsh.utils.bitmapUtil.ResizeBitmapImage
+import kr.co.jsh.utils.permission.setupPermissions
+import kr.co.jsh.utils.videoUtil.TrimVideoUtils
 import org.jetbrains.anko.runOnUiThread
 import timber.log.Timber
 import java.io.File
@@ -52,7 +51,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     private lateinit var presenter : TrimmerPresenter
     private var screenSize = ObservableField<Int>()
     private lateinit var mSrc: Uri
-    private var mFinalPath: String? = null
+   // private var mFinalPath: String? = null
     private var crop_count = 0
     lateinit var crop_time: ArrayList<Pair<Int, Int>>
     private var timeposition = 0
@@ -77,17 +76,17 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     private var videoOption = ""
     private var drawMaskCheck = false
 
-    private var destinationPath: String
-        get() {
-            if (mFinalPath == null) {
-                val folder = Environment.getExternalStorageDirectory()
-                mFinalPath = folder.path + File.separator
-            }
-            return mFinalPath ?: ""
-        }
-        set(finalPath) {
-            mFinalPath = finalPath
-        }
+    private var destinationPath: String=""
+//        get() {
+//            if (mFinalPath == null) {
+//                val folder = Environment.getExternalStorageDirectory()
+//                mFinalPath = folder.path + File.separator
+//            }
+//            return mFinalPath ?: ""
+//        }
+//        set(finalPath) {
+//            mFinalPath = finalPath
+//        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -221,7 +220,6 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
             hideVideoView()
             //미리 서버에 올리기
             presenter.trimVideo(destinationPath, this, mSrc, frameSecToSendServer[0], frameSecToSendServer[1])
-
         }
     }
 
@@ -327,7 +325,6 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
                             "%s",
                             TrimVideoUtils.stringForTime(touch_time.get())
                         )
-                        Timber.i("test!!")
                         timeposition = touch_time.get().toInt()
 
                     }, {
@@ -506,16 +503,22 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
                             binding.videoFrameView.height
                         )
                         val resizeBitmap =
-                            ResizeBitmapImage(cropBitmap, realVideoSize[0], realVideoSize[1])
+                            ResizeBitmapImage(
+                                cropBitmap,
+                                realVideoSize[0],
+                                realVideoSize[1]
+                            )
                         val binaryMask = CreateBinaryMask(resizeBitmap)
 
                         //마스크 전송
                         presenter.uploadMaskFile(binaryMask, touch_time.get(), applicationContext)
-                        //progressDialog.dismiss()
+
                     }
                 }.await()
             }
-            if(UserObject.loginResponse == 200) job.start()
+            if(UserObject.loginResponse == 200) {
+                job.start()
+            }
             else {
                 Toast.makeText(this, "로그인을 먼저 해주세요.", Toast.LENGTH_SHORT).show()
                 cancelJob()
@@ -638,4 +641,5 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
             videoObjectPid = ""
         }
     }
+
 }

@@ -1,7 +1,6 @@
 package kr.co.jsh.feature.videoedit
 
 import android.annotation.SuppressLint
-import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
@@ -10,6 +9,7 @@ import android.media.MediaExtractor
 import android.media.MediaFormat
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
@@ -24,6 +24,11 @@ import kr.co.domain.globalconst.Consts.Companion.EXTRA_VIDEO_PATH
 import kr.co.domain.globalconst.PidClass
 import kr.co.jsh.singleton.UserObject
 import kr.co.jsh.utils.*
+import kr.co.jsh.utils.bitmapUtil.BitmapToFileUtil
+import kr.co.jsh.utils.permission.RealPathUtil
+import kr.co.jsh.utils.permission_verQ.ScopeStorageFileUtil
+import kr.co.jsh.utils.videoUtil.TrimVideoUtils
+import kr.co.jsh.utils.videoUtil.VideoOptions
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -73,34 +78,37 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
 
     //사용자가 자른 동영상이 갤러리와 서버 동시에 저장, 업로드 되는 메소드
     override fun getResultUri(uri: Uri, context: Context, option: String) {
-        RunOnUiThread(context).safely {
-           // Toast.makeText(context, "Video saved at ${uri.path}", Toast.LENGTH_SHORT).show()
-            //Todo override 된 함수에 넣어줌 ( 사용자가 자른 동영상 )
+//        RunOnUiThread(context).safely {
+//           // Toast.makeText(context, "Video saved at ${uri.path}", Toast.LENGTH_SHORT).show()
+//            //Todo override 된 함수에 넣어줌 ( 사용자가 자른 동영상 )
+//
+//            val mediaMetadataRetriever = MediaMetadataRetriever()
+//            mediaMetadataRetriever.setDataSource(context, uri)
+//            val duration =
+//                mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+//                    .toLong()
+//            val width =
+//                mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
+//                    .toLong()
+//            val height =
+//                mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
+//                    .toLong()
+//            val values = ContentValues()
+//            values.put(MediaStore.Video.Media.DATA, uri.path)
+//            values.put(MediaStore.Video.VideoColumns.DURATION, duration)
+//            values.put(MediaStore.Video.VideoColumns.WIDTH, width)
+//            values.put(MediaStore.Video.VideoColumns.HEIGHT, height)
+//            val id = ContentUris.parseId(
+//                context.contentResolver.insert(
+//                    MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+//                    values
+//                )
+//            )
+//            Log.e("VIDEO ID", id.toString())
+//        }
+        ScopeStorageFileUtil.addVideoAlbum(uri, context)
 
-            val mediaMetadataRetriever = MediaMetadataRetriever()
-            mediaMetadataRetriever.setDataSource(context, uri)
-            val duration =
-                mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                    .toLong()
-            val width =
-                mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
-                    .toLong()
-            val height =
-                mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
-                    .toLong()
-            val values = ContentValues()
-            values.put(MediaStore.Video.Media.DATA, uri.path)
-            values.put(MediaStore.Video.VideoColumns.DURATION, duration)
-            values.put(MediaStore.Video.VideoColumns.WIDTH, width)
-            values.put(MediaStore.Video.VideoColumns.HEIGHT, height)
-            val id = ContentUris.parseId(
-                context.contentResolver.insert(
-                    MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-                    values
-                )
-            )
-            Log.e("VIDEO ID", id.toString())
-        }
+
         if(option.equals(Consts.SUPER_RESOL)) { improveFile(uri) }
         else { uploadFile(uri) }
 
@@ -168,7 +176,6 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
         mediaMetadataRetriever.setDataSource(context, mSrc)
 
         val file = File(mSrc.path ?: "")
-
         val root = File(path)
         root.mkdirs()
         val outputFileUri = Uri.fromFile(File(root, "t_${Calendar.getInstance().timeInMillis}_" + file.nameWithoutExtension + ".mp4"))
@@ -176,6 +183,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
             ?: File(root, "t_${Calendar.getInstance().timeInMillis}_" + mSrc.path?.substring(mSrc.path!!.lastIndexOf("/") + 1)).absolutePath
         Log.e("SOURCE", file.path)
         Log.e("DESTINATION", outPutPath)
+
         val extractor = MediaExtractor()
         var frameRate = 24
         try {
@@ -198,8 +206,8 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
         val duration = java.lang.Long.parseLong(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION))
         Log.e("FRAME RATE", frameRate.toString())
         Log.e("FRAME COUNT", (duration / 1000 * frameRate).toString())
-        VideoOptions(context).trimVideo(TrimVideoUtils.stringForTime(start_sec.toFloat()), TrimVideoUtils.stringForTime(end_sec.toFloat()), file.path, outPutPath, outputFileUri, view)
-
+        VideoOptions(context)
+            .trimVideo(TrimVideoUtils.stringForTime(start_sec.toFloat()), TrimVideoUtils.stringForTime(end_sec.toFloat()), file.path, outPutPath, outputFileUri, view)
     }
 
     //Todo 근데 왜 MediaType 이 video 인데도, 사진 동영상 둘다 왜 되는거지?
@@ -218,7 +226,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
                 }
                 else {
                     view.uploadFailed(it.message)
-                    PidClass.videoObjectPid = it.datas.objectPid
+                    //PidClass.videoObjectPid = it.datas.objectPid
                 }
             },{
                 view.uploadFailed(it.localizedMessage)
@@ -271,7 +279,10 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
 
         postPidNumberAndInfoUseCase.postPidNumberAndInfo(maskPid, frameSec, Consts.DEL_OBJ ,videoPid, curTime)
             .subscribe({
-               if(it.status.toInt() == 200) Timber.e("Complete Video Remove Request")
+               if(it.status.toInt() == 200) {
+                   Timber.e("Complete Video Remove Request")
+                   PidClass.topVideoObjectPid.add(it.datas.objectPid)
+               }
                else Timber.e("ERROR ${it.status}")
             },{
                 it.localizedMessage

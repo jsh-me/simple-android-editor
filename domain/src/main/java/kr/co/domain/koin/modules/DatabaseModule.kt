@@ -2,19 +2,35 @@ package kr.co.domain.koin.modules
 
 import androidx.room.Room
 import kr.co.domain.api.room.AppDatabase
+import kr.co.domain.api.usecase.*
+import kr.co.domain.koin.repository.room.ImageStorageRepository
 import kr.co.domain.koin.repository.room.VideoStorageRepository
+import kr.co.domain.koin.repositoryimpl.room.ImageStorageRepositoryImpl
 import kr.co.domain.koin.repositoryimpl.room.VideoStorageRepositoryImpl
-import kr.co.domain.koin.roomInteractor.VideoStorageInteractor
-import kr.co.domain.koin.roomInteractor.VideoStorageInteractorImpl
 import org.koin.dsl.module
 
 val databaseModule = module {
-    single<VideoStorageRepository> { VideoStorageRepositoryImpl(get())}
+    single<VideoStorageRepository> { VideoStorageRepositoryImpl(get()) }
 
-    single<VideoStorageInteractor> { VideoStorageInteractorImpl(get())}
+    single<ImageStorageRepository> { ImageStorageRepositoryImpl(get()) }
 
-    single { Room.databaseBuilder(get(), AppDatabase::class.java, "database").build()}
+    single { Room.databaseBuilder(get(), AppDatabase::class.java, "database").fallbackToDestructiveMigration().build()}
 
-    single { get<AppDatabase>().videoStorageDao()}
+    single { get<AppDatabase>().videoStorageDao() }
+
+    single { get<AppDatabase>().imageStorageDao() }
+
+    //----Room UseCase ----//
+    factory { InsertVideoDataBaseUseCase(get()) }
+
+    factory { InsertImageDataBaseUseCase(get()) }
+
+    factory { AllLoadVideoDataBaseUseCase(get()) }
+
+    factory { AllDeleteVideoDataBaseUseCase(get()) }
+
+    factory { AllDeleteImageDataBaseUseCase(get()) }
+
+    factory { AllLoadImageDataBaseUseCase(get()) }
 
 }

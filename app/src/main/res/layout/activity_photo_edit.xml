@@ -151,5 +151,18 @@
         app:layout_constraintStart_toEndOf="@+id/image_undo_btn"
         app:layout_constraintTop_toTopOf="@+id/image_undo_btn" />
 
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="@{()-> photo.saveTEST()}"
+        android:text="저장 테스트"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="@+id/child_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/reset_paint_btn"
+        app:layout_constraintTop_toTopOf="@+id/child_layout" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

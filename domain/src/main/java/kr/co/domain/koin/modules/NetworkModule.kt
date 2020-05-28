@@ -7,6 +7,8 @@ import kr.co.domain.koin.repositoryimpl.remote.RetrofitRepositoryImpl
 import org.koin.dsl.module
 
 val networkModule = module {
+
     single<RetrofitRepository> { RetrofitRepositoryImpl(get()) }
+
     single<HttpClientRepository> { HttpClientRepositoryImpl() }
 }

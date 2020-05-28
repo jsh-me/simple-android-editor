@@ -5,31 +5,22 @@ import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
-import android.widget.Toast
 import androidx.core.net.toFile
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
-import kr.co.data.response.ImagePidNumberResponse
 import kr.co.domain.api.usecase.PostFileUploadUseCase
 import kr.co.domain.api.usecase.PostImagePidNumberAndInfoUseCase
 import kr.co.domain.globalconst.Consts
 import kr.co.domain.globalconst.PidClass
 import kr.co.jsh.singleton.UserObject
-import kr.co.jsh.utils.BitmapToFileUtil
+import kr.co.jsh.utils.bitmapUtil.BitmapToFileUtil
 import kr.co.jsh.utils.RunOnUiThread
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import java.io.File
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.LocalDateTime
 import java.util.*
 
 class PhotoPresenter(override var view: PhotoContract.View,
@@ -125,6 +116,7 @@ class PhotoPresenter(override var view: PhotoContract.View,
         postImagePidNumberAndInfoUseCase.postImagePidNumberAndInfo(maskPid, Consts.DEL_OBJ, imagePid, curTime)
             .subscribe({
                 Log.e("Image Send Result", it.message)
+                PidClass.topImageObjectPid.add(it.datas.objectPid)
             },{
                 it.localizedMessage
             })

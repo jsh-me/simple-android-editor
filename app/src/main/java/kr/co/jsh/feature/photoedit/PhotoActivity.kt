@@ -2,17 +2,13 @@ package kr.co.jsh.feature.photoedit
 
 import android.content.Intent
 import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet
 import androidx.databinding.DataBindingUtil
-import androidx.databinding.Observable
 import androidx.databinding.ObservableField
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -26,16 +22,19 @@ import com.byox.drawview.views.DrawView
 import kotlinx.android.synthetic.main.activity_photo_edit.*
 import kotlinx.coroutines.*
 import kr.co.domain.globalconst.Consts.Companion.EXTRA_PHOTO_PATH
-import kr.co.domain.globalconst.PidClass
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityPhotoEditBinding
 import kr.co.jsh.dialog.DialogActivity
 import kr.co.jsh.singleton.UserObject
-import kr.co.jsh.utils.*
+import kr.co.jsh.utils.bitmapUtil.CreateBinaryMask
+import kr.co.jsh.utils.bitmapUtil.CropBitmapImage
+import kr.co.jsh.utils.bitmapUtil.FileToBitmapSize
+import kr.co.jsh.utils.bitmapUtil.ResizeBitmapImage
+import kr.co.jsh.utils.permission.setupPermissions
+import kr.co.jsh.utils.permission_verQ.ScopeStorageFileUtil
 import org.koin.android.ext.android.get
 import timber.log.Timber
 import java.io.File
-import java.lang.IndexOutOfBoundsException
 
 
 class PhotoActivity : AppCompatActivity() , PhotoContract.View {
@@ -50,6 +49,7 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
     var canUndo : ObservableField<Boolean> = ObservableField(false)
     var canRedo : ObservableField<Boolean> = ObservableField(false)
 
+    private lateinit var testPhoto: Bitmap
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,6 +91,8 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
                     ): Boolean {
                         val w = resource?.width
                         val h = resource?.height
+
+                        testPhoto = resource!!
                         Timber.e("$w and $h")
 
 
@@ -176,8 +178,13 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
                     )
 
                     // crop된 이미지를 원본 이미지 크기로 resize 해준다.
+                    // 해상도가 가로 세로 바뀐듯..?
                     val resizeBitmap =
-                        ResizeBitmapImage(cropBitmap, realImageSize[0], realImageSize[1])
+                        ResizeBitmapImage(
+                            cropBitmap,
+                            realImageSize[0],
+                            realImageSize[1]
+                        )
 
                     //binary mask
                     val binaryMask = CreateBinaryMask(resizeBitmap)
@@ -249,5 +256,16 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
 
     override fun uploadFailed(msg: String) {
         //Toast.makeText(this, "$msg", Toast.LENGTH_SHORT).show()
+    }
+
+
+    //-----------test code-------------//
+    fun saveTEST(){
+        val bitmap = testPhoto
+        val displayName = "${System.currentTimeMillis()}.jpg"
+        val mimeType = "image/jpeg"
+        val compressFormat = Bitmap.CompressFormat.JPEG
+        ScopeStorageFileUtil.addPhotoAlbum(bitmap, displayName, mimeType, compressFormat, this)
+        Toast.makeText(this, "저장 완료", Toast.LENGTH_SHORT).show()
     }
 }
