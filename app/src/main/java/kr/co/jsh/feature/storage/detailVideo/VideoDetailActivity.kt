@@ -1,7 +1,10 @@
 package kr.co.jsh.feature.storage.detailVideo
 
+import android.app.DownloadManager
+import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.google.android.exoplayer2.SimpleExoPlayer
@@ -10,6 +13,7 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import kr.co.domain.globalconst.Consts
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityDetailVideoResultBinding
+import kr.co.jsh.utils.permission_verQ.ScopeStorageFileUtil
 
 class VideoDetailActivity : AppCompatActivity(){
     private lateinit var binding : ActivityDetailVideoResultBinding
@@ -57,7 +61,10 @@ class VideoDetailActivity : AppCompatActivity(){
     }
 
     fun saveVideo(){
-
+        val displayName = "${System.currentTimeMillis()}.mp4"
+        val downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+        ScopeStorageFileUtil.downloadURL(result!!, downloadManager, displayName, this)
+        Toast.makeText(this, "저장 완료", Toast.LENGTH_SHORT).show()
     }
 
     override fun onResume() {

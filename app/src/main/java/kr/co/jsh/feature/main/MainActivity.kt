@@ -1,6 +1,8 @@
 package kr.co.jsh.feature.main
 
 import android.app.Activity
+import android.app.DownloadManager
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
@@ -26,13 +28,15 @@ import kr.co.jsh.utils.permission.FileUtils
 import kr.co.jsh.utils.permission.setupPermissions
 import timber.log.Timber
 
-
+//TODO: VIEW를 제외한 모든 로직은 빼자. plz~~~!
+//TODO: 더, 더더 쪼개야 하느니라!
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
        setupDataBinding()
+
     }
 
     private fun setupDataBinding(){
@@ -43,15 +47,9 @@ class MainActivity : AppCompatActivity() {
 
     fun pickFromVideo(intentCode: Int) {
         setupPermissions(this) {
-            //            val intent = Intent()
-//            intent.setTypeAndNormalize("video/*")
-//            intent.action = Intent.ACTION_GET_CONTENT
-//            intent.addCategory(Intent.CATEGORY_OPENABLE)
-//            startActivityForResult(Intent.createChooser(intent, "label_select_video"), intentCode)
-
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
-            intent.type = "*/*"
+            intent.type = "video/mp4"
             startActivityForResult(intent, intentCode)
 
         }
@@ -59,14 +57,9 @@ class MainActivity : AppCompatActivity() {
 
     fun pickFromPicture(intentCode: Int) {
         setupPermissions(this) {
-            //            val intent = Intent()
-//            intent.setTypeAndNormalize("image/*")
-//            intent.action = Intent.ACTION_GET_CONTENT
-//            intent.addCategory(Intent.CATEGORY_OPENABLE)
-//            startActivityForResult(Intent.createChooser(intent, "label_select_picture"), intentCode)
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
-            intent.type = "*/*"
+            intent.type = "image/*"
             startActivityForResult(intent, intentCode)
         }
     }
