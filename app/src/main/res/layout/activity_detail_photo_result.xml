@@ -59,6 +59,5 @@
         app:layout_constraintBottom_toBottomOf="@+id/photo_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

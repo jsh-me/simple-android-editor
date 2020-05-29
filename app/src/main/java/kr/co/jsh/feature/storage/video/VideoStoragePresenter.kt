@@ -1,6 +1,7 @@
 package kr.co.jsh.feature.storage.video
 
 import android.annotation.SuppressLint
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kr.co.data.entity.room.VideoStorage
 import kr.co.domain.api.usecase.AllDeleteVideoDataBaseUseCase
@@ -21,20 +22,18 @@ class VideoStoragePresenter(override var view: VideoStorageContract.View,
     private val addServerVideoStorage : ArrayList<List<String>> = ArrayList()
     private val resultVideoList = ArrayList<String>()
 
-    init{
-        loadVideoStorage()
-    }
 
     //when response 200
     @SuppressLint("CheckResult")
     override fun getServerVideoResult() {
-        resultVideoList.clear()
         allDeleteVideoStorage()
+        view.startAnimation()
 
         getAllVideoResultIUseCase.getAllVideoResult()
             .subscribe({
                 it.datas.list.map{
                     it.resultFile?.objectPid?.let{
+                        resultVideoList.clear()
                         resultVideoList.add("http://192.168.0.188:8080/file/fileDownload.do?objectPid=${it}")
                         resultVideoList.add(it)
                         addServerVideoStorage.add(resultVideoList)
@@ -49,31 +48,51 @@ class VideoStoragePresenter(override var view: VideoStorageContract.View,
 
     //when response 500
     override fun getLocalVideoResult() {
+        view.startAnimation()
         view.setVideoResult(addRoomDBVideoStorage)
     }
 
     //load db
     @SuppressLint("CheckResult")
-    private fun loadVideoStorage(){
-        resultVideoList.clear()
-
+    override fun loadLocalVideoStorageDB() {
         allLoadVideoDataBaseUseCase.allLoad()
-            .subscribeOn(Schedulers.io())
             .subscribe({
-                it.map{
+                it.map {
+                    Timber.e("11")
+                    resultVideoList.clear()
                     resultVideoList.add(it.path)
                     resultVideoList.add(it.filename)
                     addRoomDBVideoStorage.add(resultVideoList) //set 함수
+                    Timber.e("22")
                 }
-                    view.setVideoResult(addRoomDBVideoStorage)
-            },{
-                Timber.e( "Error getting info from interactor (video)")
+              //  view.successLoadDB()
+                Timber.e("onComplete")
+
+            }, {
+                Timber.e("Error getting info from interactor (video)")
             })
     }
+
+//        val loadRoomDB =  allLoadVideoDataBaseUseCase.allLoad()
+//        loadRoomDB.map {
+//            it.map {
+//                Timber.e("11")
+//                resultVideoList.clear()
+//                resultVideoList.apply {
+//                    add(it.path)
+//                    add(it.filename)
+//                }
+//                addRoomDBVideoStorage.add(resultVideoList) //set 함수
+//                Timber.e("22")
+//            }
+//        }
+//        view.successLoadDB()
+//        Timber.e("33")
 
     //all delete db
     private fun allDeleteVideoStorage(){
         allDeleteVideoDataBaseUseCase.allDelete()
+
     }
 
     //insert db

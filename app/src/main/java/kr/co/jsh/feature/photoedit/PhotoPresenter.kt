@@ -99,6 +99,7 @@ class PhotoPresenter(override var view: PhotoContract.View,
                 else {
                     view.uploadFailed(it.message)
                     UserObject.ResponseCode = it.status.toInt()
+
                 }
             },{
                 view.uploadFailed("로그인 후 가능")
@@ -116,6 +117,7 @@ class PhotoPresenter(override var view: PhotoContract.View,
         postImagePidNumberAndInfoUseCase.postImagePidNumberAndInfo(maskPid, Consts.DEL_OBJ, imagePid, curTime)
             .subscribe({
                 Log.e("Image Send Result", it.message)
+                view.stopAnimation()
                 PidClass.topImageObjectPid.add(it.datas.objectPid)
             },{
                 it.localizedMessage

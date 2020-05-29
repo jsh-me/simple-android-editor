@@ -24,14 +24,13 @@ import kotlinx.coroutines.*
 import kr.co.domain.globalconst.Consts.Companion.EXTRA_PHOTO_PATH
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityPhotoEditBinding
-import kr.co.jsh.dialog.DialogActivity
+import kr.co.jsh.feature.sendMsg.SuccessSendMsgActivity
 import kr.co.jsh.singleton.UserObject
 import kr.co.jsh.utils.bitmapUtil.CreateBinaryMask
 import kr.co.jsh.utils.bitmapUtil.CropBitmapImage
 import kr.co.jsh.utils.bitmapUtil.FileToBitmapSize
 import kr.co.jsh.utils.bitmapUtil.ResizeBitmapImage
 import kr.co.jsh.utils.permission.setupPermissions
-import kr.co.jsh.utils.permission_verQ.ScopeStorageFileUtil
 import org.koin.android.ext.android.get
 import timber.log.Timber
 import java.io.File
@@ -40,7 +39,7 @@ import java.io.File
 class PhotoActivity : AppCompatActivity() , PhotoContract.View {
     private lateinit var binding: ActivityPhotoEditBinding
     private lateinit var presenter: PhotoPresenter
-    var texteColor: ObservableField<Array<Boolean>> = ObservableField(arrayOf(false, false, false))
+    var textColor: ObservableField<Array<Boolean>> = ObservableField(arrayOf(false, false, false))
     var drawCheck: ObservableField<Boolean> = ObservableField(false)
     var path = ""
     private var destinationPath = ""
@@ -153,8 +152,8 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
         binding.drawPhotoview.apply {
             restartDrawing()
         }
-        texteColor.set(arrayOf(false, false, false))
-        texteColor.set(arrayOf(true, false, false))
+        textColor.set(arrayOf(false, false, false))
+        textColor.set(arrayOf(true, false, false))
         initView()
     }
 
@@ -164,7 +163,7 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
 
     fun savePhoto(v: View) {
         job = CoroutineScope(Dispatchers.Main).launch {
-            showProgressbar()
+            startAnimation()
 
             CoroutineScope(Dispatchers.Default).async {
                 val saveImage = binding.drawPhotoview.createCapture(DrawingCapture.BITMAP)
@@ -178,7 +177,6 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
                     )
 
                     // crop된 이미지를 원본 이미지 크기로 resize 해준다.
-                    // 해상도가 가로 세로 바뀐듯..?
                     val resizeBitmap =
                         ResizeBitmapImage(
                             cropBitmap,
@@ -204,14 +202,10 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
         }
     }
 
-    private fun showProgressbar() {
-        val intent = Intent(this, DialogActivity::class.java)
-        startActivity(intent)
-    }
 
     fun drawPhotoMask(){
-        texteColor.set(arrayOf(false,false,false))
-        texteColor.set(arrayOf(false,true,false))
+        textColor.set(arrayOf(false,false,false))
+        textColor.set(arrayOf(false,true,false))
         drawCheck.set(true)
         presenter.uploadFile("file://" + path) //원본 그림
 
@@ -255,17 +249,40 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
     }
 
     override fun uploadFailed(msg: String) {
-        //Toast.makeText(this, "$msg", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "$msg", Toast.LENGTH_SHORT).show()
+        failUploadServer()
+    }
+
+    override fun startAnimation(){
+        binding.loadingAnimation.playAnimation()
+        binding.blockingView.visibility = View.VISIBLE
+        binding.loadingAnimation.visibility = View.VISIBLE
+    }
+
+     override fun stopAnimation(){
+        binding.loadingAnimation.cancelAnimation()
+        binding.blockingView.visibility = View.GONE
+        binding.loadingAnimation.visibility = View.GONE
+         binding.drawPhotoview.restartDrawing()
+         val intent = Intent(this, SuccessSendMsgActivity::class.java)
+         startActivity(intent)
+         finish()
+    }
+
+    private fun failUploadServer(){
+        binding.loadingAnimation.cancelAnimation()
+        binding.blockingView.visibility = View.GONE
+        binding.loadingAnimation.visibility = View.GONE
     }
 
 
     //-----------test code-------------//
-    fun saveTEST(){
-        val bitmap = testPhoto
-        val displayName = "${System.currentTimeMillis()}.jpg"
-        val mimeType = "image/jpeg"
-        val compressFormat = Bitmap.CompressFormat.JPEG
-        ScopeStorageFileUtil.addPhotoAlbum(bitmap, displayName, mimeType, compressFormat, this)
-        Toast.makeText(this, "저장 완료", Toast.LENGTH_SHORT).show()
-    }
+//    fun saveTEST(){
+//        val bitmap = testPhoto
+//        val displayName = "${System.currentTimeMillis()}.jpg"
+//        val mimeType = "image/jpeg"
+//        val compressFormat = Bitmap.CompressFormat.JPEG
+//        ScopeStorageFileUtil.addPhotoAlbum(bitmap, displayName, mimeType, compressFormat, this)
+//        Toast.makeText(this, "저장 완료", Toast.LENGTH_SHORT).show()
+//    }
 }

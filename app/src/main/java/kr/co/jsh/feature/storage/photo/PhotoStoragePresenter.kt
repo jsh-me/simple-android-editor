@@ -20,16 +20,11 @@ class PhotoStoragePresenter(override var view: PhotoStorageContract.View,
     private val addServerImageStorage : ArrayList<List<String>> = ArrayList()
     private val resultImageList = ArrayList<String>()
 
-    init{
-        loadImageStorage()
-    }
-
-
     @SuppressLint("CheckResult")
     override fun getServerImageResult() {
         resultImageList.clear()
+        view.startAnimation()
         allDeleteImageStorage()
-
         getAllImageResultListUseCase.getAllImageResult()
             .subscribe({
                 it.datas.list.map{
@@ -44,29 +39,50 @@ class PhotoStoragePresenter(override var view: PhotoStorageContract.View,
             },{
                 Timber.e(it.localizedMessage)
             })
+
     }
 
     override fun getLocalImageResult() {
+        view.startAnimation()
         view.setImageResult(addRoomDBImageStorage)
     }
 
+
     //load db
     @SuppressLint("CheckResult")
-    private fun loadImageStorage(){
-        resultImageList.clear()
-
+    override fun loadImageStorage(){
         allLoadImageDataBaseUseCase.allLoad()
             .subscribeOn(Schedulers.io())
             .subscribe({
                 it.map{
+                    resultImageList.clear()
                     resultImageList.add(it.path)
                     resultImageList.add(it.filename)
                     addRoomDBImageStorage.add(resultImageList) //set 함수
                 }
-                view.setImageResult(addRoomDBImageStorage)
+
+              //  view.successLoadDB()
+                Timber.e("onComplete")
+
             },{
                 Timber.e( "Error getting info from interactor (image)")
             })
+
+//        val loadRoomDB =  allLoadImageDataBaseUseCase.allLoad()
+//        loadRoomDB.map {
+//            it.map {
+//                Timber.e("11")
+//                resultImageList.clear()
+//                resultImageList.apply {
+//                    add(it.path)
+//                    add(it.filename)
+//                }
+//                addRoomDBImageStorage.add(resultImageList) //set 함수
+//                Timber.e("22")
+//            }
+//        }
+//        view.successLoadDB()
+//        Timber.e("33")
     }
 
     private fun allDeleteImageStorage(){

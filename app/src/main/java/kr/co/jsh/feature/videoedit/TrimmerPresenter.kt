@@ -1,7 +1,6 @@
 package kr.co.jsh.feature.videoedit
 
 import android.annotation.SuppressLint
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -9,8 +8,6 @@ import android.media.MediaExtractor
 import android.media.MediaFormat
 import android.media.MediaMetadataRetriever
 import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
 import android.widget.VideoView
@@ -26,7 +23,7 @@ import kr.co.jsh.singleton.UserObject
 import kr.co.jsh.utils.*
 import kr.co.jsh.utils.bitmapUtil.BitmapToFileUtil
 import kr.co.jsh.utils.permission.RealPathUtil
-import kr.co.jsh.utils.permission_verQ.ScopeStorageFileUtil
+import kr.co.jsh.utils.permission.ScopeStorageFileUtil
 import kr.co.jsh.utils.videoUtil.TrimVideoUtils
 import kr.co.jsh.utils.videoUtil.VideoOptions
 import okhttp3.MediaType
@@ -282,6 +279,8 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
                if(it.status.toInt() == 200) {
                    Timber.e("Complete Video Remove Request")
                    PidClass.topVideoObjectPid.add(it.datas.objectPid)
+                   view.stopAnimation()
+
                }
                else Timber.e("ERROR ${it.status}")
             },{
@@ -297,7 +296,10 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
 
         postImproveVideoPidNumber.PostImproveVideoPidNumber(Consts.SUPER_RESOL, videoPid, curTime)
             .subscribe({
-               if(it.status.toInt() == 200) Timber.e("Complete Video Improve Request")
+               if(it.status.toInt() == 200) {
+                   Timber.e("Complete Video Improve Request")
+                   view.stopAnimation()
+               }
                 else Timber.e("ERROR ${it.status}")
             },{
                 it.localizedMessage
