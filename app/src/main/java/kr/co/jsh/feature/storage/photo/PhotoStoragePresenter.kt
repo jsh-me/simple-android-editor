@@ -39,6 +39,7 @@ class PhotoStoragePresenter(override var view: PhotoStorageContract.View,
             },{
                 Timber.e(it.localizedMessage)
             })
+
     }
 
     override fun getLocalImageResult() {
@@ -50,18 +51,38 @@ class PhotoStoragePresenter(override var view: PhotoStorageContract.View,
     //load db
     @SuppressLint("CheckResult")
     override fun loadImageStorage(){
-        resultImageList.clear()
         allLoadImageDataBaseUseCase.allLoad()
             .subscribeOn(Schedulers.io())
             .subscribe({
                 it.map{
+                    resultImageList.clear()
                     resultImageList.add(it.path)
                     resultImageList.add(it.filename)
                     addRoomDBImageStorage.add(resultImageList) //set 함수
                 }
+
+              //  view.successLoadDB()
+                Timber.e("onComplete")
+
             },{
                 Timber.e( "Error getting info from interactor (image)")
             })
+
+//        val loadRoomDB =  allLoadImageDataBaseUseCase.allLoad()
+//        loadRoomDB.map {
+//            it.map {
+//                Timber.e("11")
+//                resultImageList.clear()
+//                resultImageList.apply {
+//                    add(it.path)
+//                    add(it.filename)
+//                }
+//                addRoomDBImageStorage.add(resultImageList) //set 함수
+//                Timber.e("22")
+//            }
+//        }
+//        view.successLoadDB()
+//        Timber.e("33")
     }
 
     private fun allDeleteImageStorage(){

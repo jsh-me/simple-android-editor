@@ -13,7 +13,7 @@ import com.bumptech.glide.request.target.Target
 import kr.co.domain.globalconst.Consts
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityDetailPhotoResultBinding
-import kr.co.jsh.utils.permission_verQ.ScopeStorageFileUtil
+import kr.co.jsh.utils.permission.ScopeStorageFileUtil
 
 class PhotoDetailActivity :AppCompatActivity(){
     private lateinit var binding : ActivityDetailPhotoResultBinding

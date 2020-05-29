@@ -1,21 +1,14 @@
 package kr.co.jsh.feature.main
 
 import android.app.Activity
-import android.app.DownloadManager
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
-import androidx.core.app.ActivityCompat.startActivityForResult
-import androidx.core.content.ContextCompat.startActivity
 import androidx.databinding.DataBindingUtil
-import androidx.databinding.ObservableField
-import androidx.databinding.adapters.ImageViewBindingAdapter.setImageDrawable
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
-import kotlinx.android.synthetic.main.activity_main.*
 import kr.co.domain.globalconst.Consts
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityMainBinding
@@ -23,7 +16,7 @@ import kr.co.domain.globalconst.Consts.Companion.EXTRA_PHOTO_PATH
 import kr.co.domain.globalconst.Consts.Companion.EXTRA_VIDEO_PATH
 import kr.co.domain.globalconst.Consts.Companion.REQUEST_VIDEO_CROPPER
 import kr.co.domain.globalconst.Consts.Companion.REQUEST_VIDEO_TRIMMER
-import kr.co.jsh.login.LoginAccountDialog
+import kr.co.jsh.feature.login.LoginAccountDialog
 import kr.co.jsh.feature.photoedit.PhotoActivity
 import kr.co.jsh.feature.storage.photo.PhotoStorageActivity
 import kr.co.jsh.feature.storage.video.VideoStorageActivity

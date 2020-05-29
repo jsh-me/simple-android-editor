@@ -1,4 +1,4 @@
-package kr.co.jsh.login
+package kr.co.jsh.feature.login
 
 interface LoginAccountContract {
     interface View{

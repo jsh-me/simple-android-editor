@@ -31,14 +31,27 @@ class VideoStorageActivity : AppCompatActivity(), VideoStorageContract.View {
 
     private fun initPresenter(){
         presenter = VideoStoragePresenter(this, get(), get(), get(), get())
-        presenter.loadVideoStorage()
         response = intent.getIntExtra(Consts.LOGIN_RESPONSE, -1)
+//        presenter.loadVideoStorage()
 
         when(response){
             200 -> {presenter.getServerVideoResult()}
-            500 -> {presenter.getLocalVideoResult()}
+            500 -> {
+                presenter.loadLocalVideoStorageDB()
+                presenter.getLocalVideoResult()
+            }
         }
+
     }
+//    override fun successLoadDB() {
+//        when(response){
+//            200 -> {presenter.getServerVideoResult()}
+//            500 -> {
+//                presenter.loadLocalVideoStorageDB()
+//                presenter.getLocalVideoResult()
+//            }
+//        }
+//    }
 
     override fun setVideoResult(list: ArrayList<List<String>>) {
         if(list.isNullOrEmpty()){

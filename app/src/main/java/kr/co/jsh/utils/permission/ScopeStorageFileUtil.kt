@@ -1,4 +1,4 @@
-package kr.co.jsh.utils.permission_verQ
+package kr.co.jsh.utils.permission
 
 import android.app.DownloadManager
 import android.content.ContentUris
@@ -13,15 +13,9 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.core.net.toFile
-import androidx.core.net.toUri
 import kr.co.jsh.utils.RunOnUiThread
-import okhttp3.HttpUrl
 import timber.log.Timber
 import java.io.*
-import java.net.HttpURLConnection
-import java.net.URL
 import kotlin.concurrent.thread
 
 object ScopeStorageFileUtil{

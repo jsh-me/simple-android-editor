@@ -5,6 +5,7 @@ interface PhotoStorageContract {
         fun setImageResult(list: ArrayList<List<String>>)
         fun startAnimation()
         fun stopAnimation()
+      //  fun successLoadDB()
     }
     interface Presenter{
         var view: View
