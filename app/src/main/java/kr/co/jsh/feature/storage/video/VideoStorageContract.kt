@@ -5,10 +5,11 @@ interface VideoStorageContract {
         fun setVideoResult(list: ArrayList<List<String>>)
         fun startAnimation()
         fun stopAnimation()
+      //  fun successLoadDB()
     }
     interface Presenter{
         var view: View
-        fun loadVideoStorage()
+        fun loadLocalVideoStorageDB()
         fun getServerVideoResult()
         fun getLocalVideoResult()
     }

@@ -13,7 +13,7 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import kr.co.domain.globalconst.Consts
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityDetailVideoResultBinding
-import kr.co.jsh.utils.permission_verQ.ScopeStorageFileUtil
+import kr.co.jsh.utils.permission.ScopeStorageFileUtil
 
 class VideoDetailActivity : AppCompatActivity(){
     private lateinit var binding : ActivityDetailVideoResultBinding

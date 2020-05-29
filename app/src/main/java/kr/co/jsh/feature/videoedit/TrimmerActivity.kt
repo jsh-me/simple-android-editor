@@ -573,7 +573,8 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     }
 
     override fun uploadFailed(msg: String) {
-        Timber.e(msg)
+        Toast.makeText(this, "$msg", Toast.LENGTH_SHORT).show()
+        failUploadServer()
     }
 
     override fun cancelJob() {
@@ -626,6 +627,12 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         val intent = Intent(this, SuccessSendMsgActivity::class.java)
         startActivity(intent)
         finish()
+    }
+
+    private fun failUploadServer(){
+        binding.loadingAnimation.cancelAnimation()
+        binding.blockingView.visibility = View.GONE
+        binding.loadingAnimation.visibility = View.GONE
     }
 
 

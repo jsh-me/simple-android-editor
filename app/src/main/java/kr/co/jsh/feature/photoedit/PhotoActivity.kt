@@ -249,7 +249,8 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
     }
 
     override fun uploadFailed(msg: String) {
-        //Toast.makeText(this, "$msg", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "$msg", Toast.LENGTH_SHORT).show()
+        failUploadServer()
     }
 
     override fun startAnimation(){
@@ -266,6 +267,12 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
          val intent = Intent(this, SuccessSendMsgActivity::class.java)
          startActivity(intent)
          finish()
+    }
+
+    private fun failUploadServer(){
+        binding.loadingAnimation.cancelAnimation()
+        binding.blockingView.visibility = View.GONE
+        binding.loadingAnimation.visibility = View.GONE
     }
 
 

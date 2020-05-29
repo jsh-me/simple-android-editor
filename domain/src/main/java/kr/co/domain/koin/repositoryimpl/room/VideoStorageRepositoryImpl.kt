@@ -65,5 +65,4 @@ class VideoStorageRepositoryImpl(private val videoDao: VideoStorageDao)
 
     override fun getAllVideoStorage(): Observable<List<VideoStorage>> =
         videoDao.getAllVideoStorage()
-
 }

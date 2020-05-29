@@ -35,13 +35,27 @@ class PhotoStorageActivity : AppCompatActivity(), PhotoStorageContract.View {
 
     private fun initPresenter(){
         presenter = PhotoStoragePresenter(this, get(), get(), get(), get())
-        presenter.loadImageStorage()
+//        presenter.loadImageStorage()
         response = intent.getIntExtra(Consts.LOGIN_RESPONSE, -1)
         when(response){
             200 -> {presenter.getServerImageResult()}
-            500 -> {presenter.getLocalImageResult()}
+            500 -> {
+                presenter.loadImageStorage()
+                presenter.getLocalImageResult()
+            }
         }
     }
+
+//    override fun successLoadDB() {
+//        response = intent.getIntExtra(Consts.LOGIN_RESPONSE, -1)
+//        when(response){
+//            200 -> {presenter.getServerImageResult()}
+//            500 -> {
+//                presenter.loadImageStorage()
+//                presenter.getLocalImageResult()
+//            }
+//        }
+//    }
 
     override fun setImageResult(list: ArrayList<List<String>>) {
         if (list.isNullOrEmpty()) {

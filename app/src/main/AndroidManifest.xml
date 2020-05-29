@@ -4,8 +4,7 @@
     package="kr.co.jsh">
 
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="28"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET"/>
 
@@ -52,14 +51,12 @@
         <activity android:name="kr.co.jsh.feature.photoedit.PhotoActivity"
             android:parentActivityName="kr.co.jsh.feature.main.MainActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".login.LoginAccountDialog"
+        <activity android:name="kr.co.jsh.feature.login.LoginAccountDialog"
             android:theme="@style/Theme.Transparent" />
         <activity android:name=".feature.storage.photo.PhotoStorageActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".feature.storage.video.VideoStorageActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".dialog.DialogActivity"
-            android:theme="@style/Theme.Transparent" />
         <activity android:name=".feature.fullscreen.VideoViewActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:exported="false"

@@ -99,6 +99,7 @@ class PhotoPresenter(override var view: PhotoContract.View,
                 else {
                     view.uploadFailed(it.message)
                     UserObject.ResponseCode = it.status.toInt()
+
                 }
             },{
                 view.uploadFailed("로그인 후 가능")
