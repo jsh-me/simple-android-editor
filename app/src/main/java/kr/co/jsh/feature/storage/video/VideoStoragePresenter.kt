@@ -21,15 +21,12 @@ class VideoStoragePresenter(override var view: VideoStorageContract.View,
     private val addServerVideoStorage : ArrayList<List<String>> = ArrayList()
     private val resultVideoList = ArrayList<String>()
 
-    init{
-        loadVideoStorage()
-    }
-
     //when response 200
     @SuppressLint("CheckResult")
     override fun getServerVideoResult() {
         resultVideoList.clear()
         allDeleteVideoStorage()
+        view.startAnimation()
 
         getAllVideoResultIUseCase.getAllVideoResult()
             .subscribe({
@@ -49,14 +46,14 @@ class VideoStoragePresenter(override var view: VideoStorageContract.View,
 
     //when response 500
     override fun getLocalVideoResult() {
+        view.startAnimation()
         view.setVideoResult(addRoomDBVideoStorage)
     }
 
     //load db
     @SuppressLint("CheckResult")
-    private fun loadVideoStorage(){
+    override fun loadVideoStorage(){
         resultVideoList.clear()
-
         allLoadVideoDataBaseUseCase.allLoad()
             .subscribeOn(Schedulers.io())
             .subscribe({
@@ -65,7 +62,7 @@ class VideoStoragePresenter(override var view: VideoStorageContract.View,
                     resultVideoList.add(it.filename)
                     addRoomDBVideoStorage.add(resultVideoList) //set 함수
                 }
-                    view.setVideoResult(addRoomDBVideoStorage)
+                   // view.setVideoResult(addRoomDBVideoStorage)
             },{
                 Timber.e( "Error getting info from interactor (video)")
             })

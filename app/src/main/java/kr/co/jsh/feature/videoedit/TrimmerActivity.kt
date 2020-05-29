@@ -24,14 +24,13 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_video_edit.*
-import kotlinx.android.synthetic.main.progress_loading.*
 import kotlinx.coroutines.*
 import kr.co.domain.globalconst.Consts
 import kr.co.domain.globalconst.PidClass
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityVideoEditBinding
-import kr.co.jsh.dialog.DialogActivity
 import kr.co.jsh.feature.fullscreen.VideoViewActivity
+import kr.co.jsh.feature.sendMsg.SuccessSendMsgActivity
 import kr.co.jsh.localclass.PausableDispatcher
 import kr.co.jsh.singleton.UserObject
 import kr.co.jsh.utils.*
@@ -58,7 +57,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     private var mDuration : Float = 0f
     private var touch_time = ObservableFloat()
     private var mStartPosition = 0f
-    val texteColor : ObservableField<Array<Boolean>> = ObservableField(arrayOf(false,false,false,false,false))
+    val textColor : ObservableField<Array<Boolean>> = ObservableField(arrayOf(false,false,false,false,false))
     private var myPickBitmap : Bitmap? = null
     val mediaMetadataRetriever = MediaMetadataRetriever()
     val frameSecToSendServer = ArrayList<Int> ()
@@ -177,7 +176,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
             dispatcher.pause()
 
         } else {
-            texteColor.set(arrayOf(false,false,false,false))
+            textColor.set(arrayOf(false,false,false,false))
             binding.iconVideoPlay.isSelected = true
             binding.videoLoader.setOnPreparedListener {
                mp ->
@@ -214,8 +213,8 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
 
             Toast.makeText(this, "지울 곳을 칠해주세요", Toast.LENGTH_LONG).show()
 
-            texteColor.set(arrayOf(false, false, false, false, false))
-            texteColor.set(arrayOf(true, false, false, false, false))
+            textColor.set(arrayOf(false, false, false, false, false))
+            textColor.set(arrayOf(true, false, false, false, false))
 
             hideVideoView()
             //미리 서버에 올리기
@@ -238,8 +237,8 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         binding.boader1.visibility = View.INVISIBLE
         binding.boader2.visibility = View.INVISIBLE
 
-        texteColor.set(arrayOf(false,false,false,false, false))
-        texteColor.set(arrayOf(false,true,false,false, false))
+        textColor.set(arrayOf(false,false,false,false, false))
+        textColor.set(arrayOf(false,true,false,false, false))
     }
 
 
@@ -398,8 +397,8 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
             binding.iconVideoPlay.isSelected = false
             binding.videoFrameView.restartDrawing()
             removeMode()
-            texteColor.set(arrayOf(false, false, false, false, false))
-            texteColor.set(arrayOf(false, false, true, false, false))
+            textColor.set(arrayOf(false, false, false, false, false))
+            textColor.set(arrayOf(false, false, true, false, false))
         }
     }
 
@@ -487,11 +486,12 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     fun sendRemoveVideoInfoToServer(){
         videoOption = Consts.DEL_OBJ
         if(drawMaskCheck && frameSecToSendServer.isNotEmpty()) {
-            texteColor.set(arrayOf(false, false, false, false, false))
-            texteColor.set(arrayOf(false, false, false, true, false))
+            textColor.set(arrayOf(false, false, false, false, false))
+            textColor.set(arrayOf(false, false, false, true, false))
 
             job = CoroutineScope(Dispatchers.Main).launch {
-                showProgressbar()
+                startAnimation()
+
                 CoroutineScope(Dispatchers.Default).async {
                     //Todo 서버로 자른 비디오, frametimesec, maskimg 전송
                     val maskImg = binding.videoFrameView.createCapture(DrawingCapture.BITMAP)
@@ -536,11 +536,12 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         if(crop_count < 2) {
             Toast.makeText(this, "구간을 먼저 잘라주세요", Toast.LENGTH_LONG).show()
         } else {
-            texteColor.set(arrayOf(false, false, false, false, false))
-            texteColor.set(arrayOf(false, false, false, false, true))
+            textColor.set(arrayOf(false, false, false, false, false))
+            textColor.set(arrayOf(false, false, false, false, true))
             //미리 서버에 올리기
             job = CoroutineScope(Dispatchers.Main).launch {
-                showProgressbar()
+                //showProgressbar()
+                startAnimation()
                 CoroutineScope(Dispatchers.Default).async {
                     presenter.trimVideo(
                         destinationPath,
@@ -562,12 +563,6 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         }
         startActivityForResult(intent, 1000)
     }
-
-    private fun showProgressbar(){
-        val intent = Intent(this, DialogActivity::class.java)
-        startActivity(intent)
-    }
-
     override fun getResult(uri: Uri) {
         //Todo Trim 된 결과가 여기로 넘어오고 다시 getResultUri로 들어감
         presenter.getResultUri(uri, this, videoOption)
@@ -616,6 +611,23 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
             canRedo.set(false)
         }
     }
+
+    override fun startAnimation(){
+        binding.loadingAnimation.playAnimation()
+        binding.blockingView.visibility = View.VISIBLE
+        binding.loadingAnimation.visibility = View.VISIBLE
+    }
+
+    override fun stopAnimation(){
+        binding.loadingAnimation.cancelAnimation()
+        binding.blockingView.visibility = View.GONE
+        binding.loadingAnimation.visibility = View.GONE
+        binding.videoFrameView.restartDrawing()
+        val intent = Intent(this, SuccessSendMsgActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
 
     override fun onStop() {
         super.onStop()

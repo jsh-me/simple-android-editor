@@ -25,6 +25,10 @@ interface TrimmerContract {
 
         //suspend thread
         fun cancelJob()
+
+        fun startAnimation()
+        fun stopAnimation()
+
     }
     interface Presenter{
         var view: View

@@ -47,7 +47,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/backBtn" />
 
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/child_layout"
             android:layout_width="match_parent"
@@ -125,7 +124,7 @@
             android:gravity="center"
             android:onClick="@{() -> trimmer.removeMode()}"
             android:text="@string/draw"
-            android:textColor="@{trimmer.texteColor[0] ? @color/textWhite : @color/textBlack}"
+            android:textColor="@{trimmer.textColor[0] ? @color/textWhite : @color/textBlack}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@+id/scroll"
             app:layout_constraintTop_toBottomOf="@+id/crop_btn"
@@ -139,7 +138,7 @@
             android:layout_marginStart="20dp"
             android:text="@string/initialze_cut"
             android:onClick="@{() -> trimmer.resetTimeLineView()}"
-            android:textColor="@{trimmer.texteColor[1] ? @color/textWhite : @color/textBlack}"
+            android:textColor="@{trimmer.textColor[1] ? @color/textWhite : @color/textBlack}"
             app:layout_constraintBottom_toBottomOf="@+id/remove_btn"
             app:layout_constraintStart_toEndOf="@+id/remove_btn"
             app:layout_constraintTop_toTopOf="@+id/remove_btn"
@@ -153,7 +152,7 @@
             android:gravity="center"
             android:onClick="@{() -> trimmer.clearDraw()}"
             android:text="@string/initialize_draw"
-            android:textColor="@{trimmer.texteColor[2] ? @color/textWhite : @color/textBlack}"
+            android:textColor="@{trimmer.textColor[2] ? @color/textWhite : @color/textBlack}"
             app:layout_constraintBottom_toBottomOf="@+id/reset"
             app:layout_constraintStart_toEndOf="@+id/reset"
             app:layout_constraintTop_toTopOf="@+id/reset"
@@ -165,7 +164,7 @@
             android:layout_height="wrap_content"
             android:text="Remove"
             android:onClick="@{() -> trimmer.sendRemoveVideoInfoToServer()}"
-            android:textColor="@{trimmer.texteColor[3] ? @color/textWhite : @color/textBlack}"
+            android:textColor="@{trimmer.textColor[3] ? @color/textWhite : @color/textBlack}"
             app:layout_constraintBottom_toBottomOf="@+id/improve_ppt_btn"
             app:layout_constraintStart_toStartOf="@+id/video_undo_btn" />
 
@@ -176,7 +175,7 @@
             android:layout_marginStart="8dp"
             android:text="Improve"
             android:onClick="@{() -> trimmer.sendImproveVideoInfoToServer()}"
-            android:textColor="@{trimmer.texteColor[4] ? @color/textWhite : @color/textBlack}"
+            android:textColor="@{trimmer.textColor[4] ? @color/textWhite : @color/textBlack}"
             app:layout_constraintBottom_toBottomOf="@+id/reset_paint_btn"
             app:layout_constraintStart_toEndOf="@+id/remove_ppt_btn"
             app:layout_constraintTop_toBottomOf="@+id/video_redo_btn"
@@ -324,6 +323,26 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.5" />
+
+        <kr.co.jsh.customview.BlockingView
+            android:id="@+id/blockingView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:background="#80333333"/>
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/loading_animation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:lottie_loop="true"
+            app:lottie_fileName="loading.json" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

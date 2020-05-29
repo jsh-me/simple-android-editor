@@ -58,8 +58,6 @@ dependencies {
     implementation 'de.hdodenhof:circleimageview:3.1.0'
     implementation 'com.joooonho:selectableroundedimageview:1.0.1'
 
-    //pie
-    implementation 'com.github.tizisdeepan:pieprogress:1.0.2'
 
     //FFmpeg
     implementation 'com.writingminds:FFmpegAndroid:0.3.2'
@@ -141,4 +139,8 @@ dependencies {
     //firebase
     implementation 'com.google.firebase:firebase-analytics:17.4.2'
     implementation 'com.google.firebase:firebase-messaging:20.2.0'
+
+    //lottie
+    implementation "com.airbnb.android:lottie:3.4.0"
+
 }

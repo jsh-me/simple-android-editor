@@ -109,7 +109,7 @@
         android:layout_marginStart="10dp"
         android:onClick="@{() -> photo.drawPhotoMask()}"
         android:text="@string/draw"
-        android:textColor="@{photo.texteColor[1] ? @color/textWhite : @color/textBlack}"
+        android:textColor="@{photo.textColor[1] ? @color/textWhite : @color/textBlack}"
         app:layout_constraintBottom_toBottomOf="@+id/child_layout"
         app:layout_constraintStart_toStartOf="@+id/child_layout"
         app:layout_constraintTop_toTopOf="@+id/child_layout"
@@ -122,7 +122,7 @@
         android:layout_marginStart="20dp"
         android:onClick="@{photo::resetButton}"
         android:text="@string/initialize_draw"
-        android:textColor="@{photo.texteColor[0] ? @color/textWhite : @color/textBlack}"
+        android:textColor="@{photo.textColor[0] ? @color/textWhite : @color/textBlack}"
         app:layout_constraintBottom_toBottomOf="@+id/child_layout"
         app:layout_constraintStart_toEndOf="@+id/remove_btn"
         app:layout_constraintTop_toTopOf="@+id/remove_btn"
@@ -151,18 +151,24 @@
         app:layout_constraintStart_toEndOf="@+id/image_undo_btn"
         app:layout_constraintTop_toTopOf="@+id/image_undo_btn" />
 
+    <kr.co.jsh.customview.BlockingView
+        android:id="@+id/blockingView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:background="#80333333"/>
 
-    <TextView
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/loading_animation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="@{()-> photo.saveTEST()}"
-        android:text="저장 테스트"
-        android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="@+id/child_layout"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/reset_paint_btn"
-        app:layout_constraintTop_toTopOf="@+id/child_layout" />
-
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lottie_loop="true"
+        app:lottie_fileName="loading.json" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -20,16 +20,11 @@ class PhotoStoragePresenter(override var view: PhotoStorageContract.View,
     private val addServerImageStorage : ArrayList<List<String>> = ArrayList()
     private val resultImageList = ArrayList<String>()
 
-    init{
-        loadImageStorage()
-    }
-
-
     @SuppressLint("CheckResult")
     override fun getServerImageResult() {
         resultImageList.clear()
+        view.startAnimation()
         allDeleteImageStorage()
-
         getAllImageResultListUseCase.getAllImageResult()
             .subscribe({
                 it.datas.list.map{
@@ -47,14 +42,15 @@ class PhotoStoragePresenter(override var view: PhotoStorageContract.View,
     }
 
     override fun getLocalImageResult() {
+        view.startAnimation()
         view.setImageResult(addRoomDBImageStorage)
     }
 
+
     //load db
     @SuppressLint("CheckResult")
-    private fun loadImageStorage(){
+    override fun loadImageStorage(){
         resultImageList.clear()
-
         allLoadImageDataBaseUseCase.allLoad()
             .subscribeOn(Schedulers.io())
             .subscribe({
@@ -63,7 +59,6 @@ class PhotoStoragePresenter(override var view: PhotoStorageContract.View,
                     resultImageList.add(it.filename)
                     addRoomDBImageStorage.add(resultImageList) //set 함수
                 }
-                view.setImageResult(addRoomDBImageStorage)
             },{
                 Timber.e( "Error getting info from interactor (image)")
             })

@@ -8,4 +8,6 @@
     <string name="photo_storage">사진 결과함</string>
     <string name="video_storage">동영상 결과함</string>
     <string name="save">저장</string>
+
+    <string name="success_data">서버에 전송 되었습니다!\n저장함을 확인해주세요.</string>
 </resources>

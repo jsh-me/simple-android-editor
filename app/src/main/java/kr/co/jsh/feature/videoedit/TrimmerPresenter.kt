@@ -282,6 +282,8 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
                if(it.status.toInt() == 200) {
                    Timber.e("Complete Video Remove Request")
                    PidClass.topVideoObjectPid.add(it.datas.objectPid)
+                   view.stopAnimation()
+
                }
                else Timber.e("ERROR ${it.status}")
             },{
@@ -297,7 +299,10 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
 
         postImproveVideoPidNumber.PostImproveVideoPidNumber(Consts.SUPER_RESOL, videoPid, curTime)
             .subscribe({
-               if(it.status.toInt() == 200) Timber.e("Complete Video Improve Request")
+               if(it.status.toInt() == 200) {
+                   Timber.e("Complete Video Improve Request")
+                   view.stopAnimation()
+               }
                 else Timber.e("ERROR ${it.status}")
             },{
                 it.localizedMessage

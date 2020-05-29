@@ -116,6 +116,7 @@ class PhotoPresenter(override var view: PhotoContract.View,
         postImagePidNumberAndInfoUseCase.postImagePidNumberAndInfo(maskPid, Consts.DEL_OBJ, imagePid, curTime)
             .subscribe({
                 Log.e("Image Send Result", it.message)
+                view.stopAnimation()
                 PidClass.topImageObjectPid.add(it.datas.objectPid)
             },{
                 it.localizedMessage

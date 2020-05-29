@@ -10,6 +10,7 @@ import kr.co.domain.globalconst.Consts
 import kr.co.domain.globalconst.PidClass
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityPhotoStorageBinding
+import kr.co.jsh.feature.sendMsg.SuccessSendMsgActivity
 import kr.co.jsh.feature.storage.detailPhoto.PhotoDetailActivity
 import kr.co.jsh.feature.storage.detailVideo.VideoDetailActivity
 import java.net.URL
@@ -34,8 +35,8 @@ class PhotoStorageActivity : AppCompatActivity(), PhotoStorageContract.View {
 
     private fun initPresenter(){
         presenter = PhotoStoragePresenter(this, get(), get(), get(), get())
+        presenter.loadImageStorage()
         response = intent.getIntExtra(Consts.LOGIN_RESPONSE, -1)
-
         when(response){
             200 -> {presenter.getServerImageResult()}
             500 -> {presenter.getLocalImageResult()}
@@ -52,6 +53,7 @@ class PhotoStorageActivity : AppCompatActivity(), PhotoStorageContract.View {
                 adapter = PhotoStorageAdapter(click(), list, context)
             }
         }
+        stopAnimation()
     }
 
     private fun click() = { _:Int, url: String ->
@@ -59,6 +61,19 @@ class PhotoStorageActivity : AppCompatActivity(), PhotoStorageContract.View {
             putExtra(Consts.DETAIL_PHOTO, url)
         }
         startActivity(intent)
+    }
+
+    override fun startAnimation(){
+        binding.loadingAnimation.playAnimation()
+        binding.blockingView.visibility = View.VISIBLE
+        binding.loadingAnimation.visibility = View.VISIBLE
+    }
+
+    override fun stopAnimation(){
+        binding.loadingAnimation.cancelAnimation()
+        binding.blockingView.visibility = View.GONE
+        binding.loadingAnimation.visibility = View.GONE
+
     }
 
     fun backButton(){
