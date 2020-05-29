@@ -1,4 +1,4 @@
-# VIVOTO - 당신의 추억 속에 선명함을
+# VIVOTO - We'll make you a vivid memo
 > android video & photo editor application with deep learning processing 
 
 ![lang](https://img.shields.io/github/languages/top/jsh-me/android-video-editor)![platform](https://img.shields.io/badge/platform-android-yellowgreen)![licence](https://img.shields.io/github/license/jsh-me/android-video-editor)
