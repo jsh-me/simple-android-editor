@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "137122846865",
+    "firebase_url": "https://vivoto-c3b1f.firebaseio.com",
+    "project_id": "vivoto-c3b1f",
+    "storage_bucket": "vivoto-c3b1f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:137122846865:android:7822d01603560eaa8e0730",
+        "android_client_info": {
+          "package_name": "kr.co.jsh"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "137122846865-knnre60lhqo09doddcop5q90230mpk75.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "kr.co.jsh",
+            "certificate_hash": "e1e4386113d5cb6635b93df2f8349ee32b7cb33c"
+          }
+        },
+        {
+          "client_id": "137122846865-gfnff35pi62kjpqr8vrlqpc76rkjdj76.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB68ZTAxumohjjHPBBNtnPDNX4gFaUj60w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "137122846865-gfnff35pi62kjpqr8vrlqpc76rkjdj76.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

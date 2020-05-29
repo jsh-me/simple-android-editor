@@ -8,9 +8,14 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.core.content.ContextCompat.startActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableField
+import androidx.databinding.adapters.ImageViewBindingAdapter.setImageDrawable
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.iid.FirebaseInstanceId
+import kotlinx.android.synthetic.main.activity_main.*
 import kr.co.domain.globalconst.Consts
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityMainBinding
@@ -35,14 +40,29 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-       setupDataBinding()
 
+        setupDataBinding()
+        getMyToken()
     }
 
     private fun setupDataBinding(){
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.main = this@MainActivity
         Timber.e("${UserObject.loginResponse}")
+    }
+
+    private fun getMyToken(){
+        Thread(Runnable {
+                FirebaseInstanceId.getInstance().instanceId
+                    .addOnCompleteListener(OnCompleteListener { task ->
+                        if (!task.isSuccessful) {
+                            Timber.i("getInstanceId failed", task.exception)
+                            return@OnCompleteListener
+                        }
+                        val token = task.result?.token
+                        Timber.e(token!!)
+                    })
+        }).start()
     }
 
     fun pickFromVideo(intentCode: Int) {
@@ -136,6 +156,5 @@ class MainActivity : AppCompatActivity() {
             putExtra(EXTRA_PHOTO_PATH, FileUtils.getPath(this@MainActivity, uri))
         }
         startActivity(intent)
-
     }
 }
