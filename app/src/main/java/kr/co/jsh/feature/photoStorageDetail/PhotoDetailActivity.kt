@@ -21,7 +21,6 @@ class PhotoDetailActivity :AppCompatActivity(), PhotoDetailContract.View{
     private var resourceBitmap: Bitmap ?= null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setupDataBinding()
         initPresenter()
     }

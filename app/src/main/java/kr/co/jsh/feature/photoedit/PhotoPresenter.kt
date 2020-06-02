@@ -15,6 +15,7 @@ import kr.co.domain.api.usecase.PostFileUploadUseCase
 import kr.co.domain.api.usecase.PostImagePidNumberAndInfoUseCase
 import kr.co.domain.globalconst.Consts
 import kr.co.domain.globalconst.PidClass
+import kr.co.domain.utils.addFile
 import kr.co.jsh.singleton.UserObject
 import kr.co.jsh.utils.BitmapUtil.bitmapToFileUtil
 import kr.co.jsh.utils.RunOnUiThread
@@ -34,7 +35,7 @@ class PhotoPresenter(override var view: PhotoContract.View,
         extraIntent?.let{
             path =  it.getStringExtra(Consts.EXTRA_PHOTO_PATH)?:""
         }
-        view.setPhotoView(Uri.parse("file://"+path).toFile())
+        view.setPhotoView(Uri.parse(path.addFile()).toFile())
     }
 
     override fun saveImage(context: Context, uri: Uri) {
@@ -68,7 +69,7 @@ class PhotoPresenter(override var view: PhotoContract.View,
 
     @SuppressLint("CheckResult")
     override fun uploadFile(uri: String) {
-        val path = "file://" + uri
+        val path = uri.addFile()
         val request = MultipartBody.Part.createFormData("file", path, RequestBody.create(MediaType.parse("image/*"), Uri.parse(path).toFile()))
         postFileUploadUseCase.postFile(request)
             .subscribe({
@@ -90,7 +91,7 @@ class PhotoPresenter(override var view: PhotoContract.View,
     @SuppressLint("CheckResult")
     override fun uploadFrameFile(bitmap: Bitmap, context: Context) {
         val file = bitmapToFileUtil(bitmap, context)
-        val path = "file://" + file.toString()
+        val path = file.toString().addFile()
         val request = MultipartBody.Part.createFormData("file", path , RequestBody.create(MediaType.parse("image/*"),Uri.parse(path).toFile()))
         postFileUploadUseCase.postFile(request)
             .subscribe({

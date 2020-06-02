@@ -517,8 +517,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
             }
         }
         else {
-            Toast.makeText(applicationContext, "마스크를 먼저 그려주세요", Toast.LENGTH_SHORT)
-                .show()
+            Toast.makeText(applicationContext, "마스크를 먼저 그려주세요", Toast.LENGTH_SHORT).show()
         }
 
     }

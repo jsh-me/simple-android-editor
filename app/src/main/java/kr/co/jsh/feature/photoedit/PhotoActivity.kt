@@ -22,6 +22,7 @@ import com.byox.drawview.views.DrawView
 import kotlinx.android.synthetic.main.activity_photo_edit.*
 import kotlinx.coroutines.*
 import kr.co.domain.globalconst.Consts.Companion.EXTRA_PHOTO_PATH
+import kr.co.domain.utils.addFile
 import kr.co.domain.utils.loadUrl
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityPhotoEditBinding
@@ -196,7 +197,7 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
         changeTextColor.set(arrayOf(false,false,false))
         changeTextColor.set(arrayOf(false,true,false))
         drawCheck.set(true)
-        presenter.uploadFile("file://" + path) //원본 그림
+        presenter.uploadFile(path.addFile()) //원본 그림
 
     }
 

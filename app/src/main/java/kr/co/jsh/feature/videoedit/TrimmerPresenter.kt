@@ -19,6 +19,7 @@ import kr.co.domain.api.usecase.PostVideoPidNumberAndInfoUseCase
 import kr.co.domain.globalconst.Consts
 import kr.co.domain.globalconst.Consts.Companion.EXTRA_VIDEO_PATH
 import kr.co.domain.globalconst.PidClass
+import kr.co.domain.utils.addFile
 import kr.co.jsh.singleton.UserObject
 import kr.co.jsh.utils.*
 import kr.co.jsh.utils.BitmapUtil.bitmapToFileUtil
@@ -183,7 +184,8 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
     //Todo 동영상과 사진 확장자를 업로드 할 수 있는 메소드
     @SuppressLint("CheckResult")
     override fun uploadFile(uri: String) {
-        val path = "file://" + Uri.parse(uri)
+        //val path = "file://" + Uri.parse(uri)
+        val path = uri.addFile()
         val request = MultipartBody.Part.createFormData("file", path, RequestBody.create(MediaType.parse("video/*"), Uri.parse(path).toFile() ))
         postFileUploadUseCase.postFile(request)
             .subscribe({
@@ -205,7 +207,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
     @SuppressLint("CheckResult")
     override fun uploadMaskFile(bitmap: Bitmap, frameTimeSec:Float, context: Context) {
         val file = bitmapToFileUtil(bitmap, context)
-        val path = "file://" + file.toString()
+        val path = file.toString().addFile()
         val request = MultipartBody.Part.createFormData("file", path , RequestBody.create(MediaType.parse("image/*"),Uri.parse(path).toFile()))
         postFileUploadUseCase.postFile(request)
             .subscribe({
@@ -223,7 +225,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
 
     @SuppressLint("CheckResult")
     fun improveFile(uri: Uri){
-        val path = "file://" + uri.toString()
+        val path = uri.toString().addFile()
         val request = MultipartBody.Part.createFormData("file", path, RequestBody.create(MediaType.parse("video/*"), Uri.parse(path).toFile() ))
         postFileUploadUseCase.postFile(request)
             .subscribe({
