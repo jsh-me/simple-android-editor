@@ -34,9 +34,9 @@ import kr.co.jsh.feature.sendMsg.SuccessSendMsgActivity
 import kr.co.jsh.localclass.PausableDispatcher
 import kr.co.jsh.singleton.UserObject
 import kr.co.jsh.utils.*
-import kr.co.jsh.utils.bitmapUtil.CreateBinaryMask
-import kr.co.jsh.utils.bitmapUtil.CropBitmapImage
-import kr.co.jsh.utils.bitmapUtil.ResizeBitmapImage
+import kr.co.jsh.utils.BitmapUtil.createBinaryMask
+import kr.co.jsh.utils.BitmapUtil.cropBitmapImage
+import kr.co.jsh.utils.BitmapUtil.resizeBitmapImage
 import kr.co.jsh.utils.permission.setupPermissions
 import kr.co.jsh.utils.videoUtil.TrimVideoUtils
 import org.jetbrains.anko.runOnUiThread
@@ -76,16 +76,6 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     private var drawMaskCheck = false
 
     private var destinationPath: String=""
-//        get() {
-//            if (mFinalPath == null) {
-//                val folder = Environment.getExternalStorageDirectory()
-//                mFinalPath = folder.path + File.separator
-//            }
-//            return mFinalPath ?: ""
-//        }
-//        set(finalPath) {
-//            mFinalPath = finalPath
-//        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -235,7 +225,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         binding.iconVideoPlayBtn.isSelected = false
         binding.videoLoader.pause()
         userCropTouchCount = 0
-        presenter.resetCrop(this, trimVideoTimeList)
+        presenter.getCropArrayList(this, trimVideoTimeList)
         binding.border1.visibility = View.INVISIBLE
         binding.border2.visibility = View.INVISIBLE
 
@@ -341,7 +331,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     private fun setBoarderRange(coordiX:Float){
         //터치한 곳에서 width/2 를 빼야지 원활한 계산이 가능해짐
         var params = FrameLayout.LayoutParams(0,0)
-        var startX = coordiX - ScreenSizeUtil(this).widthPixels/2
+        val startX = coordiX - ScreenSizeUtil(this).widthPixels/2
         Log.i("startX:","$startX}")
         if(startX >= trimVideoTimeList[1].first && startX <= trimVideoTimeList[2].first){
             binding.selectedTimeLineView.visibility = View.INVISIBLE
@@ -405,9 +395,9 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     }
 
 
-    fun cropVideo(){
+    fun cuttingVideoBtn(){
         userCropTouchCount ++
-        presenter.crop(this, userCropTouchCount, video_loader, trimVideoTimeList, binding.videoEditRecycler)
+        presenter.setCuttingVideo(this, userCropTouchCount, video_loader, trimVideoTimeList, binding.videoEditRecycler)
         greyline()
     }
 
@@ -456,7 +446,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         }
     }
 
-    override fun videoPath(path: String) {
+    override fun setVideoPath(path: String) {
         mSrc= Uri.parse(path)
         binding.videoLoader.setVideoURI(mSrc)
         binding.videoLoader.requestFocus()
@@ -481,7 +471,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         }
     }
 
-    fun backButton(){
+    fun backBtn(){
         finish()
     }
 
@@ -499,18 +489,18 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
                     val maskImg = binding.videoFrameDrawView.createCapture(DrawingCapture.BITMAP)
                     maskImg?.let {
                         //자세한 코드설명은 PhotoActivity에 있음.
-                        val cropBitmap = CropBitmapImage(
+                        val cropBitmap = cropBitmapImage(
                             maskImg[0] as Bitmap,
                             binding.videoFrameDrawView.width,
                             binding.videoFrameDrawView.height
                         )
                         val resizeBitmap =
-                            ResizeBitmapImage(
+                            resizeBitmapImage(
                                 cropBitmap,
                                 realVideoSize[0],
                                 realVideoSize[1]
                             )
-                        val binaryMask = CreateBinaryMask(resizeBitmap)
+                        val binaryMask = createBinaryMask(resizeBitmap)
 
                         //마스크 전송
                         presenter.uploadMaskFile(binaryMask, userVideoTrimTime.get(), applicationContext)
@@ -542,7 +532,6 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
             changeTextColor.set(arrayOf(false, false, false, false, true))
             //미리 서버에 올리기
             job = CoroutineScope(Dispatchers.Main).launch {
-                //showProgressbar()
                 startAnimation()
                 CoroutineScope(Dispatchers.Default).async {
                     presenter.trimVideo(
@@ -590,12 +579,12 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         }
     }
 
-    fun undoButton(){
+    fun undoBtn(){
             binding.videoFrameDrawView.undo()
             canUndoRedo()
     }
 
-    fun redoButton(){
+    fun redoBtn(){
             binding.videoFrameDrawView.redo()
             canUndoRedo()
     }

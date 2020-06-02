@@ -22,14 +22,15 @@ import com.byox.drawview.views.DrawView
 import kotlinx.android.synthetic.main.activity_photo_edit.*
 import kotlinx.coroutines.*
 import kr.co.domain.globalconst.Consts.Companion.EXTRA_PHOTO_PATH
+import kr.co.domain.utils.loadUrl
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityPhotoEditBinding
 import kr.co.jsh.feature.sendMsg.SuccessSendMsgActivity
 import kr.co.jsh.singleton.UserObject
-import kr.co.jsh.utils.bitmapUtil.CreateBinaryMask
-import kr.co.jsh.utils.bitmapUtil.CropBitmapImage
-import kr.co.jsh.utils.bitmapUtil.FileToBitmapSize
-import kr.co.jsh.utils.bitmapUtil.ResizeBitmapImage
+import kr.co.jsh.utils.BitmapUtil.createBinaryMask
+import kr.co.jsh.utils.BitmapUtil.cropBitmapImage
+import kr.co.jsh.utils.BitmapUtil.fileToBitmapSize
+import kr.co.jsh.utils.BitmapUtil.resizeBitmapImage
 import kr.co.jsh.utils.permission.setupPermissions
 import org.koin.android.ext.android.get
 import timber.log.Timber
@@ -48,7 +49,7 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
     var canUndo : ObservableField<Boolean> = ObservableField(false)
     var canRedo : ObservableField<Boolean> = ObservableField(false)
 
-    private lateinit var testPhoto: Bitmap
+   // private lateinit var testPhoto: Bitmap
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,7 +72,8 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
             presenter.preparePath(extraIntent)
 
             extraIntent?.let {
-                path = extraIntent.getStringExtra(EXTRA_PHOTO_PATH)?: ""
+                path = extraIntent.getStringExtra(EXTRA_PHOTO_PATH) ?: ""
+
                 Glide.with(this).asBitmap().load(path).listener(object : RequestListener<Bitmap> {
                     override fun onLoadFailed(
                         e: GlideException?,
@@ -92,7 +94,7 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
                         val w = resource?.width
                         val h = resource?.height
 
-                        testPhoto = resource!!
+                       // testPhoto = resource!!
                         Timber.e("$w and $h")
 
 
@@ -138,18 +140,18 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
         })
     }
 
-    override fun displayPhotoView(file: File) {
+    override fun setPhotoView(file: File) {
         binding.photoEditDrawView.post {
             binding.photoEditDrawView.apply {
                 setBackgroundResource(R.color.grey1)
                 setBackgroundImage(file, BackgroundType.FILE, BackgroundScale.FIT_START)
             }
         }
-        realImageSize = FileToBitmapSize(file)
+        realImageSize = fileToBitmapSize(file)
         Timber.e("${realImageSize[0]} and ${realImageSize[1]}")
     }
 
-    fun resetButton(v: View) {
+    fun resetBtn() {
         binding.photoEditDrawView.apply {
             restartDrawing()
         }
@@ -162,32 +164,19 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
     //Unknown URI: content://media/external_primary/images/media
     //오른쪽 위 아이콘
 
-    fun saveBtn(v: View) {
+    fun saveBtn() {
         job = CoroutineScope(Dispatchers.Main).launch {
             startAnimation()
 
             CoroutineScope(Dispatchers.Default).async {
                 val saveImage = binding.photoEditDrawView.createCapture(DrawingCapture.BITMAP)
                 saveImage?.let {
-
                     // 불러온 resource 크기만큼 crop한다.
-                    val cropBitmap = CropBitmapImage(
-                        saveImage[0] as Bitmap,
-                        binding.photoEditDrawView.width,
-                        binding.photoEditDrawView.height
-                    )
-
+                    val cropBitmap = cropBitmapImage(saveImage[0] as Bitmap, binding.photoEditDrawView.width, binding.photoEditDrawView.height)
                     // crop된 이미지를 원본 이미지 크기로 resize 해준다.
-                    val resizeBitmap =
-                        ResizeBitmapImage(
-                            cropBitmap,
-                            realImageSize[0],
-                            realImageSize[1]
-                        )
-
+                    val resizeBitmap = resizeBitmapImage(cropBitmap, realImageSize[0], realImageSize[1])
                     //binary mask
-                    val binaryMask = CreateBinaryMask(resizeBitmap)
-
+                    val binaryMask = createBinaryMask(resizeBitmap)
                     //마스크까지 그려진 그림
                     presenter.uploadFrameFile(binaryMask, applicationContext)
                     Timber.e("마스크 결과 : ${(saveImage[0] as Bitmap).width} and ${(saveImage[0] as Bitmap).height}")
@@ -202,7 +191,6 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
             cancelJob()
         }
     }
-
 
     fun drawPhotoMask(){
         changeTextColor.set(arrayOf(false,false,false))

@@ -21,7 +21,7 @@ import kr.co.domain.globalconst.Consts.Companion.EXTRA_VIDEO_PATH
 import kr.co.domain.globalconst.PidClass
 import kr.co.jsh.singleton.UserObject
 import kr.co.jsh.utils.*
-import kr.co.jsh.utils.bitmapUtil.BitmapToFileUtil
+import kr.co.jsh.utils.BitmapUtil.bitmapToFileUtil
 import kr.co.jsh.utils.permission.RealPathUtil
 import kr.co.jsh.utils.permission.ScopeStorageFileUtil
 import kr.co.jsh.utils.videoUtil.TrimVideoUtils
@@ -39,7 +39,9 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
                        private var postFileUploadUseCase: PostFileUploadUseCase,
                        private var postPidNumberAndInfoUseCase: PostVideoPidNumberAndInfoUseCase,
                        private var postImproveVideoPidNumber: PostImproveVideoPidNumber) : TrimmerContract.Presenter{
-   override fun crop(context: Context, cropCount: Int, videoLoader:VideoView,
+
+
+   override fun setCuttingVideo(context: Context, cropCount: Int, videoLoader:VideoView,
                           trimVideoTimeList: ArrayList<Pair<Int, Int>>, recycler: RecyclerView
    ){
         var crop_x1 = 0
@@ -75,40 +77,10 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
 
     //사용자가 자른 동영상이 갤러리와 서버 동시에 저장, 업로드 되는 메소드
     override fun getResultUri(uri: Uri, context: Context, option: String) {
-//        RunOnUiThread(context).safely {
-//           // Toast.makeText(context, "Video saved at ${uri.path}", Toast.LENGTH_SHORT).show()
-//            //Todo override 된 함수에 넣어줌 ( 사용자가 자른 동영상 )
-//
-//            val mediaMetadataRetriever = MediaMetadataRetriever()
-//            mediaMetadataRetriever.setDataSource(context, uri)
-//            val duration =
-//                mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-//                    .toLong()
-//            val width =
-//                mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
-//                    .toLong()
-//            val height =
-//                mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
-//                    .toLong()
-//            val values = ContentValues()
-//            values.put(MediaStore.Video.Media.DATA, uri.path)
-//            values.put(MediaStore.Video.VideoColumns.DURATION, duration)
-//            values.put(MediaStore.Video.VideoColumns.WIDTH, width)
-//            values.put(MediaStore.Video.VideoColumns.HEIGHT, height)
-//            val id = ContentUris.parseId(
-//                context.contentResolver.insert(
-//                    MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-//                    values
-//                )
-//            )
-//            Log.e("VIDEO ID", id.toString())
-//        }
         ScopeStorageFileUtil.addVideoAlbum(uri, context)
 
-
         if(option.equals(Consts.SUPER_RESOL)) { improveFile(uri) }
-        else { uploadFile(uri) }
-
+        else { uploadFile(uri.toString()) }
     }
 
     override fun preparePath(extraIntent: Intent) {
@@ -116,10 +88,10 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
         extraIntent?.let{
             path =  it.getStringExtra(EXTRA_VIDEO_PATH)
             }
-        view.videoPath(path)
+        view.setVideoPath(path)
     }
 
-    override fun resetCrop(context:Context, trimVideoTimeList: ArrayList<Pair<Int, Int>>) {
+    override fun getCropArrayList(context:Context, trimVideoTimeList: ArrayList<Pair<Int, Int>>) {
         try {
             trimVideoTimeList.clear()
             trimVideoTimeList.add(Pair(0,0))//1
@@ -210,8 +182,8 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
     //Todo 근데 왜 MediaType 이 video 인데도, 사진 동영상 둘다 왜 되는거지?
     //Todo 동영상과 사진 확장자를 업로드 할 수 있는 메소드
     @SuppressLint("CheckResult")
-    override fun uploadFile(uri: Uri) {
-        val path = "file://" + uri.toString()
+    override fun uploadFile(uri: String) {
+        val path = "file://" + Uri.parse(uri)
         val request = MultipartBody.Part.createFormData("file", path, RequestBody.create(MediaType.parse("video/*"), Uri.parse(path).toFile() ))
         postFileUploadUseCase.postFile(request)
             .subscribe({
@@ -232,7 +204,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
 
     @SuppressLint("CheckResult")
     override fun uploadMaskFile(bitmap: Bitmap, frameTimeSec:Float, context: Context) {
-        val file = BitmapToFileUtil(bitmap, context)
+        val file = bitmapToFileUtil(bitmap, context)
         val path = "file://" + file.toString()
         val request = MultipartBody.Part.createFormData("file", path , RequestBody.create(MediaType.parse("image/*"),Uri.parse(path).toFile()))
         postFileUploadUseCase.postFile(request)

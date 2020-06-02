@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import kr.co.domain.utils.loadUrl
 import kr.co.jsh.databinding.ItemPhotoStorageListBinding
 
 class PhotoStorageAdapter(val click:( Int, String) -> Unit,
@@ -26,7 +27,7 @@ class PhotoStorageAdapter(val click:( Int, String) -> Unit,
     override fun getItemCount(): Int = list.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        Glide.with(context).load(list[position][0]).into(holder.resultPhotoView)
+        holder.resultPhotoView.loadUrl(list[position][0])
         holder.resultPhotoName.text = list[position][1]
         holder.resultPhotoView.setOnClickListener { click(position,  list[position][0]) }
     }

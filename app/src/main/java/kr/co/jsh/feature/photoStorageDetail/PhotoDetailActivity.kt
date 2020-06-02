@@ -15,14 +15,15 @@ import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityDetailPhotoResultBinding
 import kr.co.jsh.utils.permission.ScopeStorageFileUtil
 
-class PhotoDetailActivity :AppCompatActivity(){
+class PhotoDetailActivity :AppCompatActivity(), PhotoDetailContract.View{
     private lateinit var binding : ActivityDetailPhotoResultBinding
+    private lateinit var presenter : PhotoDetailPresenter
     private var resourceBitmap: Bitmap ?= null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setupDataBinding()
-        initView()
+        initPresenter()
     }
 
     private fun setupDataBinding(){
@@ -30,8 +31,10 @@ class PhotoDetailActivity :AppCompatActivity(){
         binding.resultPhoto = this@PhotoDetailActivity
     }
 
-    private fun initView(){
-        val result = intent.getStringExtra(Consts.DETAIL_PHOTO)
+    private fun initPresenter(){
+        val result = intent.getStringExtra(Consts.DETAIL_PHOTO)?:""
+        presenter = PhotoDetailPresenter(this)
+
         Glide.with(this).asBitmap().load(result).listener(object: RequestListener<Bitmap>{
             override fun onLoadFailed(
                 e: GlideException?,

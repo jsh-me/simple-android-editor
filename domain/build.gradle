@@ -91,4 +91,8 @@ dependencies {
     //Timber
     implementation 'com.jakewharton.timber:timber:4.7.1'
 
+    //glide
+    implementation "com.github.bumptech.glide:glide:4.11.0"
+    kapt "com.github.bumptech.glide:compiler:4.11.0"
+
 }
