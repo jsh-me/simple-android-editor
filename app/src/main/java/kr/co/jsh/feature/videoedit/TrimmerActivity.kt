@@ -374,7 +374,6 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
                 add(trimVideoTimeList[0].second)
                 add(trimVideoTimeList[1].second)
             }
-
         }
         else{
             binding.selectedTimeLineView.visibility = View.INVISIBLE
@@ -487,17 +486,8 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
                     val maskImg = binding.videoFrameDrawView.createCapture(DrawingCapture.BITMAP)
                     maskImg?.let {
                         //자세한 코드설명은 PhotoActivity에 있음.
-                        val cropBitmap = cropBitmapImage(
-                            maskImg[0] as Bitmap,
-                            binding.videoFrameDrawView.width,
-                            binding.videoFrameDrawView.height
-                        )
-                        val resizeBitmap =
-                            resizeBitmapImage(
-                                cropBitmap,
-                                realVideoSize[0],
-                                realVideoSize[1]
-                            )
+                        val cropBitmap = cropBitmapImage(maskImg[0] as Bitmap, binding.videoFrameDrawView.width, binding.videoFrameDrawView.height)
+                        val resizeBitmap = resizeBitmapImage(cropBitmap, realVideoSize[0], realVideoSize[1])
                         val binaryMask = createBinaryMask(resizeBitmap)
 
                         //마스크 전송
@@ -531,13 +521,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
             job = CoroutineScope(Dispatchers.Main).launch {
                 startAnimation()
                 CoroutineScope(Dispatchers.Default).async {
-                    presenter.trimVideo(
-                        destinationPath,
-                        applicationContext,
-                        mSrc,
-                        frameSecToSendServer[0],
-                        frameSecToSendServer[1]
-                    )
+                    presenter.trimVideo(destinationPath, applicationContext, mSrc, frameSecToSendServer[0], frameSecToSendServer[1])
                 }.await()
             }
         }
