@@ -43,15 +43,6 @@ class VideoStorageActivity : AppCompatActivity(), VideoStorageContract.View {
         }
 
     }
-//    override fun successLoadDB() {
-//        when(response){
-//            200 -> {presenter.getServerVideoResult()}
-//            500 -> {
-//                presenter.loadLocalVideoStorageDB()
-//                presenter.getLocalVideoResult()
-//            }
-//        }
-//    }
 
     override fun setVideoResult(list: ArrayList<List<String>>) {
         if(list.isNullOrEmpty()){

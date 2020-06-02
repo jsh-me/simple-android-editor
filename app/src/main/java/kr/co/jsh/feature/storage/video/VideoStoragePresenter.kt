@@ -67,27 +67,11 @@ class VideoStoragePresenter(override var view: VideoStorageContract.View,
                 }
               //  view.successLoadDB()
                 Timber.e("onComplete")
-
+                view.setVideoResult(addRoomDBVideoStorage)
             }, {
                 Timber.e("Error getting info from interactor (video)")
             })
     }
-
-//        val loadRoomDB =  allLoadVideoDataBaseUseCase.allLoad()
-//        loadRoomDB.map {
-//            it.map {
-//                Timber.e("11")
-//                resultVideoList.clear()
-//                resultVideoList.apply {
-//                    add(it.path)
-//                    add(it.filename)
-//                }
-//                addRoomDBVideoStorage.add(resultVideoList) //set 함수
-//                Timber.e("22")
-//            }
-//        }
-//        view.successLoadDB()
-//        Timber.e("33")
 
     //all delete db
     private fun allDeleteVideoStorage(){

@@ -112,6 +112,8 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         mDuration = binding.videoLoader.duration.toFloat()
         binding.videoLoader.setOnPreparedListener {
                 mp -> onVideoPrepared(mp) }
+
+        binding.frameLayout.clipToOutline = true
     }
 
     private fun setupDataBinding(){
