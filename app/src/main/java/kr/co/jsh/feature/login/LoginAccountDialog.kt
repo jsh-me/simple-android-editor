@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.Window
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import kr.co.domain.utils.toastShort
 import kr.co.jsh.R
 import kr.co.jsh.databinding.DialogLayoutBinding
 import org.koin.android.ext.android.get
@@ -45,7 +46,7 @@ class LoginAccountDialog: Activity(), LoginAccountContract.View{
     }
 
     override fun setUserData(name: String) {
-        Toast.makeText(this, "$name 님 안녕하세요.", Toast.LENGTH_LONG).show()
+       this.toastShort("$name 님 안녕하세요.")
         setResult(1000)
         finish()
     }

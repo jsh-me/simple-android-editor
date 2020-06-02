@@ -11,6 +11,7 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import kr.co.domain.globalconst.Consts
+import kr.co.domain.utils.toastShort
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityDetailPhotoResultBinding
 import kr.co.jsh.utils.permission.ScopeStorageFileUtil
@@ -54,7 +55,7 @@ class PhotoDetailActivity :AppCompatActivity(), PhotoDetailContract.View{
                 resourceBitmap = resource
                 return false
             }
-        }).into(binding.resultImageDetail)
+        }).into(binding.imageDetailView)
     }
 
     fun saveBtn(){
@@ -62,7 +63,7 @@ class PhotoDetailActivity :AppCompatActivity(), PhotoDetailContract.View{
         val mimeType = "image/jpeg"
         val compressFormat = Bitmap.CompressFormat.JPEG
         resourceBitmap?.let{ ScopeStorageFileUtil.addPhotoAlbum(resourceBitmap!!, displayName, mimeType, compressFormat, this) }
-        Toast.makeText(this, "저장 완료", Toast.LENGTH_SHORT).show()
+        this.toastShort("저장 완료")
     }
 
     fun backBtn(){

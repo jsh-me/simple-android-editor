@@ -24,6 +24,7 @@ import kotlinx.coroutines.*
 import kr.co.domain.globalconst.Consts.Companion.EXTRA_PHOTO_PATH
 import kr.co.domain.utils.addFile
 import kr.co.domain.utils.loadUrl
+import kr.co.domain.utils.toastShort
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityPhotoEditBinding
 import kr.co.jsh.feature.sendMsg.SuccessSendMsgActivity
@@ -182,13 +183,12 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
                     presenter.uploadFrameFile(binaryMask, applicationContext)
                     Timber.e("마스크 결과 : ${(saveImage[0] as Bitmap).width} and ${(saveImage[0] as Bitmap).height}")
                 } ?: run {
-                    Toast.makeText(applicationContext, "마스크를 그려주세요", Toast.LENGTH_SHORT).show()
+                    applicationContext.toastShort("마스크를 그려주세요")
                 }
             }.await()
         }
         if (UserObject.loginResponse == 200) job.start()
         else {
-           // Toast.makeText(applicationContext, "로그인을 먼저 해주세요.", Toast.LENGTH_SHORT).show()
             cancelJob()
         }
     }
@@ -239,7 +239,7 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
     }
 
     override fun uploadFailed(msg: String) {
-        Toast.makeText(this, "$msg", Toast.LENGTH_SHORT).show()
+        this.toastShort(msg)
         failUploadServer()
     }
 

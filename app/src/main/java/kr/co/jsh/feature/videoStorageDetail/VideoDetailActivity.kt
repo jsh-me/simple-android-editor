@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.google.android.exoplayer2.SimpleExoPlayer
 import kr.co.domain.globalconst.Consts
+import kr.co.domain.utils.toastShort
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityDetailVideoResultBinding
 import kr.co.jsh.utils.permission.ScopeStorageFileUtil
@@ -34,7 +35,7 @@ class VideoDetailActivity : AppCompatActivity(), VideoDetailContract.View{
     }
 
     override fun setPlayer(player: SimpleExoPlayer) {
-        binding.resultVideoDetail.player = player
+        binding.videoDetailView.player = player
     }
 
 
@@ -42,7 +43,7 @@ class VideoDetailActivity : AppCompatActivity(), VideoDetailContract.View{
         val displayName = "${System.currentTimeMillis()}.mp4"
         val downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
         ScopeStorageFileUtil.downloadURL(videoUri!!, downloadManager, displayName, this)
-        Toast.makeText(this, "저장 완료", Toast.LENGTH_SHORT).show()
+        this.toastShort("저장 완료")
     }
 
     override fun onResume() {

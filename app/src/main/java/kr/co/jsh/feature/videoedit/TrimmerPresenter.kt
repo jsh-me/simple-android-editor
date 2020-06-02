@@ -20,6 +20,7 @@ import kr.co.domain.globalconst.Consts
 import kr.co.domain.globalconst.Consts.Companion.EXTRA_VIDEO_PATH
 import kr.co.domain.globalconst.PidClass
 import kr.co.domain.utils.addFile
+import kr.co.domain.utils.toastShort
 import kr.co.jsh.singleton.UserObject
 import kr.co.jsh.utils.*
 import kr.co.jsh.utils.BitmapUtil.bitmapToFileUtil
@@ -56,7 +57,6 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
                 trimVideoTimeList.add(Pair(crop_x1,  videoLoader.currentPosition))//2
                 trimVideoTimeList.add(Pair(crop_x1,  videoLoader.currentPosition))//3
                 trimVideoTimeList.add(Pair(recycler.width - ScreenSizeUtil(context).widthPixels,videoLoader.duration)) //4
-               // Toast.makeText(context, "${crop_x1} and ${videoLoader.currentPosition}", Toast.LENGTH_LONG).show()
             }
              2-> {
                  crop_x2 =
@@ -65,11 +65,10 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
                     trimVideoTimeList[1] = Pair(crop_x2, videoLoader.currentPosition)
                 }
                  else trimVideoTimeList[2] = Pair(crop_x2, videoLoader.currentPosition)
-               //  Toast.makeText(context, "${crop_x2} and ${videoLoader.currentPosition}", Toast.LENGTH_LONG).show()
              }
 
             else -> {
-                Toast.makeText(context, "두번만 선택 가능", Toast.LENGTH_LONG).show()
+                context.toastShort("두번만 선택 가능")
             }
         }
        view.setPairList(trimVideoTimeList)
@@ -98,7 +97,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
             trimVideoTimeList.add(Pair(0,0))//1
             view.resetCropView()
         } catch (e: Exception) {
-            Toast.makeText(context, "잘라진 것이 없어요!", Toast.LENGTH_LONG).show()
+            context.toastShort("잘라진 것이 없어요!")
         }
     }
 

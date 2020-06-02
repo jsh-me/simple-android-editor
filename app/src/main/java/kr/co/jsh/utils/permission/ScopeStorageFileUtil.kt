@@ -195,8 +195,6 @@ object ScopeStorageFileUtil{
                     }
                     bos.close()
                     fos.close()
-                    Toast.makeText(context, "Copy file into $tempDir succeeded.", Toast.LENGTH_LONG)
-                        .show()
                 }
             }
         }

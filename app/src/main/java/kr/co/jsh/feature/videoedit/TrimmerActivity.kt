@@ -27,6 +27,7 @@ import kotlinx.android.synthetic.main.activity_video_edit.*
 import kotlinx.coroutines.*
 import kr.co.domain.globalconst.Consts
 import kr.co.domain.globalconst.PidClass
+import kr.co.domain.utils.toastShort
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityVideoEditBinding
 import kr.co.jsh.feature.fullscreen.VideoViewActivity
@@ -186,7 +187,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     fun removeMode(){
         drawMaskCheck = true
         if(userCropTouchCount < 2) {
-            Toast.makeText(this, "구간을 먼저 잘라주세요", Toast.LENGTH_LONG).show()
+            this.toastShort("구간을 먼저 잘라주세요")
         } else {
             binding.iconVideoPlayBtn.isSelected = false
             binding.videoLoader.pause()
@@ -203,7 +204,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
                 BackgroundScale.FIT_START
             )
 
-            Toast.makeText(this, "지울 곳을 칠해주세요", Toast.LENGTH_LONG).show()
+            this.toastShort("지울 곳을 칠해주세요")
 
             changeTextColor.set(arrayOf(false, false, false, false, false))
             changeTextColor.set(arrayOf(true, false, false, false, false))
@@ -383,7 +384,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
 
     fun clearDraw(){
         if(binding.videoFrameDrawView.visibility == View.INVISIBLE){
-            Toast.makeText(this,"지울 객체를 먼저 선택하세요.",Toast.LENGTH_LONG).show()
+            this.toastShort("지울 객체를 먼저 선택하세요.")
         }
         else {
             binding.iconVideoPlayBtn.isSelected = false
@@ -398,10 +399,10 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     fun cuttingVideoBtn(){
         userCropTouchCount ++
         presenter.setCuttingVideo(this, userCropTouchCount, video_loader, trimVideoTimeList, binding.videoEditRecycler)
-        greyline()
+        setGreyLine()
     }
 
-    private fun greyline() {
+    private fun setGreyLine() {
         val param1 = FrameLayout.LayoutParams(7,FrameLayout.LayoutParams.MATCH_PARENT)
         val param2 = FrameLayout.LayoutParams(7,FrameLayout.LayoutParams.MATCH_PARENT)
 
@@ -412,13 +413,10 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
             visibility = View.VISIBLE
         }
         param2.setMargins(trimVideoTimeList[2].first + ScreenSizeUtil(this).widthPixels/2 ,0,0,0)
-        binding.border2.apply{
+        binding.border2.apply {
             layoutParams = param2
             visibility = View.VISIBLE
         }
-
-
-
     }
 
     override fun onVideoPrepared() {
@@ -512,12 +510,12 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
                 job.start()
             }
             else {
-                Toast.makeText(this, "로그인을 먼저 해주세요.", Toast.LENGTH_SHORT).show()
+                this.toastShort("로그인을 먼저 해주세요.")
                 cancelJob()
             }
         }
         else {
-            Toast.makeText(applicationContext, "마스크를 먼저 그려주세요", Toast.LENGTH_SHORT).show()
+            this.toastShort( "마스크를 먼저 그려주세요")
         }
 
     }
@@ -525,7 +523,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     fun sendImproveVideoInfoToServer(){
         videoOption = Consts.SUPER_RESOL
         if(userCropTouchCount < 2) {
-            Toast.makeText(this, "구간을 먼저 잘라주세요", Toast.LENGTH_LONG).show()
+            this.toastShort("구간을 먼저 잘라주세요")
         } else {
             changeTextColor.set(arrayOf(false, false, false, false, false))
             changeTextColor.set(arrayOf(false, false, false, false, true))
@@ -563,7 +561,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     }
 
     override fun uploadFailed(msg: String) {
-        Toast.makeText(this, "$msg", Toast.LENGTH_SHORT).show()
+        this.toastShort(msg)
         failUploadServer()
     }
 

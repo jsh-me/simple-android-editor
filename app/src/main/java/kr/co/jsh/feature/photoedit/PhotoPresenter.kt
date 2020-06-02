@@ -40,8 +40,6 @@ class PhotoPresenter(override var view: PhotoContract.View,
 
     override fun saveImage(context: Context, uri: Uri) {
         RunOnUiThread(context).safely {
-          //  Toast.makeText(context, "Image saved at ${uri.path}", Toast.LENGTH_SHORT).show()
-
             val mediaMetadataRetriever = MediaMetadataRetriever()
             mediaMetadataRetriever.setDataSource(context, uri)
             val duration =

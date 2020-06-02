@@ -16,6 +16,7 @@ import kr.co.domain.globalconst.Consts.Companion.EXTRA_PHOTO_PATH
 import kr.co.domain.globalconst.Consts.Companion.EXTRA_VIDEO_PATH
 import kr.co.domain.globalconst.Consts.Companion.REQUEST_VIDEO_CROPPER
 import kr.co.domain.globalconst.Consts.Companion.REQUEST_VIDEO_TRIMMER
+import kr.co.domain.utils.toastShort
 import kr.co.jsh.feature.login.LoginAccountDialog
 import kr.co.jsh.feature.photoedit.PhotoActivity
 import kr.co.jsh.feature.photoStorage.PhotoStorageActivity
@@ -87,22 +88,14 @@ class MainActivity : AppCompatActivity() {
                 if (selectedUri != null) {
                     startTrimActivity(selectedUri)
                 } else {
-                    Toast.makeText(
-                        this@MainActivity,
-                        "toast_cannot_retrieve_selected_video",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    this.toastShort("toast_cannot_retrieve_selected_video")
                 }
             } else if (requestCode == REQUEST_VIDEO_CROPPER) {
                 val selectedUri = data!!.data
                 if (selectedUri != null) {
                     startPhotoActivity(selectedUri)
                 } else {
-                    Toast.makeText(
-                        this@MainActivity,
-                        "toast_cannot_retrieve_selected_video",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    this.toastShort(  "toast_cannot_retrieve_selected_video")
                 }
             }
         }
@@ -119,7 +112,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun accountCircleImage(){
-        if(UserObject.loginResponse == 200) { Toast.makeText(this, "이미 로그인되어 있습니다.", Toast.LENGTH_SHORT).show() }
+        if(UserObject.loginResponse == 200) {this.toastShort( "이미 로그인되어 있습니다.") }
         else {
             val intent = Intent(this, LoginAccountDialog::class.java)
             startActivityForResult(intent, 1000)
