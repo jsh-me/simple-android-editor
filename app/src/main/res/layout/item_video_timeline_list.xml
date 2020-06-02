@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
-<kr.co.jsh.customview.TimeLineView
-    android:id="@+id/itemVideo"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="50dp"
-    android:adjustViewBounds="true">
+    <kr.co.jsh.customview.TimeLineView
+        android:id="@+id/itemVideo"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:adjustViewBounds="true">
 
-</kr.co.jsh.customview.TimeLineView>
+    </kr.co.jsh.customview.TimeLineView>
 </layout>

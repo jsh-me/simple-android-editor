@@ -40,7 +40,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
                        private var postPidNumberAndInfoUseCase: PostVideoPidNumberAndInfoUseCase,
                        private var postImproveVideoPidNumber: PostImproveVideoPidNumber) : TrimmerContract.Presenter{
    override fun crop(context: Context, cropCount: Int, videoLoader:VideoView,
-                          crop_time: ArrayList<Pair<Int, Int>>, recycler: RecyclerView
+                          trimVideoTimeList: ArrayList<Pair<Int, Int>>, recycler: RecyclerView
    ){
         var crop_x1 = 0
        var crop_x2 = 0
@@ -50,18 +50,18 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
                 crop_x1 =
                     ( videoLoader.currentPosition * (recycler.width - ScreenSizeUtil(context).widthPixels)) /  videoLoader.duration
 
-                crop_time.add(Pair(crop_x1,  videoLoader.currentPosition))//2
-                crop_time.add(Pair(crop_x1,  videoLoader.currentPosition))//3
-                crop_time.add(Pair(recycler.width - ScreenSizeUtil(context).widthPixels,videoLoader.duration)) //4
+                trimVideoTimeList.add(Pair(crop_x1,  videoLoader.currentPosition))//2
+                trimVideoTimeList.add(Pair(crop_x1,  videoLoader.currentPosition))//3
+                trimVideoTimeList.add(Pair(recycler.width - ScreenSizeUtil(context).widthPixels,videoLoader.duration)) //4
                // Toast.makeText(context, "${crop_x1} and ${videoLoader.currentPosition}", Toast.LENGTH_LONG).show()
             }
              2-> {
                  crop_x2 =
                      ( videoLoader.currentPosition * (recycler.width - ScreenSizeUtil(context).widthPixels)) /  videoLoader.duration
-                if(crop_time[1].first > crop_x2) {
-                    crop_time[1] = Pair(crop_x2, videoLoader.currentPosition)
+                if(trimVideoTimeList[1].first > crop_x2) {
+                    trimVideoTimeList[1] = Pair(crop_x2, videoLoader.currentPosition)
                 }
-                 else crop_time[2] = Pair(crop_x2, videoLoader.currentPosition)
+                 else trimVideoTimeList[2] = Pair(crop_x2, videoLoader.currentPosition)
                //  Toast.makeText(context, "${crop_x2} and ${videoLoader.currentPosition}", Toast.LENGTH_LONG).show()
              }
 
@@ -69,7 +69,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
                 Toast.makeText(context, "두번만 선택 가능", Toast.LENGTH_LONG).show()
             }
         }
-       view.setPairList(crop_time)
+       view.setPairList(trimVideoTimeList)
 
     }
 
@@ -111,7 +111,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
 
     }
 
-    override fun prepareVideoPath(extraIntent: Intent) {
+    override fun preparePath(extraIntent: Intent) {
         var path =""
         extraIntent?.let{
             path =  it.getStringExtra(EXTRA_VIDEO_PATH)
@@ -119,10 +119,10 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
         view.videoPath(path)
     }
 
-    override fun resetCrop(context:Context, crop_time: ArrayList<Pair<Int, Int>>) {
+    override fun resetCrop(context:Context, trimVideoTimeList: ArrayList<Pair<Int, Int>>) {
         try {
-            crop_time.clear()
-            crop_time.add(Pair(0,0))//1
+            trimVideoTimeList.clear()
+            trimVideoTimeList.add(Pair(0,0))//1
             view.resetCropView()
         } catch (e: Exception) {
             Toast.makeText(context, "잘라진 것이 없어요!", Toast.LENGTH_LONG).show()

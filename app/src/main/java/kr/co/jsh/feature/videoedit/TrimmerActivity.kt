@@ -47,20 +47,20 @@ import org.koin.android.ext.android.get
 
 class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     private lateinit var binding: ActivityVideoEditBinding
-    private lateinit var presenter : TrimmerPresenter
-    private var screenSize = ObservableField<Int>()
+    override lateinit var presenter : TrimmerContract.Presenter
+    private var mScreenSize = ObservableField<Int>()
     private lateinit var mSrc: Uri
    // private var mFinalPath: String? = null
-    private var crop_count = 0
-    lateinit var crop_time: ArrayList<Pair<Int, Int>>
+    private var userCropTouchCount = 0
+    lateinit var trimVideoTimeList: ArrayList<Pair<Int, Int>>
     private var timeposition = 0
     private var mDuration : Float = 0f
-    private var touch_time = ObservableFloat()
+    private var userVideoTrimTime = ObservableFloat()
     private var mStartPosition = 0f
-    val textColor : ObservableField<Array<Boolean>> = ObservableField(arrayOf(false,false,false,false,false))
-    private var myPickBitmap : Bitmap? = null
-    val mediaMetadataRetriever = MediaMetadataRetriever()
-    val frameSecToSendServer = ArrayList<Int> ()
+    val changeTextColor : ObservableField<Array<Boolean>> = ObservableField(arrayOf(false,false,false,false,false))
+    private var mSpecificFrameBitmap : Bitmap? = null
+    private val mediaMetadataRetriever = MediaMetadataRetriever()
+    private val frameSecToSendServer = ArrayList<Int> ()
     private var realVideoSize = ArrayList<Int>()
     private lateinit var job: Job
 
@@ -96,24 +96,24 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
 
     private fun initView(){
         presenter = TrimmerPresenter(this, get(), get(), get())
-        screenSize = ObservableField(ScreenSizeUtil(this).widthPixels/2)
+        mScreenSize = ObservableField(ScreenSizeUtil(this).widthPixels/2)
         mBitmaps = ArrayList()
         setupPermissions(this) {
             val extraIntent = intent
-            presenter.prepareVideoPath(extraIntent)
+            presenter.preparePath(extraIntent)
         }
 
         binding.handlerTop.progress =  binding.handlerTop.max / 2
         binding.handlerTop.isEnabled = false
 
-        crop_time = arrayListOf() //initialize
-        crop_time.add(Pair(0, 0))//1
+        trimVideoTimeList = arrayListOf() //initialize
+        trimVideoTimeList.add(Pair(0, 0))//1
 
         mDuration = binding.videoLoader.duration.toFloat()
         binding.videoLoader.setOnPreparedListener {
                 mp -> onVideoPrepared(mp) }
 
-        binding.frameLayout.clipToOutline = true
+        binding.videoEditChildFrameLayout.clipToOutline = true
     }
 
     private fun setupDataBinding(){
@@ -122,7 +122,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     }
 
     private fun setupDrawView(){
-        binding.videoFrameView.setOnDrawViewListener(object : DrawView.OnDrawViewListener {
+        binding.videoFrameDrawView.setOnDrawViewListener(object : DrawView.OnDrawViewListener {
             override fun onEndDrawing() {
                 canUndoRedo()
             }
@@ -165,21 +165,21 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
 
     fun playVideo() {
         binding.videoLoader.setOnCompletionListener{
-            binding.iconVideoPlay.isSelected = false
+            binding.iconVideoPlayBtn.isSelected = false
             onVideoCompleted()
             dispatcher.cancel()
         }
 
         if (binding.videoLoader.isPlaying) {
-            binding.iconVideoPlay.isSelected = false
+            binding.iconVideoPlayBtn.isSelected = false
             timeposition = binding.videoLoader.currentPosition
             binding.videoLoader.seekTo(timeposition)
             binding.videoLoader.pause()
             dispatcher.pause()
 
         } else {
-            textColor.set(arrayOf(false,false,false,false))
-            binding.iconVideoPlay.isSelected = true
+            changeTextColor.set(arrayOf(false,false,false,false))
+            binding.iconVideoPlayBtn.isSelected = true
             binding.videoLoader.setOnPreparedListener {
                mp ->
                 mp.setOnSeekCompleteListener {
@@ -195,28 +195,28 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     //지울 객체 그리기
     fun removeMode(){
         drawMaskCheck = true
-        if(crop_count < 2) {
+        if(userCropTouchCount < 2) {
             Toast.makeText(this, "구간을 먼저 잘라주세요", Toast.LENGTH_LONG).show()
         } else {
-            binding.iconVideoPlay.isSelected = false
+            binding.iconVideoPlayBtn.isSelected = false
             binding.videoLoader.pause()
-            binding.videoFrameView.setBackgroundResource(R.color.background_space)
+            binding.videoFrameDrawView.setBackgroundResource(R.color.grey1)
             mediaMetadataRetriever.setDataSource(this, mSrc)
             //지울 곳의 프레임위치
-            myPickBitmap = mediaMetadataRetriever.getFrameAtTime(
-                touch_time.get().toLong() * 1000,
+            mSpecificFrameBitmap = mediaMetadataRetriever.getFrameAtTime(
+                userVideoTrimTime.get().toLong() * 1000,
                 MediaMetadataRetriever.OPTION_CLOSEST_SYNC
             )
-            binding.videoFrameView.setBackgroundImage(
-                myPickBitmap as Bitmap,
+            binding.videoFrameDrawView.setBackgroundImage(
+                mSpecificFrameBitmap as Bitmap,
                 BackgroundType.BITMAP,
                 BackgroundScale.FIT_START
             )
 
             Toast.makeText(this, "지울 곳을 칠해주세요", Toast.LENGTH_LONG).show()
 
-            textColor.set(arrayOf(false, false, false, false, false))
-            textColor.set(arrayOf(true, false, false, false, false))
+            changeTextColor.set(arrayOf(false, false, false, false, false))
+            changeTextColor.set(arrayOf(true, false, false, false, false))
 
             hideVideoView()
             //미리 서버에 올리기
@@ -227,20 +227,20 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     private fun hideVideoView(){
         if(binding.videoLoader.visibility == View.VISIBLE) {
             binding.videoLoader.visibility = View.INVISIBLE
-            binding.videoFrameView.visibility = View.VISIBLE
+            binding.videoFrameDrawView.visibility = View.VISIBLE
         }
     }
 
     fun resetTimeLineView(){
-        binding.iconVideoPlay.isSelected = false
+        binding.iconVideoPlayBtn.isSelected = false
         binding.videoLoader.pause()
-        crop_count = 0
-        presenter.resetCrop(this, crop_time)
-        binding.boader1.visibility = View.INVISIBLE
-        binding.boader2.visibility = View.INVISIBLE
+        userCropTouchCount = 0
+        presenter.resetCrop(this, trimVideoTimeList)
+        binding.border1.visibility = View.INVISIBLE
+        binding.border2.visibility = View.INVISIBLE
 
-        textColor.set(arrayOf(false,false,false,false, false))
-        textColor.set(arrayOf(false,true,false,false, false))
+        changeTextColor.set(arrayOf(false,false,false,false, false))
+        changeTextColor.set(arrayOf(false,true,false,false, false))
     }
 
 
@@ -260,13 +260,13 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     private suspend fun suspendFunc() {
         while ( binding.videoLoader.isPlaying) {
             applicationContext.runOnUiThread {
-                binding.textStartTime.text = String.format(
+                binding.videoStartTimeTv.text = String.format(
                     "%s",
                     TrimVideoUtils.stringForTime( binding.videoLoader.currentPosition.toFloat())
                 )
                 //시간 흐를때마다 뷰 옆으로 이동!
-                binding.scroll.scrollTo(
-                    ( binding.videoLoader.currentPosition * (binding.timeLineViewRecycler.width - ScreenSizeUtil(
+                binding.videoEditScrollView.scrollTo(
+                    ( binding.videoLoader.currentPosition * (binding.videoEditRecycler.width - ScreenSizeUtil(
                         applicationContext
                     ).widthPixels)) /  binding.videoLoader.duration, 0
                 )
@@ -277,21 +277,21 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun setTimeFrames() {
-        binding.textTimeSelection.text =
+        binding.videoEndTimeTv.text =
             String.format("%s", TrimVideoUtils.stringForTime(mDuration))
-        binding.textStartTime.text = String.format(
+        binding.videoStartTimeTv.text = String.format(
             "%s",
             TrimVideoUtils.stringForTime(binding.videoLoader.currentPosition.toFloat())
         )
 
 
-        binding.timeLineViewRecycler.setOnTouchListener { _: View, motionEvent: MotionEvent ->
+        binding.videoEditRecycler.setOnTouchListener { _: View, motionEvent: MotionEvent ->
             when (motionEvent.action) {
                 //편집할 영역을 선택하기
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_DOWN -> {
                     try {
-                        if (crop_count == 2) {
-                            binding.timeLineViewRecycler.performClick()
+                        if (userCropTouchCount == 2) {
+                            binding.videoEditRecycler.performClick()
                             setBoarderRange(motionEvent.x)
                             Log.i("touch x coordi:", "${motionEvent.x}")
                             true
@@ -306,27 +306,27 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
             }
         }
 
-        binding.scroll.setOnScrollChangeListener { view: View, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int ->
+        binding.videoEditScrollView.setOnScrollChangeListener { view: View, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int ->
             if (scrollX != oldScrollX && !binding.videoLoader.isPlaying) {
-                Observable.just(binding.scroll.scrollX)
+                Observable.just(binding.videoEditScrollView.scrollX)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({
                         //showVideoView() //재생 버튼 누른 후 remove 하면 이상하게 동작함. 무조건 seekbar로 이동시에만 정상동작.
                         binding.videoLoader.visibility = View.VISIBLE
-                        binding.videoFrameView.visibility = View.INVISIBLE
+                        binding.videoFrameDrawView.visibility = View.INVISIBLE
 
-                        touch_time.set(
-                            (mDuration * it) / ((binding.timeLineViewRecycler.width) - ScreenSizeUtil(
+                        userVideoTrimTime.set(
+                            (mDuration * it) / ((binding.videoEditRecycler.width) - ScreenSizeUtil(
                                 this
                             ).widthPixels)
                         )
-                        binding.videoLoader.seekTo(touch_time.get().toInt())
-                        binding.textStartTime.text = String.format(
+                        binding.videoLoader.seekTo(userVideoTrimTime.get().toInt())
+                        binding.videoStartTimeTv.text = String.format(
                             "%s",
-                            TrimVideoUtils.stringForTime(touch_time.get())
+                            TrimVideoUtils.stringForTime(userVideoTrimTime.get())
                         )
-                        timeposition = touch_time.get().toInt()
+                        timeposition = userVideoTrimTime.get().toInt()
 
                     }, {
                         Timber.i(it.localizedMessage)
@@ -343,71 +343,71 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         var params = FrameLayout.LayoutParams(0,0)
         var startX = coordiX - ScreenSizeUtil(this).widthPixels/2
         Log.i("startX:","$startX}")
-        if(startX >= crop_time[1].first && startX <= crop_time[2].first){
-            binding.border.visibility = View.INVISIBLE
+        if(startX >= trimVideoTimeList[1].first && startX <= trimVideoTimeList[2].first){
+            binding.selectedTimeLineView.visibility = View.INVISIBLE
             //7은 TimeLintView 에서 그려줄 때 만든 margin 값
-            params = FrameLayout.LayoutParams(crop_time[2].first - crop_time[1].first, binding.timeLineViewRecycler.height-10)
-            params.marginStart = ScreenSizeUtil(this).widthPixels/2 + crop_time[1].first
-            binding.border.layoutParams = params
-            binding.border.visibility = View.VISIBLE
+            params = FrameLayout.LayoutParams(trimVideoTimeList[2].first - trimVideoTimeList[1].first, binding.videoEditRecycler.height-10)
+            params.marginStart = ScreenSizeUtil(this).widthPixels/2 + trimVideoTimeList[1].first
+            binding.selectedTimeLineView.layoutParams = params
+            binding.selectedTimeLineView.visibility = View.VISIBLE
 
             frameSecToSendServer.apply{
                 clear()
-                add(crop_time[1].second)
-                add(crop_time[2].second)
+                add(trimVideoTimeList[1].second)
+                add(trimVideoTimeList[2].second)
             }
         }
-        else if(startX > crop_time[2].first){
-            binding.border.visibility = View.INVISIBLE
-            params = FrameLayout.LayoutParams(crop_time[3].first - crop_time[2].first,  binding.timeLineViewRecycler.height-10)
-            params.marginStart = ScreenSizeUtil(this).widthPixels/2 + crop_time[2].first
-            binding.border.layoutParams = params
-            binding.border.visibility = View.VISIBLE
+        else if(startX > trimVideoTimeList[2].first){
+            binding.selectedTimeLineView.visibility = View.INVISIBLE
+            params = FrameLayout.LayoutParams(trimVideoTimeList[3].first - trimVideoTimeList[2].first,  binding.videoEditRecycler.height-10)
+            params.marginStart = ScreenSizeUtil(this).widthPixels/2 + trimVideoTimeList[2].first
+            binding.selectedTimeLineView.layoutParams = params
+            binding.selectedTimeLineView.visibility = View.VISIBLE
 
             frameSecToSendServer.apply{
                 clear()
-                add(crop_time[2].second)
-                add(crop_time[3].second)
+                add(trimVideoTimeList[2].second)
+                add(trimVideoTimeList[3].second)
             }
 
         }
-        else if (startX >= 0 && startX < crop_time[1].first) {
-            binding.border.visibility = View.INVISIBLE
-            params = FrameLayout.LayoutParams(crop_time[1].first - crop_time[0].first,  binding.timeLineViewRecycler.height-10)
+        else if (startX >= 0 && startX < trimVideoTimeList[1].first) {
+            binding.selectedTimeLineView.visibility = View.INVISIBLE
+            params = FrameLayout.LayoutParams(trimVideoTimeList[1].first - trimVideoTimeList[0].first,  binding.videoEditRecycler.height-10)
             params.marginStart = ScreenSizeUtil(this).widthPixels/2
-            binding.border.layoutParams = params
-            binding.border.visibility = View.VISIBLE
+            binding.selectedTimeLineView.layoutParams = params
+            binding.selectedTimeLineView.visibility = View.VISIBLE
 
             frameSecToSendServer.apply{
                 clear()
-                add(crop_time[0].second)
-                add(crop_time[1].second)
+                add(trimVideoTimeList[0].second)
+                add(trimVideoTimeList[1].second)
             }
 
         }
         else{
-            binding.border.visibility = View.INVISIBLE
+            binding.selectedTimeLineView.visibility = View.INVISIBLE
         }
 
     }
 
     fun clearDraw(){
-        if(binding.videoFrameView.visibility == View.INVISIBLE){
+        if(binding.videoFrameDrawView.visibility == View.INVISIBLE){
             Toast.makeText(this,"지울 객체를 먼저 선택하세요.",Toast.LENGTH_LONG).show()
         }
         else {
-            binding.iconVideoPlay.isSelected = false
-            binding.videoFrameView.restartDrawing()
+            binding.iconVideoPlayBtn.isSelected = false
+            binding.videoFrameDrawView.restartDrawing()
             removeMode()
-            textColor.set(arrayOf(false, false, false, false, false))
-            textColor.set(arrayOf(false, false, true, false, false))
+            changeTextColor.set(arrayOf(false, false, false, false, false))
+            changeTextColor.set(arrayOf(false, false, true, false, false))
         }
     }
 
 
     fun cropVideo(){
-        crop_count ++
-        presenter.crop(this, crop_count, video_loader, crop_time, binding.timeLineViewRecycler)
+        userCropTouchCount ++
+        presenter.crop(this, userCropTouchCount, video_loader, trimVideoTimeList, binding.videoEditRecycler)
         greyline()
     }
 
@@ -415,14 +415,14 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         val param1 = FrameLayout.LayoutParams(7,FrameLayout.LayoutParams.MATCH_PARENT)
         val param2 = FrameLayout.LayoutParams(7,FrameLayout.LayoutParams.MATCH_PARENT)
 
-        param1.setMargins(crop_time[1].first + ScreenSizeUtil(this).widthPixels/2,0,0,0)
+        param1.setMargins(trimVideoTimeList[1].first + ScreenSizeUtil(this).widthPixels/2,0,0,0)
 
-        binding.boader1.apply {
+        binding.border1.apply {
             layoutParams = param1
             visibility = View.VISIBLE
         }
-        param2.setMargins(crop_time[2].first + ScreenSizeUtil(this).widthPixels/2 ,0,0,0)
-        binding.boader2.apply{
+        param2.setMargins(trimVideoTimeList[2].first + ScreenSizeUtil(this).widthPixels/2 ,0,0,0)
+        binding.border2.apply{
             layoutParams = param2
             visibility = View.VISIBLE
         }
@@ -465,17 +465,17 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     }
 
     override fun setPairList(list: ArrayList<Pair<Int, Int>>) {
-        crop_time = list
+        trimVideoTimeList = list
     }
 
     override fun resetCropView() {
-        binding.border.visibility = View.INVISIBLE
+        binding.selectedTimeLineView.visibility = View.INVISIBLE
     }
 
     override fun setThumbnailListView(thumbnailList: ArrayList<Bitmap>) {
         mBitmaps.add(thumbnailList)
 
-        binding.timeLineViewRecycler.apply{
+        binding.videoEditRecycler.apply{
             layoutManager = LinearLayoutManager(context)
             adapter = TrimmerAdapter(mBitmaps, context)
         }
@@ -488,21 +488,21 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     fun sendRemoveVideoInfoToServer(){
         videoOption = Consts.DEL_OBJ
         if(drawMaskCheck && frameSecToSendServer.isNotEmpty()) {
-            textColor.set(arrayOf(false, false, false, false, false))
-            textColor.set(arrayOf(false, false, false, true, false))
+            changeTextColor.set(arrayOf(false, false, false, false, false))
+            changeTextColor.set(arrayOf(false, false, false, true, false))
 
             job = CoroutineScope(Dispatchers.Main).launch {
                 startAnimation()
 
                 CoroutineScope(Dispatchers.Default).async {
                     //Todo 서버로 자른 비디오, frametimesec, maskimg 전송
-                    val maskImg = binding.videoFrameView.createCapture(DrawingCapture.BITMAP)
+                    val maskImg = binding.videoFrameDrawView.createCapture(DrawingCapture.BITMAP)
                     maskImg?.let {
                         //자세한 코드설명은 PhotoActivity에 있음.
                         val cropBitmap = CropBitmapImage(
                             maskImg[0] as Bitmap,
-                            binding.videoFrameView.width,
-                            binding.videoFrameView.height
+                            binding.videoFrameDrawView.width,
+                            binding.videoFrameDrawView.height
                         )
                         val resizeBitmap =
                             ResizeBitmapImage(
@@ -513,7 +513,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
                         val binaryMask = CreateBinaryMask(resizeBitmap)
 
                         //마스크 전송
-                        presenter.uploadMaskFile(binaryMask, touch_time.get(), applicationContext)
+                        presenter.uploadMaskFile(binaryMask, userVideoTrimTime.get(), applicationContext)
 
                     }
                 }.await()
@@ -535,11 +535,11 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
 
     fun sendImproveVideoInfoToServer(){
         videoOption = Consts.SUPER_RESOL
-        if(crop_count < 2) {
+        if(userCropTouchCount < 2) {
             Toast.makeText(this, "구간을 먼저 잘라주세요", Toast.LENGTH_LONG).show()
         } else {
-            textColor.set(arrayOf(false, false, false, false, false))
-            textColor.set(arrayOf(false, false, false, false, true))
+            changeTextColor.set(arrayOf(false, false, false, false, false))
+            changeTextColor.set(arrayOf(false, false, false, false, true))
             //미리 서버에 올리기
             job = CoroutineScope(Dispatchers.Main).launch {
                 //showProgressbar()
@@ -591,23 +591,23 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     }
 
     fun undoButton(){
-            binding.videoFrameView.undo()
+            binding.videoFrameDrawView.undo()
             canUndoRedo()
     }
 
     fun redoButton(){
-            binding.videoFrameView.redo()
+            binding.videoFrameDrawView.redo()
             canUndoRedo()
     }
 
     private fun canUndoRedo(){
-        if(binding.videoFrameView.canUndo()) {
+        if(binding.videoFrameDrawView.canUndo()) {
             canUndo.set(true)
         } else {
             canUndo.set(false)
         }
 
-        if(binding.videoFrameView.canRedo()) {
+        if(binding.videoFrameDrawView.canRedo()) {
             canRedo.set(true)
         }
         else {
@@ -625,7 +625,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         binding.loadingAnimation.cancelAnimation()
         binding.blockingView.visibility = View.GONE
         binding.loadingAnimation.visibility = View.GONE
-        binding.videoFrameView.restartDrawing()
+        binding.videoFrameDrawView.restartDrawing()
         val intent = Intent(this, SuccessSendMsgActivity::class.java)
         startActivity(intent)
         finish()

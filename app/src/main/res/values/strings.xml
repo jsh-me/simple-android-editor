@@ -4,6 +4,10 @@
     <string name="myId">jsh-me@returnable.co.kr</string>
     <string name="mypwd">jsh-me</string>
 
+    <string name="main_view_title">Smart editing\nfor your wonderful life</string>
+    <string name="new_project">NEW PROJECT</string>
+    <string name="my_project">MY PROJECT</string>
+
     <string name="no_result">결과물이 없습니다.</string>
     <string name="photo_storage">사진 결과함</string>
     <string name="video_storage">동영상 결과함</string>

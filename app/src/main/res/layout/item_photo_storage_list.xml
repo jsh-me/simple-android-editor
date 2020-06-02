@@ -9,7 +9,7 @@
         android:layout_height="wrap_content">
 
         <ImageView
-            android:id="@+id/result_image_storage_view"
+            android:id="@+id/result_photo_storage_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
@@ -23,16 +23,16 @@
         </ImageView>
 
         <TextView
-            android:id="@+id/result_image_name"
+            android:id="@+id/result_photo_name"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:gravity="center|center_horizontal"
             android:maxLines="1"
-            android:background="@color/name_background"
+            android:background="@color/grey3"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/result_image_storage_view"
+            app:layout_constraintTop_toTopOf="@+id/result_photo_storage_view"
             app:layout_constraintVertical_bias="1.0"
             tools:text="name.jpg" />
 

@@ -1,4 +1,4 @@
-package kr.co.jsh.feature.storage.video
+package kr.co.jsh.feature.photoStorage
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,58 +8,56 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import kr.co.domain.globalconst.Consts
 import kr.co.jsh.R
-import kr.co.jsh.databinding.ActivityVideoStorageBinding
-import kr.co.jsh.feature.storage.detailVideo.VideoDetailActivity
+import kr.co.jsh.databinding.ActivityPhotoStorageBinding
+import kr.co.jsh.feature.photoStorageDetail.PhotoDetailActivity
+import kr.co.jsh.feature.photoedit.PhotoContract
 import org.koin.android.ext.android.get
 
-class VideoStorageActivity : AppCompatActivity(), VideoStorageContract.View {
-    private lateinit var binding : ActivityVideoStorageBinding
-    lateinit var presenter : VideoStoragePresenter
+
+class PhotoStorageActivity : AppCompatActivity(), PhotoStorageContract.View {
+    lateinit var binding : ActivityPhotoStorageBinding
+    override lateinit var presenter : PhotoStorageContract.Presenter
     private var response = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setupDataBinding()
         initPresenter()
     }
-
     private fun setupDataBinding() {
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_video_storage)
-        binding.videoStorage = this@VideoStorageActivity
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_photo_storage)
+        binding.photoStorage = this@PhotoStorageActivity
     }
 
     private fun initPresenter(){
-        presenter = VideoStoragePresenter(this, get(), get(), get(), get())
+        presenter = PhotoStoragePresenter(this, get(), get(), get(), get())
+//        presenter.loadImageStorage()
         response = intent.getIntExtra(Consts.LOGIN_RESPONSE, -1)
-//        presenter.loadVideoStorage()
-
         when(response){
-            200 -> {presenter.getServerVideoResult()}
+            200 -> {presenter.getServerFileResult()}
             500 -> {
-                presenter.loadLocalVideoStorageDB()
-                presenter.getLocalVideoResult()
+                presenter.loadLocalFileStorageDB()
+                presenter.getLocalFileResult()
             }
         }
-
     }
 
-    override fun setVideoResult(list: ArrayList<List<String>>) {
-        if(list.isNullOrEmpty()){
+    override fun setFileResult(list: ArrayList<List<String>>) {
+        if (list.isNullOrEmpty()) {
             binding.noResultText.visibility = View.VISIBLE
         } else {
             binding.noResultText.visibility = View.GONE
-            binding.videoStorageRecycler.apply {
-                layoutManager = GridLayoutManager(this@VideoStorageActivity, 2)
-                adapter = VideoStorageAdapter(click(), list, context)
+            binding.photoStorageRecycler.apply {
+                layoutManager = GridLayoutManager(this@PhotoStorageActivity, 2)
+                adapter = PhotoStorageAdapter(click(), list, context)
             }
         }
         stopAnimation()
     }
 
-    private fun click() = { _: Int, url: String ->
-        val intent = Intent(this, VideoDetailActivity::class.java).apply{
-            putExtra(Consts.DETAIL_VIDEO, url)
+    private fun click() = { _:Int, url: String ->
+        val intent = Intent(this, PhotoDetailActivity::class.java).apply{
+            putExtra(Consts.DETAIL_PHOTO, url)
         }
         startActivity(intent)
     }
@@ -74,9 +72,10 @@ class VideoStorageActivity : AppCompatActivity(), VideoStorageContract.View {
         binding.loadingAnimation.cancelAnimation()
         binding.blockingView.visibility = View.GONE
         binding.loadingAnimation.visibility = View.GONE
+
     }
 
-    fun backButton(){
+    fun backBtn(){
         finish()
     }
 }

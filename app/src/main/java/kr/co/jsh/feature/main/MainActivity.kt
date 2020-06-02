@@ -18,16 +18,19 @@ import kr.co.domain.globalconst.Consts.Companion.REQUEST_VIDEO_CROPPER
 import kr.co.domain.globalconst.Consts.Companion.REQUEST_VIDEO_TRIMMER
 import kr.co.jsh.feature.login.LoginAccountDialog
 import kr.co.jsh.feature.photoedit.PhotoActivity
-import kr.co.jsh.feature.storage.photo.PhotoStorageActivity
-import kr.co.jsh.feature.storage.video.VideoStorageActivity
+import kr.co.jsh.feature.photoStorage.PhotoStorageActivity
+import kr.co.jsh.feature.videoStorage.VideoStorageActivity
 import kr.co.jsh.feature.videoedit.TrimmerActivity
 import kr.co.jsh.singleton.UserObject
 import kr.co.jsh.utils.permission.FileUtils
 import kr.co.jsh.utils.permission.setupPermissions
 import timber.log.Timber
 
-//TODO: VIEW를 제외한 모든 로직은 빼자. plz~~~!
-//TODO: 더, 더더 쪼개야 하느니라!
+//1. Non-public, non-static field names start with m.
+//2. Static field names start with s.
+//3. Other fields start with a lower case letter.
+//4. Public static final fields (constants) are ALL_CAPS_WITH_UNDERSCORES.
+
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 

@@ -4,80 +4,80 @@
     <data>
         <variable
             name="photoStorage"
-            type="kr.co.jsh.feature.storage.photo.PhotoStorageActivity" />
+            type="kr.co.jsh.feature.photoStorage.PhotoStorageActivity" />
     </data>
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:background="@color/backgound_space1"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <TextView
-        android:id="@+id/photo_title"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:background="@color/grey2"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/background_space"
-        android:gravity="center"
-        android:padding="10dp"
-        android:text="@string/photo_storage"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="match_parent">
 
-    <ImageButton
-        android:id="@+id/backBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/ic_back"
-        android:onClick="@{() -> photoStorage.backButton()}"
-        app:layout_constraintBottom_toBottomOf="@+id/photo_title"
-        app:layout_constraintStart_toStartOf="@+id/photo_title"
-        app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/photo_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/grey1"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="@string/photo_storage"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/photoStorageRecycler"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/photo_title"
-        app:layout_constraintVertical_bias="0.0" />
+        <ImageButton
+            android:id="@+id/backBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_back"
+            android:onClick="@{() -> photoStorage.backBtn()}"
+            app:layout_constraintBottom_toBottomOf="@+id/photo_title"
+            app:layout_constraintStart_toStartOf="@+id/photo_title"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/noResultText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:visibility="gone"
-        android:text="@string/no_result"
-        android:textColor="@color/white"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="@+id/photoStorageRecycler"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/photo_title" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/photoStorageRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/photo_title"
+            app:layout_constraintVertical_bias="0.0" />
 
-    <kr.co.jsh.customview.BlockingView
-        android:id="@+id/blockingView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        android:background="#80333333"/>
+        <TextView
+            android:id="@+id/noResultText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:visibility="gone"
+            android:text="@string/no_result"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@+id/photoStorageRecycler"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/photo_title" />
 
-    <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/loading_animation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:lottie_loop="true"
-        app:lottie_fileName="loading.json" />
+        <kr.co.jsh.customview.BlockingView
+            android:id="@+id/blockingView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:background="#80333333"/>
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/loading_animation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:lottie_loop="true"
+            app:lottie_fileName="loading.json" />
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

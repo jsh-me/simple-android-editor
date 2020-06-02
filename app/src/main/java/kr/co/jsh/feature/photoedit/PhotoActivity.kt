@@ -38,8 +38,8 @@ import java.io.File
 
 class PhotoActivity : AppCompatActivity() , PhotoContract.View {
     private lateinit var binding: ActivityPhotoEditBinding
-    private lateinit var presenter: PhotoPresenter
-    var textColor: ObservableField<Array<Boolean>> = ObservableField(arrayOf(false, false, false))
+    override lateinit var presenter: PhotoContract.Presenter
+    var changeTextColor: ObservableField<Array<Boolean>> = ObservableField(arrayOf(false, false, false))
     var drawCheck: ObservableField<Boolean> = ObservableField(false)
     var path = ""
     private var destinationPath = ""
@@ -68,9 +68,10 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
 
         presenter = PhotoPresenter(this, get(), get())
         setupPermissions(this) {
+            presenter.preparePath(extraIntent)
+
             extraIntent?.let {
-                path = extraIntent.getStringExtra(EXTRA_PHOTO_PATH)
-                presenter.setImageView(this, "file://" + path)
+                path = extraIntent.getStringExtra(EXTRA_PHOTO_PATH)?: ""
                 Glide.with(this).asBitmap().load(path).listener(object : RequestListener<Bitmap> {
                     override fun onLoadFailed(
                         e: GlideException?,
@@ -96,16 +97,16 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
 
 
                         ConstraintLayout.LayoutParams(w!!, h!!).apply {
-                            leftToLeft = R.id.photo_edit_layout
-                            rightToRight = R.id.photo_edit_layout
-                            bottomToTop = R.id.child_layout
-                            topToBottom = R.id.photoBackBtn
-                            binding.drawPhotoview.layoutParams = this
+                            leftToLeft = R.id.photo_edit_parent_layout
+                            rightToRight = R.id.photo_edit_parent_layout
+                            bottomToTop = R.id.photo_edit_child_layout
+                            topToBottom = R.id.photo_edit_back_btn
+                            binding.photoEditDrawView.layoutParams = this
                         }
                         return false
                     }
                 })
-                    .into(photoImageView)
+                    .into(photo_edit_iv)
             }
         }
         destinationPath =
@@ -114,7 +115,7 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
     }
 
     private fun setupDrawView(){
-        binding.drawPhotoview.setOnDrawViewListener(object : DrawView.OnDrawViewListener {
+        binding.photoEditDrawView.setOnDrawViewListener(object : DrawView.OnDrawViewListener {
             override fun onEndDrawing() {
                 canUndoRedo()
             }
@@ -138,9 +139,9 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
     }
 
     override fun displayPhotoView(file: File) {
-        binding.drawPhotoview.post {
-            binding.drawPhotoview.apply {
-                setBackgroundResource(R.color.background_space)
+        binding.photoEditDrawView.post {
+            binding.photoEditDrawView.apply {
+                setBackgroundResource(R.color.grey1)
                 setBackgroundImage(file, BackgroundType.FILE, BackgroundScale.FIT_START)
             }
         }
@@ -149,11 +150,11 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
     }
 
     fun resetButton(v: View) {
-        binding.drawPhotoview.apply {
+        binding.photoEditDrawView.apply {
             restartDrawing()
         }
-        textColor.set(arrayOf(false, false, false))
-        textColor.set(arrayOf(true, false, false))
+        changeTextColor.set(arrayOf(false, false, false))
+        changeTextColor.set(arrayOf(true, false, false))
         initView()
     }
 
@@ -161,19 +162,19 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
     //Unknown URI: content://media/external_primary/images/media
     //오른쪽 위 아이콘
 
-    fun savePhoto(v: View) {
+    fun saveBtn(v: View) {
         job = CoroutineScope(Dispatchers.Main).launch {
             startAnimation()
 
             CoroutineScope(Dispatchers.Default).async {
-                val saveImage = binding.drawPhotoview.createCapture(DrawingCapture.BITMAP)
+                val saveImage = binding.photoEditDrawView.createCapture(DrawingCapture.BITMAP)
                 saveImage?.let {
 
                     // 불러온 resource 크기만큼 crop한다.
                     val cropBitmap = CropBitmapImage(
                         saveImage[0] as Bitmap,
-                        binding.drawPhotoview.width,
-                        binding.drawPhotoview.height
+                        binding.photoEditDrawView.width,
+                        binding.photoEditDrawView.height
                     )
 
                     // crop된 이미지를 원본 이미지 크기로 resize 해준다.
@@ -204,31 +205,31 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
 
 
     fun drawPhotoMask(){
-        textColor.set(arrayOf(false,false,false))
-        textColor.set(arrayOf(false,true,false))
+        changeTextColor.set(arrayOf(false,false,false))
+        changeTextColor.set(arrayOf(false,true,false))
         drawCheck.set(true)
         presenter.uploadFile("file://" + path) //원본 그림
 
     }
 
-    fun undoButton(){
-        binding.drawPhotoview.undo()
+    fun undoBtn(){
+        binding.photoEditDrawView.undo()
         canUndoRedo()
     }
 
-    fun redoButton(){
-        binding.drawPhotoview.redo()
+    fun redoBtn(){
+        binding.photoEditDrawView.redo()
         canUndoRedo()
     }
 
     private fun canUndoRedo(){
-        if(binding.drawPhotoview.canUndo()) {
+        if(binding.photoEditDrawView.canUndo()) {
             canUndo.set(true)
         } else {
             canUndo.set(false)
         }
 
-        if(binding.drawPhotoview.canRedo()) {
+        if(binding.photoEditDrawView.canRedo()) {
             canRedo.set(true)
         }
         else {
@@ -236,7 +237,7 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
         }
     }
 
-    fun backButton(){
+    fun backBtn(){
         finish()
     }
 
@@ -263,7 +264,7 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
         binding.loadingAnimation.cancelAnimation()
         binding.blockingView.visibility = View.GONE
         binding.loadingAnimation.visibility = View.GONE
-         binding.drawPhotoview.restartDrawing()
+         binding.photoEditDrawView.restartDrawing()
          val intent = Intent(this, SuccessSendMsgActivity::class.java)
          startActivity(intent)
          finish()
@@ -275,7 +276,13 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
         binding.loadingAnimation.visibility = View.GONE
     }
 
+    override fun onError(message: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
+    override fun cancelAction() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
     //-----------test code-------------//
 //    fun saveTEST(){
 //        val bitmap = testPhoto

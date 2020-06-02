@@ -4,21 +4,17 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#754CAF50</color>
 
-    <color name="background_video_color">#2f3031</color>
-    <color name="background_progress_color">#6C6D6D</color>
     <color name="progress_color">#3F51B5</color>
     <color name="line_color">#FF15FF00</color>
-    <color name="shadow_color">#FF000000</color>
-    <color name="line_button">#565758</color>
-    <color name="black_translucent">#50000000</color>
+
     <color name="transparent">#00FFFFFF</color>
-    <color name="background_space">#202020</color>
-    <color name="backgound_space1">#282828</color>
 
     <color name="grey">#595959</color>
+    <color name="grey1">#202020</color>
+    <color name="grey2">#282828</color>
+    <color name="grey3">#7EA09898</color>
 
-    <color name="textBlack">#FF000000</color>
-    <color name="textWhite">#FFFFFF</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFF</color>
 
-    <color name="name_background">#7EA09898</color>
 </resources>

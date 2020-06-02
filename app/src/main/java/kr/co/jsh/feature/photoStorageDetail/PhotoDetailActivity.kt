@@ -1,4 +1,4 @@
-package kr.co.jsh.feature.storage.detailPhoto
+package kr.co.jsh.feature.photoStorageDetail
 
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -55,7 +55,7 @@ class PhotoDetailActivity :AppCompatActivity(){
         }).into(binding.resultImageDetail)
     }
 
-    fun savePhoto(){
+    fun saveBtn(){
         val displayName = "${System.currentTimeMillis()}.jpg"
         val mimeType = "image/jpeg"
         val compressFormat = Bitmap.CompressFormat.JPEG
@@ -63,7 +63,7 @@ class PhotoDetailActivity :AppCompatActivity(){
         Toast.makeText(this, "저장 완료", Toast.LENGTH_SHORT).show()
     }
 
-    fun backButton(){
+    fun backBtn(){
         finish()
     }
 

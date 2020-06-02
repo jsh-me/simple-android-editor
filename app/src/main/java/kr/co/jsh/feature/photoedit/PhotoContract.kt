@@ -1,27 +1,20 @@
 package kr.co.jsh.feature.photoedit
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
+import kr.co.jsh.base.BasePresenter
+import kr.co.jsh.base.BaseView
 import java.io.File
 
 interface PhotoContract {
-    interface View{
+    interface View : BaseView<Presenter> {
         fun displayPhotoView(file: File)
 
-        //uploadFile result
-        fun uploadSuccess(msg: String)
-        fun uploadFailed(msg: String)
-
-        //suspend thread
-        fun cancelJob()
-
-        fun startAnimation()
-        fun stopAnimation()
     }
-    interface Presenter{
+    interface Presenter: BasePresenter {
         var view: View
-        fun setImageView(context: Context, string: String)
         fun saveImage(context: Context, uri: Uri)
 
         fun uploadFile(uri: String)

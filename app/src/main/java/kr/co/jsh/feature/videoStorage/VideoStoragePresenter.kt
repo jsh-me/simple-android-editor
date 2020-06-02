@@ -1,8 +1,6 @@
-package kr.co.jsh.feature.storage.video
+package kr.co.jsh.feature.videoStorage
 
 import android.annotation.SuppressLint
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import kr.co.data.entity.room.VideoStorage
 import kr.co.domain.api.usecase.AllDeleteVideoDataBaseUseCase
 import kr.co.domain.api.usecase.AllLoadVideoDataBaseUseCase
@@ -25,7 +23,7 @@ class VideoStoragePresenter(override var view: VideoStorageContract.View,
 
     //when response 200
     @SuppressLint("CheckResult")
-    override fun getServerVideoResult() {
+    override fun getServerFileResult() {
         allDeleteVideoStorage()
         view.startAnimation()
 
@@ -40,21 +38,21 @@ class VideoStoragePresenter(override var view: VideoStorageContract.View,
                         insertDataBase(addServerVideoStorage)
                      }
                     }
-                view.setVideoResult(addServerVideoStorage)
+                view.setFileResult(addServerVideoStorage)
             },{
                 Timber.e(it.localizedMessage)
             })
     }
 
     //when response 500
-    override fun getLocalVideoResult() {
+    override fun getLocalFileResult() {
         view.startAnimation()
-        view.setVideoResult(addRoomDBVideoStorage)
+        view.setFileResult(addRoomDBVideoStorage)
     }
 
     //load db
     @SuppressLint("CheckResult")
-    override fun loadLocalVideoStorageDB() {
+    override fun loadLocalFileStorageDB() {
         allLoadVideoDataBaseUseCase.allLoad()
             .subscribe({
                 it.map {
@@ -67,7 +65,7 @@ class VideoStoragePresenter(override var view: VideoStorageContract.View,
                 }
               //  view.successLoadDB()
                 Timber.e("onComplete")
-                view.setVideoResult(addRoomDBVideoStorage)
+                view.setFileResult(addRoomDBVideoStorage)
             }, {
                 Timber.e("Error getting info from interactor (video)")
             })

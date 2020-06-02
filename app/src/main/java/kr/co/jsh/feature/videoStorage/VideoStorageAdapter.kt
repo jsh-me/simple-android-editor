@@ -1,4 +1,4 @@
-package kr.co.jsh.feature.storage.video
+package kr.co.jsh.feature.videoStorage
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup

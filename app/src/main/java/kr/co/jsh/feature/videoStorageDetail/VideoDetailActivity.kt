@@ -1,4 +1,4 @@
-package kr.co.jsh.feature.storage.detailVideo
+package kr.co.jsh.feature.videoStorageDetail
 
 import android.app.DownloadManager
 import android.content.Context
@@ -60,7 +60,7 @@ class VideoDetailActivity : AppCompatActivity(){
         }
     }
 
-    fun saveVideo(){
+    fun saveBtn(){
         val displayName = "${System.currentTimeMillis()}.mp4"
         val downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
         ScopeStorageFileUtil.downloadURL(result!!, downloadManager, displayName, this)
@@ -83,7 +83,7 @@ class VideoDetailActivity : AppCompatActivity(){
         releasePlayer()
     }
 
-    fun backButton(){
+    fun backBtn(){
         finish()
         releasePlayer()
     }

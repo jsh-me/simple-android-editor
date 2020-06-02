@@ -8,10 +8,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import kr.co.domain.globalconst.Consts
 import kr.co.jsh.R
-import kr.co.jsh.databinding.FullscreenVideoviewBinding
+import kr.co.jsh.databinding.ActivityFullscreenVideoViewBinding
 
 class VideoViewActivity : AppCompatActivity(){
-    private lateinit var binding : FullscreenVideoviewBinding
+    private lateinit var binding : ActivityFullscreenVideoViewBinding
     private lateinit var videoUrl: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,7 +22,7 @@ class VideoViewActivity : AppCompatActivity(){
     }
 
     private fun setupDataBinding(){
-        binding = DataBindingUtil.setContentView(this, R.layout.fullscreen_videoview)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_fullscreen_video_view)
         binding.fullscreen = this@VideoViewActivity
     }
 
@@ -32,28 +32,28 @@ class VideoViewActivity : AppCompatActivity(){
         }
         videoUrl = intent.getStringExtra(Consts.VIDEO_URI)
         val videoCurrentPosition = intent.getIntExtra(Consts.VIDEO_CURRENT_POSITION, 0)
-        binding.fullScreenVideoView.setVideoURI(Uri.parse(videoUrl))
-        binding.fullScreenVideoView.seekTo(videoCurrentPosition)
+        binding.videoFullScreen.setVideoURI(Uri.parse(videoUrl))
+        binding.videoFullScreen.seekTo(videoCurrentPosition)
 
         val mediaController = MediaController(this)
-        mediaController.setAnchorView(binding.fullScreenVideoView)
-        binding.fullScreenVideoView.setMediaController(mediaController)
+        mediaController.setAnchorView(binding.videoFullScreen)
+        binding.videoFullScreen.setMediaController(mediaController)
     }
 
     override fun onPause() {
         super.onPause()
-        binding.fullScreenVideoView.stopPlayback()
+        binding.videoFullScreen.stopPlayback()
     }
 
     override fun onResume() {
         super.onResume()
-        binding.fullScreenVideoView.start()
+        binding.videoFullScreen.start()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         val intent = Intent().apply{
-            putExtra(Consts.VIDEO_CURRENT_POSITION, binding.fullScreenVideoView.currentPosition)
+            putExtra(Consts.VIDEO_CURRENT_POSITION, binding.videoFullScreen.currentPosition)
         }
         setResult(1000, intent)
     }

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.net.Uri
@@ -27,10 +28,13 @@ class PhotoPresenter(override var view: PhotoContract.View,
                      private var postFileUploadUseCase: PostFileUploadUseCase,
                      private var postImagePidNumberAndInfoUseCase: PostImagePidNumberAndInfoUseCase
 ) : PhotoContract.Presenter {
-    @SuppressLint("CheckResult")
-    override fun setImageView(context: Context, string: String) {
-        val stringToFile = Uri.parse(string).toFile()
-        view.displayPhotoView(stringToFile)
+
+    override fun preparePath(extraIntent: Intent) {
+        var path =""
+        extraIntent?.let{
+            path =  it.getStringExtra(Consts.EXTRA_PHOTO_PATH)
+        }
+        view.displayPhotoView(Uri.parse(path).toFile())
     }
 
     override fun saveImage(context: Context, uri: Uri) {

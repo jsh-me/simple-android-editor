@@ -6,35 +6,23 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.widget.VideoView
 import androidx.recyclerview.widget.RecyclerView
+import kr.co.jsh.base.BasePresenter
+import kr.co.jsh.base.BaseView
 
 interface TrimmerContract {
-    interface View{
+    interface View: BaseView<Presenter> {
         fun onVideoPrepared() //OnVideoListener
-        fun onError(message: String)
-        fun cancelAction()
         fun onTrimStarted()
         fun videoPath(path : String)
         fun resetCropView()
         fun setThumbnailListView(thumbnailList :  ArrayList<Bitmap>)
         fun setPairList(list : ArrayList<Pair<Int,Int>>)
         fun getResult(uri:Uri)
-
-        //uploadFile result
-        fun uploadSuccess(msg: String)
-        fun uploadFailed(msg: String)
-
-        //suspend thread
-        fun cancelJob()
-
-        fun startAnimation()
-        fun stopAnimation()
-
     }
-    interface Presenter{
+    interface Presenter: BasePresenter {
         var view: View
-        fun prepareVideoPath(extraIntent: Intent)
-        fun resetCrop(context:Context, crop_time: ArrayList<Pair<Int, Int>>)
-        fun crop(context: Context, cropCount: Int, videoLoader:VideoView, crop_time: ArrayList<Pair<Int, Int>>, recycler: RecyclerView)
+        fun resetCrop(context:Context, trimVideoTimeList: ArrayList<Pair<Int, Int>>)
+        fun crop(context: Context, cropCount: Int, videoLoader:VideoView, trimVideoTimeList: ArrayList<Pair<Int, Int>>, recycler: RecyclerView)
         fun getThumbnailList(mSrc: Uri, context: Context)
         fun trimVideo(path: String, context:Context, mSrc: Uri, start_sec: Int, end_sec: Int)
         fun getResultUri(uri:Uri, context:Context, option: String)
