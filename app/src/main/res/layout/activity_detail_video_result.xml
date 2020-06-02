@@ -4,63 +4,63 @@
     <data>
         <variable
             name="resultVideo"
-            type="kr.co.jsh.feature.storage.detailVideo.VideoDetailActivity" />
+            type="kr.co.jsh.feature.videoStorageDetail.VideoDetailActivity" />
 
         <variable
             name="view"
             type="android.view.View" />
     </data>
 
-<androidx.constraintlayout.widget.ConstraintLayout
-   android:layout_width="match_parent"
-    android:background="@color/backgound_space1"
-    android:layout_height="match_parent">
+    <androidx.constraintlayout.widget.ConstraintLayout
+       android:layout_width="match_parent"
+        android:background="@color/grey2"
+        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/photo_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/background_space"
-        android:gravity="center"
-        android:padding="10dp"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/video_detail_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/grey1"
+            android:gravity="center"
+            android:padding="10dp"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageButton
-        android:id="@+id/backBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/ic_back"
-        android:onClick="@{() -> resultVideo.backButton()}"
-        app:layout_constraintBottom_toBottomOf="@+id/photo_title"
-        app:layout_constraintStart_toStartOf="@+id/photo_title"
-        app:layout_constraintTop_toTopOf="parent" />
+        <ImageButton
+            android:id="@+id/video_detail_back_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_back"
+            android:onClick="@{() -> resultVideo.backBtn()}"
+            app:layout_constraintBottom_toBottomOf="@+id/video_detail_title"
+            app:layout_constraintStart_toStartOf="@+id/video_detail_title"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.exoplayer2.ui.PlayerView
-        android:id="@+id/result_video_detail"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/photo_title" />
+        <com.google.android.exoplayer2.ui.PlayerView
+            android:id="@+id/video_detail_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/video_detail_title" />
 
-    <TextView
-        android:id="@+id/video_save_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:textSize="18sp"
-        android:text="@string/save"
-        android:textColor="@color/white"
-        android:onClick="@{() -> resultVideo.saveVideo()}"
-        app:layout_constraintBottom_toBottomOf="@+id/photo_title"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/video_save_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:textSize="18sp"
+            android:text="@string/save"
+            android:textColor="@color/white"
+            android:onClick="@{() -> resultVideo.saveBtn()}"
+            app:layout_constraintBottom_toBottomOf="@+id/video_detail_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

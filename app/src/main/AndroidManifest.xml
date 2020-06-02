@@ -11,7 +11,7 @@
     <application
         android:name=".MainApplication"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_app_icon_round"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:requestLegacyExternalStorage="true"
@@ -53,17 +53,17 @@
             android:screenOrientation="portrait"/>
         <activity android:name="kr.co.jsh.feature.login.LoginAccountDialog"
             android:theme="@style/Theme.Transparent" />
-        <activity android:name=".feature.storage.photo.PhotoStorageActivity"
+        <activity android:name="kr.co.jsh.feature.photoStorage.PhotoStorageActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".feature.storage.video.VideoStorageActivity"
+        <activity android:name="kr.co.jsh.feature.videoStorage.VideoStorageActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".feature.fullscreen.VideoViewActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:exported="false"
             android:theme="@style/Theme.AppCompat.VideoViewScreen" />
-        <activity android:name=".feature.storage.detailPhoto.PhotoDetailActivity"
+        <activity android:name="kr.co.jsh.feature.photoStorageDetail.PhotoDetailActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".feature.storage.detailVideo.VideoDetailActivity"
+        <activity android:name=".feature.videoStorageDetail.VideoDetailActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".feature.sendMsg.SuccessSendMsgActivity"
             android:screenOrientation="portrait"/>

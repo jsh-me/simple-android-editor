@@ -8,7 +8,6 @@ import com.github.hiteshsondhi88.libffmpeg.FFmpeg
 import com.github.hiteshsondhi88.libffmpeg.FFmpegLoadBinaryResponseHandler
 import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegCommandAlreadyRunningException
 import kr.co.jsh.feature.videoedit.TrimmerContract
-import kr.co.jsh.interfaces.OnCompressVideoListener
 
 class VideoOptions(private var ctx: Context) {
     companion object {
@@ -141,59 +140,59 @@ class VideoOptions(private var ctx: Context) {
 //        listener?.onCropStarted()
 //    }
 
-    fun compressVideo(inputPath: String, outputPath: String, outputFileUri: Uri, width: String, height: String, listener: OnCompressVideoListener?) {
-        val ff = FFmpeg.getInstance(ctx)
-        ff.loadBinary(object : FFmpegLoadBinaryResponseHandler {
-            override fun onFinish() {
-                Log.e("FFmpegLoad", "onFinish")
-            }
-
-            override fun onSuccess() {
-                Log.e("FFmpegLoad", "onSuccess")
-                val command = arrayOf("-i", inputPath, "-vf", "scale=$width:$height", outputPath) //iw:ih
-                try {
-                    ff.execute(command, object : ExecuteBinaryResponseHandler() {
-                        override fun onSuccess(message: String?) {
-                            super.onSuccess(message)
-                            Log.e(TAG, "onSuccess: " + message!!)
-                        }
-
-                        override fun onProgress(message: String?) {
-                            super.onProgress(message)
-                            listener?.onError(message.toString())
-                            Log.e(TAG, "onProgress: " + message!!)
-                        }
-
-                        override fun onFailure(message: String?) {
-                            super.onFailure(message)
-                            listener?.onError(message.toString())
-                            Log.e(TAG, "onFailure: " + message!!)
-                        }
-
-                        override fun onStart() {
-                            super.onStart()
-                            Log.e(TAG, "onStart: ")
-                        }
-
-                        override fun onFinish() {
-                            super.onFinish()
-                            listener?.getResult(outputFileUri)
-                            Log.e(TAG, "onFinish: ")
-                        }
-                    })
-                } catch (e: FFmpegCommandAlreadyRunningException) {
-                    listener?.onError(e.toString())
-                }
-            }
-
-            override fun onFailure() {
-                Log.e("FFmpegLoad", "onFailure")
-                listener?.onError("Failed")
-            }
-
-            override fun onStart() {
-            }
-        })
-        listener?.onCompressStarted()
-    }
+//    fun compressVideo(inputPath: String, outputPath: String, outputFileUri: Uri, width: String, height: String, listener: OnCompressVideoListener?) {
+//        val ff = FFmpeg.getInstance(ctx)
+//        ff.loadBinary(object : FFmpegLoadBinaryResponseHandler {
+//            override fun onFinish() {
+//                Log.e("FFmpegLoad", "onFinish")
+//            }
+//
+//            override fun onSuccess() {
+//                Log.e("FFmpegLoad", "onSuccess")
+//                val command = arrayOf("-i", inputPath, "-vf", "scale=$width:$height", outputPath) //iw:ih
+//                try {
+//                    ff.execute(command, object : ExecuteBinaryResponseHandler() {
+//                        override fun onSuccess(message: String?) {
+//                            super.onSuccess(message)
+//                            Log.e(TAG, "onSuccess: " + message!!)
+//                        }
+//
+//                        override fun onProgress(message: String?) {
+//                            super.onProgress(message)
+//                            listener?.onError(message.toString())
+//                            Log.e(TAG, "onProgress: " + message!!)
+//                        }
+//
+//                        override fun onFailure(message: String?) {
+//                            super.onFailure(message)
+//                            listener?.onError(message.toString())
+//                            Log.e(TAG, "onFailure: " + message!!)
+//                        }
+//
+//                        override fun onStart() {
+//                            super.onStart()
+//                            Log.e(TAG, "onStart: ")
+//                        }
+//
+//                        override fun onFinish() {
+//                            super.onFinish()
+//                            listener?.getResult(outputFileUri)
+//                            Log.e(TAG, "onFinish: ")
+//                        }
+//                    })
+//                } catch (e: FFmpegCommandAlreadyRunningException) {
+//                    listener?.onError(e.toString())
+//                }
+//            }
+//
+//            override fun onFailure() {
+//                Log.e("FFmpegLoad", "onFailure")
+//                listener?.onError("Failed")
+//            }
+//
+//            override fun onStart() {
+//            }
+//        })
+//        listener?.onCompressStarted()
+//    }
 }

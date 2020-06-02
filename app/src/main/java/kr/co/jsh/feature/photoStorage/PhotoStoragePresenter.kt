@@ -1,4 +1,4 @@
-package kr.co.jsh.feature.storage.photo
+package kr.co.jsh.feature.photoStorage
 
 import android.annotation.SuppressLint
 import io.reactivex.schedulers.Schedulers
@@ -21,7 +21,7 @@ class PhotoStoragePresenter(override var view: PhotoStorageContract.View,
     private val resultImageList = ArrayList<String>()
 
     @SuppressLint("CheckResult")
-    override fun getServerImageResult() {
+    override fun getServerFileResult() {
         resultImageList.clear()
         view.startAnimation()
         allDeleteImageStorage()
@@ -35,54 +35,38 @@ class PhotoStoragePresenter(override var view: PhotoStorageContract.View,
                         insertDataBase(addServerImageStorage)
                     }
                 }
-                view.setImageResult(addServerImageStorage)
+                view.setFileResult(addServerImageStorage)
             },{
                 Timber.e(it.localizedMessage)
             })
 
     }
 
-    override fun getLocalImageResult() {
+    override fun getLocalFileResult() {
         view.startAnimation()
-        view.setImageResult(addRoomDBImageStorage)
+        view.setFileResult(addRoomDBImageStorage)
     }
 
 
     //load db
     @SuppressLint("CheckResult")
-    override fun loadImageStorage(){
+    override fun loadLocalFileStorageDB() {
         allLoadImageDataBaseUseCase.allLoad()
             .subscribeOn(Schedulers.io())
             .subscribe({
-                it.map{
+                it.map {
                     resultImageList.clear()
                     resultImageList.add(it.path)
                     resultImageList.add(it.filename)
                     addRoomDBImageStorage.add(resultImageList) //set 함수
                 }
 
-              //  view.successLoadDB()
+                //  view.successLoadDB()
                 Timber.e("onComplete")
 
-            },{
-                Timber.e( "Error getting info from interactor (image)")
+            }, {
+                Timber.e("Error getting info from interactor (image)")
             })
-
-//        val loadRoomDB =  allLoadImageDataBaseUseCase.allLoad()
-//        loadRoomDB.map {
-//            it.map {
-//                Timber.e("11")
-//                resultImageList.clear()
-//                resultImageList.apply {
-//                    add(it.path)
-//                    add(it.filename)
-//                }
-//                addRoomDBImageStorage.add(resultImageList) //set 함수
-//                Timber.e("22")
-//            }
-//        }
-//        view.successLoadDB()
-//        Timber.e("33")
     }
 
     private fun allDeleteImageStorage(){

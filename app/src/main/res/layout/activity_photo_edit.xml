@@ -14,161 +14,161 @@
     </data>
 
 
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/photo_edit_layout"
-    android:orientation="vertical"
-    android:background="@color/background_space"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <ImageView
-        android:id="@+id/photoBackBtn"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_gravity="center"
-        android:layout_margin="10dp"
-        android:onClick="@{()->photo.backButton()}"
-        android:background="@drawable/ic_back"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/photoSaveBtn"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:layout_gravity="end"
-        android:layout_margin="10dp"
-        android:background="@drawable/ic_file_download"
-        android:onClick="@{photo::savePhoto}"
-        android:padding="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/photoImageView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="20dp"
-        android:adjustViewBounds="true"
-        android:visibility="@{photo.drawCheck ? view.INVISIBLE : view.VISIBLE}"
-        app:layout_constraintBottom_toTopOf="@+id/child_layout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/photoBackBtn"
-        app:layout_constraintVertical_bias="0.57" />
-
-
-    <com.byox.drawview.views.DrawView
-        android:id="@+id/drawPhotoview"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_centerHorizontal="true"
-        android:visibility="@{photo.drawCheck ? view.VISIBLE : view.INVISIBLE}"
-        app:dv_draw_anti_alias="true"
-        app:dv_draw_color="@color/textBlack"
-        app:dv_draw_corners="round"
-        app:dv_draw_dither="true"
-        app:dv_draw_enable_zoom="true"
-        app:dv_draw_max_zoom_factor="8"
-        app:dv_draw_mode="draw"
-        app:dv_draw_style="stroke"
-        app:dv_draw_tool="pen"
-        app:dv_draw_width="20"
-        app:dv_draw_zoomregion_maxscale="5"
-        app:dv_draw_zoomregion_minscale="2"
-        app:dv_draw_zoomregion_scale="4"
-        app:layout_constraintBottom_toBottomOf="@+id/photoImageView"
-        app:layout_constraintEnd_toEndOf="@+id/photoImageView"
-        app:layout_constraintStart_toStartOf="@+id/photoImageView"
-        app:layout_constraintTop_toTopOf="@+id/photoImageView"
-        app:layout_constraintVertical_bias="0.49" />
-
-
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/child_layout"
+        android:id="@+id/photo_edit_parent_layout"
+        android:orientation="vertical"
+        android:background="@color/grey1"
         android:layout_width="match_parent"
-        android:layout_height="180dp"
-        android:layout_marginBottom="50dp"
-        android:background="@color/backgound_space1"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/remove_btn"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:onClick="@{() -> photo.drawPhotoMask()}"
-        android:text="@string/draw"
-        android:textColor="@{photo.textColor[1] ? @color/textWhite : @color/textBlack}"
-        app:layout_constraintBottom_toBottomOf="@+id/child_layout"
-        app:layout_constraintStart_toStartOf="@+id/child_layout"
-        app:layout_constraintTop_toTopOf="@+id/child_layout"
-        app:layout_constraintVertical_bias="0.39" />
+        <ImageView
+            android:id="@+id/photo_edit_back_btn"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            android:onClick="@{()->photo.backBtn()}"
+            android:background="@drawable/ic_back"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/reset_paint_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:onClick="@{photo::resetButton}"
-        android:text="@string/initialize_draw"
-        android:textColor="@{photo.textColor[0] ? @color/textWhite : @color/textBlack}"
-        app:layout_constraintBottom_toBottomOf="@+id/child_layout"
-        app:layout_constraintStart_toEndOf="@+id/remove_btn"
-        app:layout_constraintTop_toTopOf="@+id/remove_btn"
-        app:layout_constraintVertical_bias="0.0" />
+        <ImageView
+            android:id="@+id/photo_edit_save_btn"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="end"
+            android:layout_margin="10dp"
+            android:background="@drawable/ic_file_download"
+            android:onClick="@{() -> photo.saveBtn()}"
+            android:padding="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageButton
-        android:id="@+id/image_undo_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:onClick="@{() -> photo.undoButton()}"
-        android:enabled = "@{photo.canUndo ? true : false}"
-        android:background="@{photo.canUndo ? @drawable/ic_undo_white_24dp : @drawable/ic_undo_grey_24dp}"
-        app:layout_constraintStart_toStartOf="@+id/remove_btn"
-        app:layout_constraintTop_toTopOf="@+id/child_layout" />
+        <ImageView
+            android:id="@+id/photo_edit_iv"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="20dp"
+            android:adjustViewBounds="true"
+            android:visibility="@{photo.drawCheck ? view.INVISIBLE : view.VISIBLE}"
+            app:layout_constraintBottom_toTopOf="@+id/photo_edit_child_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/photo_edit_back_btn"
+            app:layout_constraintVertical_bias="0.57" />
 
-    <ImageButton
-        android:id="@+id/image_redo_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:onClick="@{() -> photo.redoButton()}"
-        android:enabled = "@{photo.canRedo ? true : false}"
-        android:background="@{photo.canRedo? @drawable/ic_redo_white_24dp : @drawable/ic_redo_grey_24dp}"
-        app:layout_constraintBottom_toBottomOf="@+id/image_undo_btn"
-        app:layout_constraintStart_toEndOf="@+id/image_undo_btn"
-        app:layout_constraintTop_toTopOf="@+id/image_undo_btn" />
 
-    <kr.co.jsh.customview.BlockingView
-        android:id="@+id/blockingView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        android:background="#80333333"/>
+        <com.byox.drawview.views.DrawView
+            android:id="@+id/photo_edit_draw_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_centerHorizontal="true"
+            android:visibility="@{photo.drawCheck ? view.VISIBLE : view.INVISIBLE}"
+            app:dv_draw_anti_alias="true"
+            app:dv_draw_color="@color/black"
+            app:dv_draw_corners="round"
+            app:dv_draw_dither="true"
+            app:dv_draw_enable_zoom="true"
+            app:dv_draw_max_zoom_factor="8"
+            app:dv_draw_mode="draw"
+            app:dv_draw_style="stroke"
+            app:dv_draw_tool="pen"
+            app:dv_draw_width="20"
+            app:dv_draw_zoomregion_maxscale="5"
+            app:dv_draw_zoomregion_minscale="2"
+            app:dv_draw_zoomregion_scale="4"
+            app:layout_constraintBottom_toBottomOf="@+id/photo_edit_iv"
+            app:layout_constraintEnd_toEndOf="@+id/photo_edit_iv"
+            app:layout_constraintStart_toStartOf="@+id/photo_edit_iv"
+            app:layout_constraintTop_toTopOf="@+id/photo_edit_iv"
+            app:layout_constraintVertical_bias="0.49" />
 
-    <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/loading_animation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:lottie_loop="true"
-        app:lottie_fileName="loading.json" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/photo_edit_child_layout"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:layout_marginBottom="50dp"
+            android:background="@color/grey2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/photo_edit_remove_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:onClick="@{() -> photo.drawPhotoMask()}"
+            android:text="@string/draw"
+            android:textColor="@{photo.changeTextColor[1] ? @color/white : @color/black}"
+            app:layout_constraintBottom_toBottomOf="@+id/photo_edit_child_layout"
+            app:layout_constraintStart_toStartOf="@+id/photo_edit_child_layout"
+            app:layout_constraintTop_toTopOf="@+id/photo_edit_child_layout"
+            app:layout_constraintVertical_bias="0.39" />
+
+        <TextView
+            android:id="@+id/photo_edit_reset_draw_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:onClick="@{() -> photo.resetBtn()}"
+            android:text="@string/initialize_draw"
+            android:textColor="@{photo.changeTextColor[0] ? @color/white : @color/black}"
+            app:layout_constraintBottom_toBottomOf="@+id/photo_edit_child_layout"
+            app:layout_constraintStart_toEndOf="@+id/photo_edit_remove_btn"
+            app:layout_constraintTop_toTopOf="@+id/photo_edit_remove_btn"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <ImageButton
+            android:id="@+id/photo_edit_undo_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:onClick="@{() -> photo.undoBtn()}"
+            android:enabled = "@{photo.canUndo ? true : false}"
+            android:background="@{photo.canUndo ? @drawable/ic_undo_white_24dp : @drawable/ic_undo_grey_24dp}"
+            app:layout_constraintStart_toStartOf="@+id/photo_edit_remove_btn"
+            app:layout_constraintTop_toTopOf="@+id/photo_edit_child_layout" />
+
+        <ImageButton
+            android:id="@+id/photo_edit_redo_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:onClick="@{() -> photo.redoBtn()}"
+            android:enabled = "@{photo.canRedo ? true : false}"
+            android:background="@{photo.canRedo? @drawable/ic_redo_white_24dp : @drawable/ic_redo_grey_24dp}"
+            app:layout_constraintBottom_toBottomOf="@+id/photo_edit_undo_btn"
+            app:layout_constraintStart_toEndOf="@+id/photo_edit_undo_btn"
+            app:layout_constraintTop_toTopOf="@+id/photo_edit_undo_btn" />
+
+        <kr.co.jsh.customview.BlockingView
+            android:id="@+id/blockingView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:background="#80333333"/>
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/loading_animation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:lottie_loop="true"
+            app:lottie_fileName="loading.json" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -4,18 +4,18 @@
     <data>
         <variable
             name="videoStorage"
-            type="kr.co.jsh.feature.storage.video.VideoStorageActivity" />
+            type="kr.co.jsh.feature.videoStorage.VideoStorageActivity" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:background="@color/backgound_space1"
+        android:background="@color/grey2"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/photo_title"
+            android:id="@+id/video_storage_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/background_space"
+            android:background="@color/grey1"
             android:gravity="center"
             android:padding="10dp"
             android:text="@string/video_storage"
@@ -26,24 +26,24 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
-            android:id="@+id/backBtn"
+            android:id="@+id/video_storage_back_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/ic_back"
-            android:onClick="@{() -> videoStorage.backButton()}"
-            app:layout_constraintBottom_toBottomOf="@+id/photo_title"
-            app:layout_constraintStart_toStartOf="@+id/photo_title"
+            android:onClick="@{() -> videoStorage.backBtn()}"
+            app:layout_constraintBottom_toBottomOf="@+id/video_storage_title"
+            app:layout_constraintStart_toStartOf="@+id/video_storage_title"
             app:layout_constraintTop_toTopOf="parent" />
 
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/videoStorageRecycler"
+            android:id="@+id/video_storage_recycler"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/photo_title"
+            app:layout_constraintTop_toBottomOf="@+id/video_storage_title"
             app:layout_constraintVertical_bias="0.0" />
 
         <TextView
@@ -55,10 +55,10 @@
             android:visibility="gone"
             android:textColor="@color/white"
             android:textSize="18sp"
-            app:layout_constraintBottom_toBottomOf="@+id/videoStorageRecycler"
+            app:layout_constraintBottom_toBottomOf="@+id/video_storage_recycler"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/photo_title" />
+            app:layout_constraintTop_toBottomOf="@+id/video_storage_title" />
 
         <kr.co.jsh.customview.BlockingView
             android:id="@+id/blockingView"

@@ -1,4 +1,4 @@
-package kr.co.jsh.feature.storage.video
+package kr.co.jsh.feature.videoStorage
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,12 +9,12 @@ import androidx.recyclerview.widget.GridLayoutManager
 import kr.co.domain.globalconst.Consts
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityVideoStorageBinding
-import kr.co.jsh.feature.storage.detailVideo.VideoDetailActivity
+import kr.co.jsh.feature.videoStorageDetail.VideoDetailActivity
 import org.koin.android.ext.android.get
 
 class VideoStorageActivity : AppCompatActivity(), VideoStorageContract.View {
     private lateinit var binding : ActivityVideoStorageBinding
-    lateinit var presenter : VideoStoragePresenter
+    override lateinit var presenter : VideoStorageContract.Presenter
     private var response = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,25 +35,16 @@ class VideoStorageActivity : AppCompatActivity(), VideoStorageContract.View {
 //        presenter.loadVideoStorage()
 
         when(response){
-            200 -> {presenter.getServerVideoResult()}
+            200 -> {presenter.getServerFileResult()}
             500 -> {
-                presenter.loadLocalVideoStorageDB()
-                presenter.getLocalVideoResult()
+                presenter.loadLocalFileStorageDB()
+                presenter.getLocalFileResult()
             }
         }
 
     }
-//    override fun successLoadDB() {
-//        when(response){
-//            200 -> {presenter.getServerVideoResult()}
-//            500 -> {
-//                presenter.loadLocalVideoStorageDB()
-//                presenter.getLocalVideoResult()
-//            }
-//        }
-//    }
 
-    override fun setVideoResult(list: ArrayList<List<String>>) {
+    override fun setFileResult(list: ArrayList<List<String>>) {
         if(list.isNullOrEmpty()){
             binding.noResultText.visibility = View.VISIBLE
         } else {
@@ -85,7 +76,7 @@ class VideoStorageActivity : AppCompatActivity(), VideoStorageContract.View {
         binding.loadingAnimation.visibility = View.GONE
     }
 
-    fun backButton(){
+    fun backBtn(){
         finish()
     }
 }

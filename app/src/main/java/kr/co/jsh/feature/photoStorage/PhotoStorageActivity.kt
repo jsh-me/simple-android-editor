@@ -1,4 +1,4 @@
-package kr.co.jsh.feature.storage.photo
+package kr.co.jsh.feature.photoStorage
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,20 +7,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import kr.co.domain.globalconst.Consts
-import kr.co.domain.globalconst.PidClass
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityPhotoStorageBinding
-import kr.co.jsh.feature.sendMsg.SuccessSendMsgActivity
-import kr.co.jsh.feature.storage.detailPhoto.PhotoDetailActivity
-import kr.co.jsh.feature.storage.detailVideo.VideoDetailActivity
-import java.net.URL
+import kr.co.jsh.feature.photoStorageDetail.PhotoDetailActivity
+import kr.co.jsh.feature.photoedit.PhotoContract
 import org.koin.android.ext.android.get
-import java.io.File
 
 
 class PhotoStorageActivity : AppCompatActivity(), PhotoStorageContract.View {
     lateinit var binding : ActivityPhotoStorageBinding
-    lateinit var presenter : PhotoStoragePresenter
+    override lateinit var presenter : PhotoStorageContract.Presenter
     private var response = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,26 +34,15 @@ class PhotoStorageActivity : AppCompatActivity(), PhotoStorageContract.View {
 //        presenter.loadImageStorage()
         response = intent.getIntExtra(Consts.LOGIN_RESPONSE, -1)
         when(response){
-            200 -> {presenter.getServerImageResult()}
+            200 -> {presenter.getServerFileResult()}
             500 -> {
-                presenter.loadImageStorage()
-                presenter.getLocalImageResult()
+                presenter.loadLocalFileStorageDB()
+                presenter.getLocalFileResult()
             }
         }
     }
 
-//    override fun successLoadDB() {
-//        response = intent.getIntExtra(Consts.LOGIN_RESPONSE, -1)
-//        when(response){
-//            200 -> {presenter.getServerImageResult()}
-//            500 -> {
-//                presenter.loadImageStorage()
-//                presenter.getLocalImageResult()
-//            }
-//        }
-//    }
-
-    override fun setImageResult(list: ArrayList<List<String>>) {
+    override fun setFileResult(list: ArrayList<List<String>>) {
         if (list.isNullOrEmpty()) {
             binding.noResultText.visibility = View.VISIBLE
         } else {
@@ -90,7 +75,7 @@ class PhotoStorageActivity : AppCompatActivity(), PhotoStorageContract.View {
 
     }
 
-    fun backButton(){
+    fun backBtn(){
         finish()
     }
 }

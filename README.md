@@ -13,31 +13,13 @@ you can use video-time-line view, video trim based on ffmpeg engine, and select 
 
 ## Main UI Feature
 
-There are four main feature in ui :-9
-
-#### 1. Play a video
-
-![1loadVideo](https://user-images.githubusercontent.com/39688690/82647357-0c3f9900-9c51-11ea-87d3-95fe55b67b05.gif)
 
 
-
-#### 2. Trim a Video
-
-![2cropVideo](https://user-images.githubusercontent.com/39688690/82647496-3f822800-9c51-11ea-8a79-4c5aee0e92de.gif)
-
-
-
-#### 3. Select the specific frame and Draw a line
-
-![3drawVideo](https://user-images.githubusercontent.com/39688690/82647547-532d8e80-9c51-11ea-82bc-c4810ecf30f9.gif)
-
-
-
-#### 4. Save a result
-
-![4saveVideo](https://user-images.githubusercontent.com/39688690/82647652-7d7f4c00-9c51-11ea-8724-8973a5b4db3c.gif)
-
-
+|                          Play Video                          |                         Select Video                         |
+| :----------------------------------------------------------: | :----------------------------------------------------------: |
+| <img src="https://user-images.githubusercontent.com/39688690/82647357-0c3f9900-9c51-11ea-87d3-95fe55b67b05.gif" /> | <img src="https://user-images.githubusercontent.com/39688690/82647496-3f822800-9c51-11ea-8a79-4c5aee0e92de.gif" /> |
+|        **Select the specific frame and Draw a line**         |                       **Save Result**                        |
+| ![gif (1)](https://user-images.githubusercontent.com/39688690/83498844-66651780-a4f7-11ea-8f11-6f648c8a3ec0.gif) | ![gif](https://user-images.githubusercontent.com/39688690/83498614-18501400-a4f7-11ea-8646-04fba2cca479.gif) |
 
 
 
@@ -58,19 +40,15 @@ Inpainting is a conservation process where damaged, deteriorating, or missing pa
 
 
 
-
-
-### Original image and generated result mask image in android App
+## Original image and generated result mask image
 
 <img src="https://user-images.githubusercontent.com/39688690/82655327-f9cb5c80-9c5c-11ea-9215-6367014d5fdd.gif" width="80%">
 
 
 
-#### Result: 
+### Result
 
 <img src="https://user-images.githubusercontent.com/39688690/82655031-8b869a00-9c5c-11ea-80bd-299288f10f8a.png" width="48%">  <img src="https://user-images.githubusercontent.com/39688690/82655208-ca1c5480-9c5c-11ea-937d-c9d317247330.png" width="48%">
-
-
 
 
 

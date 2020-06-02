@@ -19,9 +19,11 @@ import kr.co.domain.api.usecase.PostVideoPidNumberAndInfoUseCase
 import kr.co.domain.globalconst.Consts
 import kr.co.domain.globalconst.Consts.Companion.EXTRA_VIDEO_PATH
 import kr.co.domain.globalconst.PidClass
+import kr.co.domain.utils.addFile
+import kr.co.domain.utils.toastShort
 import kr.co.jsh.singleton.UserObject
 import kr.co.jsh.utils.*
-import kr.co.jsh.utils.bitmapUtil.BitmapToFileUtil
+import kr.co.jsh.utils.BitmapUtil.bitmapToFileUtil
 import kr.co.jsh.utils.permission.RealPathUtil
 import kr.co.jsh.utils.permission.ScopeStorageFileUtil
 import kr.co.jsh.utils.videoUtil.TrimVideoUtils
@@ -39,8 +41,10 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
                        private var postFileUploadUseCase: PostFileUploadUseCase,
                        private var postPidNumberAndInfoUseCase: PostVideoPidNumberAndInfoUseCase,
                        private var postImproveVideoPidNumber: PostImproveVideoPidNumber) : TrimmerContract.Presenter{
-   override fun crop(context: Context, cropCount: Int, videoLoader:VideoView,
-                          crop_time: ArrayList<Pair<Int, Int>>, recycler: RecyclerView
+
+
+   override fun setCuttingVideo(context: Context, cropCount: Int, videoLoader:VideoView,
+                          trimVideoTimeList: ArrayList<Pair<Int, Int>>, recycler: RecyclerView
    ){
         var crop_x1 = 0
        var crop_x2 = 0
@@ -50,82 +54,50 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
                 crop_x1 =
                     ( videoLoader.currentPosition * (recycler.width - ScreenSizeUtil(context).widthPixels)) /  videoLoader.duration
 
-                crop_time.add(Pair(crop_x1,  videoLoader.currentPosition))//2
-                crop_time.add(Pair(crop_x1,  videoLoader.currentPosition))//3
-                crop_time.add(Pair(recycler.width - ScreenSizeUtil(context).widthPixels,videoLoader.duration)) //4
-               // Toast.makeText(context, "${crop_x1} and ${videoLoader.currentPosition}", Toast.LENGTH_LONG).show()
+                trimVideoTimeList.add(Pair(crop_x1,  videoLoader.currentPosition))//2
+                trimVideoTimeList.add(Pair(crop_x1,  videoLoader.currentPosition))//3
+                trimVideoTimeList.add(Pair(recycler.width - ScreenSizeUtil(context).widthPixels,videoLoader.duration)) //4
             }
              2-> {
                  crop_x2 =
                      ( videoLoader.currentPosition * (recycler.width - ScreenSizeUtil(context).widthPixels)) /  videoLoader.duration
-                if(crop_time[1].first > crop_x2) {
-                    crop_time[1] = Pair(crop_x2, videoLoader.currentPosition)
+                if(trimVideoTimeList[1].first > crop_x2) {
+                    trimVideoTimeList[1] = Pair(crop_x2, videoLoader.currentPosition)
                 }
-                 else crop_time[2] = Pair(crop_x2, videoLoader.currentPosition)
-               //  Toast.makeText(context, "${crop_x2} and ${videoLoader.currentPosition}", Toast.LENGTH_LONG).show()
+                 else trimVideoTimeList[2] = Pair(crop_x2, videoLoader.currentPosition)
              }
 
             else -> {
-                Toast.makeText(context, "두번만 선택 가능", Toast.LENGTH_LONG).show()
+                context.toastShort("두번만 선택 가능")
             }
         }
-       view.setPairList(crop_time)
+       view.setPairList(trimVideoTimeList)
 
     }
 
     //사용자가 자른 동영상이 갤러리와 서버 동시에 저장, 업로드 되는 메소드
     override fun getResultUri(uri: Uri, context: Context, option: String) {
-//        RunOnUiThread(context).safely {
-//           // Toast.makeText(context, "Video saved at ${uri.path}", Toast.LENGTH_SHORT).show()
-//            //Todo override 된 함수에 넣어줌 ( 사용자가 자른 동영상 )
-//
-//            val mediaMetadataRetriever = MediaMetadataRetriever()
-//            mediaMetadataRetriever.setDataSource(context, uri)
-//            val duration =
-//                mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-//                    .toLong()
-//            val width =
-//                mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
-//                    .toLong()
-//            val height =
-//                mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
-//                    .toLong()
-//            val values = ContentValues()
-//            values.put(MediaStore.Video.Media.DATA, uri.path)
-//            values.put(MediaStore.Video.VideoColumns.DURATION, duration)
-//            values.put(MediaStore.Video.VideoColumns.WIDTH, width)
-//            values.put(MediaStore.Video.VideoColumns.HEIGHT, height)
-//            val id = ContentUris.parseId(
-//                context.contentResolver.insert(
-//                    MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-//                    values
-//                )
-//            )
-//            Log.e("VIDEO ID", id.toString())
-//        }
         ScopeStorageFileUtil.addVideoAlbum(uri, context)
 
-
         if(option.equals(Consts.SUPER_RESOL)) { improveFile(uri) }
-        else { uploadFile(uri) }
-
+        else { uploadFile(uri.toString()) }
     }
 
-    override fun prepareVideoPath(extraIntent: Intent) {
+    override fun preparePath(extraIntent: Intent) {
         var path =""
         extraIntent?.let{
             path =  it.getStringExtra(EXTRA_VIDEO_PATH)
             }
-        view.videoPath(path)
+        view.setVideoPath(path)
     }
 
-    override fun resetCrop(context:Context, crop_time: ArrayList<Pair<Int, Int>>) {
+    override fun getCropArrayList(context:Context, trimVideoTimeList: ArrayList<Pair<Int, Int>>) {
         try {
-            crop_time.clear()
-            crop_time.add(Pair(0,0))//1
+            trimVideoTimeList.clear()
+            trimVideoTimeList.add(Pair(0,0))//1
             view.resetCropView()
         } catch (e: Exception) {
-            Toast.makeText(context, "잘라진 것이 없어요!", Toast.LENGTH_LONG).show()
+            context.toastShort("잘라진 것이 없어요!")
         }
     }
 
@@ -210,8 +182,9 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
     //Todo 근데 왜 MediaType 이 video 인데도, 사진 동영상 둘다 왜 되는거지?
     //Todo 동영상과 사진 확장자를 업로드 할 수 있는 메소드
     @SuppressLint("CheckResult")
-    override fun uploadFile(uri: Uri) {
-        val path = "file://" + uri.toString()
+    override fun uploadFile(uri: String) {
+        //val path = "file://" + Uri.parse(uri)
+        val path = uri.addFile()
         val request = MultipartBody.Part.createFormData("file", path, RequestBody.create(MediaType.parse("video/*"), Uri.parse(path).toFile() ))
         postFileUploadUseCase.postFile(request)
             .subscribe({
@@ -232,8 +205,8 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
 
     @SuppressLint("CheckResult")
     override fun uploadMaskFile(bitmap: Bitmap, frameTimeSec:Float, context: Context) {
-        val file = BitmapToFileUtil(bitmap, context)
-        val path = "file://" + file.toString()
+        val file = bitmapToFileUtil(bitmap, context)
+        val path = file.toString().addFile()
         val request = MultipartBody.Part.createFormData("file", path , RequestBody.create(MediaType.parse("image/*"),Uri.parse(path).toFile()))
         postFileUploadUseCase.postFile(request)
             .subscribe({
@@ -251,7 +224,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
 
     @SuppressLint("CheckResult")
     fun improveFile(uri: Uri){
-        val path = "file://" + uri.toString()
+        val path = uri.toString().addFile()
         val request = MultipartBody.Part.createFormData("file", path, RequestBody.create(MediaType.parse("video/*"), Uri.parse(path).toFile() ))
         postFileUploadUseCase.postFile(request)
             .subscribe({

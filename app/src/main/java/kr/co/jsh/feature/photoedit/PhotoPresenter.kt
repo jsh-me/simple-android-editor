@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.net.Uri
@@ -14,8 +15,9 @@ import kr.co.domain.api.usecase.PostFileUploadUseCase
 import kr.co.domain.api.usecase.PostImagePidNumberAndInfoUseCase
 import kr.co.domain.globalconst.Consts
 import kr.co.domain.globalconst.PidClass
+import kr.co.domain.utils.addFile
 import kr.co.jsh.singleton.UserObject
-import kr.co.jsh.utils.bitmapUtil.BitmapToFileUtil
+import kr.co.jsh.utils.BitmapUtil.bitmapToFileUtil
 import kr.co.jsh.utils.RunOnUiThread
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -27,16 +29,17 @@ class PhotoPresenter(override var view: PhotoContract.View,
                      private var postFileUploadUseCase: PostFileUploadUseCase,
                      private var postImagePidNumberAndInfoUseCase: PostImagePidNumberAndInfoUseCase
 ) : PhotoContract.Presenter {
-    @SuppressLint("CheckResult")
-    override fun setImageView(context: Context, string: String) {
-        val stringToFile = Uri.parse(string).toFile()
-        view.displayPhotoView(stringToFile)
+
+    override fun preparePath(extraIntent: Intent) {
+        var path =""
+        extraIntent?.let{
+            path =  it.getStringExtra(Consts.EXTRA_PHOTO_PATH)?:""
+        }
+        view.setPhotoView(Uri.parse(path.addFile()).toFile())
     }
 
     override fun saveImage(context: Context, uri: Uri) {
         RunOnUiThread(context).safely {
-          //  Toast.makeText(context, "Image saved at ${uri.path}", Toast.LENGTH_SHORT).show()
-
             val mediaMetadataRetriever = MediaMetadataRetriever()
             mediaMetadataRetriever.setDataSource(context, uri)
             val duration =
@@ -64,7 +67,7 @@ class PhotoPresenter(override var view: PhotoContract.View,
 
     @SuppressLint("CheckResult")
     override fun uploadFile(uri: String) {
-        val path = "file://" + uri
+        val path = uri.addFile()
         val request = MultipartBody.Part.createFormData("file", path, RequestBody.create(MediaType.parse("image/*"), Uri.parse(path).toFile()))
         postFileUploadUseCase.postFile(request)
             .subscribe({
@@ -85,8 +88,8 @@ class PhotoPresenter(override var view: PhotoContract.View,
 
     @SuppressLint("CheckResult")
     override fun uploadFrameFile(bitmap: Bitmap, context: Context) {
-        val file = BitmapToFileUtil(bitmap, context)
-        val path = "file://" + file.toString()
+        val file = bitmapToFileUtil(bitmap, context)
+        val path = file.toString().addFile()
         val request = MultipartBody.Part.createFormData("file", path , RequestBody.create(MediaType.parse("image/*"),Uri.parse(path).toFile()))
         postFileUploadUseCase.postFile(request)
             .subscribe({

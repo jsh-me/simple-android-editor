@@ -16,18 +16,22 @@ import kr.co.domain.globalconst.Consts.Companion.EXTRA_PHOTO_PATH
 import kr.co.domain.globalconst.Consts.Companion.EXTRA_VIDEO_PATH
 import kr.co.domain.globalconst.Consts.Companion.REQUEST_VIDEO_CROPPER
 import kr.co.domain.globalconst.Consts.Companion.REQUEST_VIDEO_TRIMMER
+import kr.co.domain.utils.toastShort
 import kr.co.jsh.feature.login.LoginAccountDialog
 import kr.co.jsh.feature.photoedit.PhotoActivity
-import kr.co.jsh.feature.storage.photo.PhotoStorageActivity
-import kr.co.jsh.feature.storage.video.VideoStorageActivity
+import kr.co.jsh.feature.photoStorage.PhotoStorageActivity
+import kr.co.jsh.feature.videoStorage.VideoStorageActivity
 import kr.co.jsh.feature.videoedit.TrimmerActivity
 import kr.co.jsh.singleton.UserObject
 import kr.co.jsh.utils.permission.FileUtils
 import kr.co.jsh.utils.permission.setupPermissions
 import timber.log.Timber
 
-//TODO: VIEW를 제외한 모든 로직은 빼자. plz~~~!
-//TODO: 더, 더더 쪼개야 하느니라!
+//1. Non-public, non-static field names start with m.
+//2. Static field names start with s.
+//3. Other fields start with a lower case letter.
+//4. Public static final fields (constants) are ALL_CAPS_WITH_UNDERSCORES.
+
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
@@ -84,22 +88,14 @@ class MainActivity : AppCompatActivity() {
                 if (selectedUri != null) {
                     startTrimActivity(selectedUri)
                 } else {
-                    Toast.makeText(
-                        this@MainActivity,
-                        "toast_cannot_retrieve_selected_video",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    this.toastShort("toast_cannot_retrieve_selected_video")
                 }
             } else if (requestCode == REQUEST_VIDEO_CROPPER) {
                 val selectedUri = data!!.data
                 if (selectedUri != null) {
                     startPhotoActivity(selectedUri)
                 } else {
-                    Toast.makeText(
-                        this@MainActivity,
-                        "toast_cannot_retrieve_selected_video",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    this.toastShort(  "toast_cannot_retrieve_selected_video")
                 }
             }
         }
@@ -116,7 +112,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun accountCircleImage(){
-        if(UserObject.loginResponse == 200) { Toast.makeText(this, "이미 로그인되어 있습니다.", Toast.LENGTH_SHORT).show() }
+        if(UserObject.loginResponse == 200) {this.toastShort( "이미 로그인되어 있습니다.") }
         else {
             val intent = Intent(this, LoginAccountDialog::class.java)
             startActivityForResult(intent, 1000)
