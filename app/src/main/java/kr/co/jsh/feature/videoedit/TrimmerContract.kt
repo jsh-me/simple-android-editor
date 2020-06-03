@@ -25,7 +25,6 @@ interface TrimmerContract {
         fun getThumbnailList(mSrc: Uri, context: Context)
         fun trimVideo(path: String, context:Context, mSrc: Uri, start_sec: Int, end_sec: Int)
         fun getResultUri(uri:Uri, context:Context, option: String)
-        //uploadMaskFile
         fun uploadMaskFile(bitmap: Bitmap, frameTimeSec: Float, context: Context)
 
     }

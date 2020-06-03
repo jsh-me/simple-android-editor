@@ -223,7 +223,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
     }
 
     @SuppressLint("CheckResult")
-    fun improveFile(uri: Uri){
+    private fun improveFile(uri: Uri){
         val path = uri.toString().addFile()
         val request = MultipartBody.Part.createFormData("file", path, RequestBody.create(MediaType.parse("video/*"), Uri.parse(path).toFile() ))
         postFileUploadUseCase.postFile(request)
@@ -242,7 +242,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
 
 
     @SuppressLint("CheckResult")
-    fun sendVideoResultToServerWithInfo(maskPid: String, frameSec: Float, videoPid: String) {
+    private fun sendVideoResultToServerWithInfo(maskPid: String, frameSec: Float, videoPid: String) {
         val time = System.currentTimeMillis()
         val dateFormat = SimpleDateFormat("yyyy-mm-dd hh:mm:ss")
         val curTime = dateFormat.format(Date(time))
