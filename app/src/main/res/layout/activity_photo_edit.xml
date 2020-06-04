@@ -94,8 +94,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/photo_edit_child_layout"
             android:layout_width="match_parent"
-            android:layout_height="180dp"
-            android:layout_marginBottom="50dp"
+            android:layout_height="100dp"
             android:background="@color/grey2"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -110,23 +109,22 @@
             android:onClick="@{() -> photo.drawPhotoMask()}"
             android:text="@string/draw"
             android:textColor="@{photo.changeTextColor[1] ? @color/white : @color/black}"
-            app:layout_constraintBottom_toBottomOf="@+id/photo_edit_child_layout"
+            app:layout_constraintBottom_toBottomOf="@+id/photo_edit_reset_draw_btn"
             app:layout_constraintStart_toStartOf="@+id/photo_edit_child_layout"
-            app:layout_constraintTop_toTopOf="@+id/photo_edit_child_layout"
-            app:layout_constraintVertical_bias="0.39" />
+            app:layout_constraintTop_toTopOf="@+id/photo_edit_reset_draw_btn"
+            app:layout_constraintVertical_bias="0.9" />
 
         <TextView
             android:id="@+id/photo_edit_reset_draw_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
+            android:layout_marginBottom="8dp"
             android:onClick="@{() -> photo.resetBtn()}"
             android:text="@string/initialize_draw"
             android:textColor="@{photo.changeTextColor[0] ? @color/white : @color/black}"
-            app:layout_constraintBottom_toBottomOf="@+id/photo_edit_child_layout"
-            app:layout_constraintStart_toEndOf="@+id/photo_edit_remove_btn"
-            app:layout_constraintTop_toTopOf="@+id/photo_edit_remove_btn"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/photo_edit_remove_btn" />
 
         <ImageButton
             android:id="@+id/photo_edit_undo_btn"

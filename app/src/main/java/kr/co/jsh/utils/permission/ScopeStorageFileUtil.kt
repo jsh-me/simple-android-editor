@@ -131,7 +131,7 @@ object ScopeStorageFileUtil{
                     val duration =
                         mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
                             .toLong()
-                    val width =
+                    val width: Long? =
                         mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
                             .toLong()
                     val height =
