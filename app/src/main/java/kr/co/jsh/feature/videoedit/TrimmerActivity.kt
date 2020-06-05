@@ -301,7 +301,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     private fun selectedVideoFrames(start: Int, end: Int){
         binding.selectedTimeLineView.visibility = View.INVISIBLE
         val params = FrameLayout.LayoutParams(trimVideoTimeList[end].first.toInt() - trimVideoTimeList[start].first.toInt(), binding.videoEditRecycler.height-10)
-        params.marginStart = ScreenSizeUtil(this).widthPixels/2 + trimVideoTimeList[start].first.toInt()
+            .apply{ marginStart = ScreenSizeUtil(applicationContext).widthPixels/2 + trimVideoTimeList[start].first.toInt() }
         binding.selectedTimeLineView.layoutParams = params
         binding.selectedTimeLineView.visibility = View.VISIBLE
 
@@ -333,15 +333,14 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
 
     private fun setGreyLine() {
         val param1 = FrameLayout.LayoutParams(7,FrameLayout.LayoutParams.MATCH_PARENT)
+            .apply { setMargins(trimVideoTimeList[1].first.toInt() + ScreenSizeUtil(applicationContext).widthPixels/2,0,0,0)}
         val param2 = FrameLayout.LayoutParams(7,FrameLayout.LayoutParams.MATCH_PARENT)
-
-        param1.setMargins(trimVideoTimeList[1].first.toInt() + ScreenSizeUtil(this).widthPixels/2,0,0,0)
+            .apply{ setMargins(trimVideoTimeList[2].first.toInt() + ScreenSizeUtil(applicationContext).widthPixels/2 ,0,0,0)  }
 
         binding.border1.apply {
             layoutParams = param1
             visibility = View.VISIBLE
         }
-        param2.setMargins(trimVideoTimeList[2].first.toInt() + ScreenSizeUtil(this).widthPixels/2 ,0,0,0)
         binding.border2.apply {
             layoutParams = param2
             visibility = View.VISIBLE
