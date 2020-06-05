@@ -143,7 +143,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
 
     override fun setPlayer(player: SimpleExoPlayer) {
         binding.videoLoader.player = player
-        presenter.getVideoDuration() //listener
+        presenter.getVideoListener() //listener
         binding.videoLoader.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
         binding.videoStartTimeTv.text = String.format("%s", TrimVideoUtils.stringForTime(player.currentPosition.toFloat()))
     }
@@ -156,6 +156,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
 
     fun playVideo() { //플레이 버튼을 눌렀을
         changeTextColor.set(arrayOf(false, false, false, false, false))
+        showVideoView()
         binding.iconVideoPauseBtn.visibility = View.VISIBLE
         binding.iconVideoPlayBtn.visibility = View.INVISIBLE
         presenter.isVideoPlay(true)
@@ -169,6 +170,10 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         binding.iconVideoPlayBtn.visibility = View.VISIBLE
         dispatcher.pause()
         presenter.isVideoPlay(false)
+    }
+
+    override fun onVideoFinished() {
+        pauseVideo()
     }
 
     override fun setVideoPlayFlag(whenReady: Boolean) {
@@ -191,8 +196,6 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
             hideVideoView()
             //미리 서버에 올리기
             presenter.trimVideo(destinationPath, this, mSrc, frameSecToSendServer[0].toInt(), frameSecToSendServer[1].toInt())
-
-            //Todo: https://pooheaven81.tistory.com/137
         }
     }
 
@@ -219,10 +222,13 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     }
 
     private fun hideVideoView(){
-        if(binding.videoLoader.visibility == View.VISIBLE) {
-            binding.videoLoader.visibility = View.INVISIBLE
-            binding.videoFrameDrawView.visibility = View.VISIBLE
-        }
+        binding.videoLoader.visibility = View.INVISIBLE
+        binding.videoFrameDrawView.visibility = View.VISIBLE
+    }
+
+    private fun showVideoView(){
+        binding.videoLoader.visibility = View.VISIBLE
+        binding.videoFrameDrawView.visibility = View.INVISIBLE
     }
 
     fun resetTimeLineView(){
@@ -257,6 +263,9 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
                         userVideoTrimTime.value = (( presenter.getVideoCurrentPosition()*(binding.videoEditRecycler.width
                                 - ScreenSizeUtil(applicationContext).widthPixels)) /  mDuration).toLong()
                         binding.videoEditScrollView.scrollTo(userVideoTrimTime.value!!.toInt(), 0)
+                        if(userCropTouchCount==2){
+                            setBorder(presenter.getVideoCurrentPosition().toLong())
+                        }
                     }
                     delay(1)
                 }
@@ -265,23 +274,6 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     }
     @SuppressLint("ClickableViewAccessibility")
     private fun setListener() {
-        binding.videoEditRecycler.setOnTouchListener { _: View, motionEvent: MotionEvent ->
-            when (motionEvent.action) {
-                //편집할 영역을 선택하기
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_DOWN -> {
-                    if (userCropTouchCount == 2) {
-                        binding.videoEditRecycler.performClick()
-                        setBoarderRange(motionEvent.x)
-                        Log.i("touch x :", "${motionEvent.x}")
-                        true
-                    } else {
-                        false
-                    }
-                }
-                else -> false
-            }
-        }
-
         binding.videoEditScrollView.setOnScrollChangeListener { view: View, scrollX: Int, _: Int, oldScrollX: Int, _: Int ->
             if (scrollX != oldScrollX && !setPlayFlag) {
                 binding.videoLoader.visibility = View.VISIBLE
@@ -289,19 +281,18 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
                 userVideoTrimTime.value= (mDuration * binding.videoEditScrollView.scrollX) / ((binding.videoEditRecycler.width) - ScreenSizeUtil(applicationContext).widthPixels)
                 presenter.setVideoSeekTo(userVideoTrimTime.value!!)
                 binding.videoStartTimeTv.text = String.format("%s", TrimVideoUtils.stringForTime(userVideoTrimTime.value!!.toFloat()))
+
+                if(userCropTouchCount==2){
+                    setBorder(userVideoTrimTime.value!!)
+                }
             }
         }
     }
 
-
-    //coordiX: 사용자가 터치한 좌표의 X값을 가져옴 (상대좌표)
-    private fun setBoarderRange(coordiX: Float){
-        //터치한 곳에서 width/2 를 빼야지 원활한 계산이 가능해짐
-        val startX = coordiX - ScreenSizeUtil(this).widthPixels/2
-        Log.i("startX:","$startX}")
-        if(startX >= trimVideoTimeList[1].first && startX <= trimVideoTimeList[2].first) selectedVideoFrames(1,2)
-        else if(startX > trimVideoTimeList[2].first)  selectedVideoFrames(2,3)
-        else if (startX >= 0 && startX < trimVideoTimeList[1].first) selectedVideoFrames(0,1)
+    private fun setBorder(frameSec: Long){
+        if(frameSec >= trimVideoTimeList[1].second && frameSec <= trimVideoTimeList[2].second) selectedVideoFrames(1,2)
+        else if(frameSec > trimVideoTimeList[2].second)  selectedVideoFrames(2,3)
+        else if (frameSec >= 0 && frameSec < trimVideoTimeList[1].second) selectedVideoFrames(0,1)
         else{
             binding.selectedTimeLineView.visibility = View.INVISIBLE
         }

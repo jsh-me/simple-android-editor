@@ -23,6 +23,7 @@ interface TrimmerContract {
         fun setVideoPlayFlag(whenReady: Boolean)
         fun setVideoDuration(duration: Long)
         fun setDrawBitmap(bitmap: Bitmap)
+        fun onVideoFinished()
     }
 
     interface Presenter: BasePresenter {
@@ -39,7 +40,7 @@ interface TrimmerContract {
         fun releasePlayer()
         fun isVideoPlay(whenReady: Boolean)
         fun getVideoCurrentPosition(): Float
-        fun getVideoDuration()
+        fun getVideoListener()
         fun setVideoSeekTo(currentPosition: Long)
         fun getFrameBitmap(sec: Long)
 

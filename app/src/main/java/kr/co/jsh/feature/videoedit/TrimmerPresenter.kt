@@ -70,12 +70,15 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
         mediaMetadataRetriever.setDataSource(context, uri)
     }
 
-    override fun getVideoDuration() {
+    override fun getVideoListener() {
         mplayer?.addListener(object: Player.EventListener{
             override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
                 if (playbackState == ExoPlayer.STATE_READY) {
                     val realDurationMillis: Long = mplayer?.duration!!
                     view.setVideoDuration(realDurationMillis)
+                } else if(playbackState == ExoPlayer.STATE_ENDED){
+                    mplayer!!.seekTo(0)
+                    view.onVideoFinished()
                 }
                 super.onPlayerStateChanged(playWhenReady, playbackState)
             }
