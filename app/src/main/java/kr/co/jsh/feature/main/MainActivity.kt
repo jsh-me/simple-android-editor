@@ -135,6 +135,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun startTrimActivity(uri: Uri) {
         val intent = Intent(this, TrimmerActivity::class.java).apply{
+            Timber.e("$uri")
             putExtra(EXTRA_VIDEO_PATH, FileUtils.getPath(this@MainActivity, uri))
         }
             startActivity(intent)

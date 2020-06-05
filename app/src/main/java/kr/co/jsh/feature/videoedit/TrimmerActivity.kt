@@ -535,6 +535,11 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         binding.loadingAnimation.visibility = View.GONE
     }
 
+    override fun onUserLeaveHint() {
+        binding.videoFrameDrawView.restartDrawing()
+        Timber.e("onUserLeaveHint")
+        super.onUserLeaveHint()
+    }
 
     override fun onStop() {
         super.onStop()
