@@ -17,7 +17,7 @@ you can use video-time-line view, video trim based on ffmpeg engine, and select 
 
 |                          Play Video                          |                         Select Video                         |
 | :----------------------------------------------------------: | :----------------------------------------------------------: |
-| <img src="https://user-images.githubusercontent.com/39688690/82647357-0c3f9900-9c51-11ea-87d3-95fe55b67b05.gif" /> | <img src="https://user-images.githubusercontent.com/39688690/82647496-3f822800-9c51-11ea-8a79-4c5aee0e92de.gif" /> |
+| <img src="https://user-images.githubusercontent.com/39688690/83832793-6ba7a980-a725-11ea-978d-aa49abb4bc1a.gif"/> | <img src="https://user-images.githubusercontent.com/39688690/83832938-ba554380-a725-11ea-802d-0514b239d8df.gif"/> |
 |        **Select the specific frame and Draw a line**         |                       **Save Result**                        |
 | ![gif (1)](https://user-images.githubusercontent.com/39688690/83498844-66651780-a4f7-11ea-8f11-6f648c8a3ec0.gif) | ![gif](https://user-images.githubusercontent.com/39688690/83498614-18501400-a4f7-11ea-8646-04fba2cca479.gif) |
 

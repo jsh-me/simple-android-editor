@@ -12,6 +12,7 @@ import kr.co.domain.utils.toastShort
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityDetailVideoResultBinding
 import kr.co.jsh.utils.permission.ScopeStorageFileUtil
+import timber.log.Timber
 
 class VideoDetailActivity : AppCompatActivity(), VideoDetailContract.View{
     private lateinit var binding : ActivityDetailVideoResultBinding

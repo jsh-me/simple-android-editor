@@ -13,6 +13,12 @@ import android.widget.Toast
 import android.widget.VideoView
 import androidx.core.net.toFile
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import kr.co.domain.api.usecase.PostFileUploadUseCase
 import kr.co.domain.api.usecase.PostImproveVideoPidNumber
 import kr.co.domain.api.usecase.PostVideoPidNumberAndInfoUseCase
@@ -42,29 +48,93 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
                        private var postPidNumberAndInfoUseCase: PostVideoPidNumberAndInfoUseCase,
                        private var postImproveVideoPidNumber: PostImproveVideoPidNumber) : TrimmerContract.Presenter{
 
+    private var mplayer: SimpleExoPlayer ?= null
+    private var playbackPosition = 0L
+    private var currentWindow = 0 //재생곡의 순번
+    private var playWhenReady = false
+    private val mediaMetadataRetriever = MediaMetadataRetriever()
 
-   override fun setCuttingVideo(context: Context, cropCount: Int, videoLoader:VideoView,
-                          trimVideoTimeList: ArrayList<Pair<Int, Int>>, recycler: RecyclerView
-   ){
-        var crop_x1 = 0
-       var crop_x2 = 0
+
+    override fun initPlayer(uri: Uri, context: Context) {
+        mplayer = SimpleExoPlayer.Builder(context).build()
+        val dataSourceFactory =
+            DefaultDataSourceFactory(context ,"del.it")
+        val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(uri)
+        mplayer!!.apply{
+            prepare(mediaSource)
+            seekTo(currentWindow, playbackPosition)
+            playWhenReady = playWhenReady
+            view.setPlayer(mplayer!!)
+        }
+
+        mediaMetadataRetriever.setDataSource(context, uri)
+    }
+
+    override fun getVideoListener() {
+        mplayer?.addListener(object: Player.EventListener{
+            override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+                if (playbackState == ExoPlayer.STATE_READY) {
+                    val realDurationMillis: Long = mplayer?.duration!!
+                    view.setVideoDuration(realDurationMillis)
+                } else if(playbackState == ExoPlayer.STATE_ENDED){
+                    mplayer!!.seekTo(0)
+                    view.onVideoFinished()
+                }
+                super.onPlayerStateChanged(playWhenReady, playbackState)
+            }
+        })
+    }
+
+    override fun releasePlayer() {
+        mplayer?.let{
+            playbackPosition = it.currentPosition
+            currentWindow = it.currentWindowIndex
+            playWhenReady = it.playWhenReady
+            it.release()
+            mplayer = null
+        }
+    }
+
+    override fun isVideoPlay(whenReady: Boolean) {
+        mplayer?.playWhenReady = whenReady
+        view.setVideoPlayFlag(whenReady)
+    }
+
+    override fun getVideoCurrentPosition(): Float {
+        return mplayer?.currentPosition!!.toFloat()
+    }
+
+    override fun setVideoSeekTo(currentPosition: Long) {
+        mplayer?.seekTo(currentPosition)
+    }
+
+    override fun getFrameBitmap(sec: Long) {
+        val bitmap = mediaMetadataRetriever.getFrameAtTime(sec * 1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+        view.setDrawBitmap(bitmap)
+    }
+
+    //----------
+
+    override fun setCuttingVideo(context: Context, cropCount: Int, trimVideoTimeList: ArrayList<Pair<Long, Long>>, recycler: RecyclerView){
+        var firstTrim = 0L
+        var secondTrim = 0L
 
         when(cropCount){
             1 -> {
-                crop_x1 =
-                    ( videoLoader.currentPosition * (recycler.width - ScreenSizeUtil(context).widthPixels)) /  videoLoader.duration
+                firstTrim =
+                    ( mplayer?.currentPosition!! * (recycler.width - ScreenSizeUtil(context).widthPixels)) /  mplayer?.duration!!
 
-                trimVideoTimeList.add(Pair(crop_x1,  videoLoader.currentPosition))//2
-                trimVideoTimeList.add(Pair(crop_x1,  videoLoader.currentPosition))//3
-                trimVideoTimeList.add(Pair(recycler.width - ScreenSizeUtil(context).widthPixels,videoLoader.duration)) //4
+                trimVideoTimeList.add(Pair(firstTrim, mplayer?.currentPosition!!))//2
+                trimVideoTimeList.add(Pair(firstTrim, mplayer?.currentPosition!!))//3
+                trimVideoTimeList.add(Pair(recycler.width - ScreenSizeUtil(context).widthPixels.toLong(), mplayer?.duration!!)) //4
             }
              2-> {
-                 crop_x2 =
-                     ( videoLoader.currentPosition * (recycler.width - ScreenSizeUtil(context).widthPixels)) /  videoLoader.duration
-                if(trimVideoTimeList[1].first > crop_x2) {
-                    trimVideoTimeList[1] = Pair(crop_x2, videoLoader.currentPosition)
+                 secondTrim =
+                     ( mplayer?.currentPosition!! * (recycler.width - ScreenSizeUtil(context).widthPixels)) /  mplayer?.duration!!
+                if(trimVideoTimeList[1].first > secondTrim) {
+                    trimVideoTimeList[1] = Pair(secondTrim,  mplayer?.currentPosition!!)
                 }
-                 else trimVideoTimeList[2] = Pair(crop_x2, videoLoader.currentPosition)
+                 else trimVideoTimeList[2] = Pair(secondTrim,  mplayer?.currentPosition!!)
              }
 
             else -> {
@@ -91,7 +161,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
         view.setVideoPath(path)
     }
 
-    override fun getCropArrayList(context:Context, trimVideoTimeList: ArrayList<Pair<Int, Int>>) {
+    override fun getCropArrayList(context:Context, trimVideoTimeList:  ArrayList<Pair<Long, Long>>) {
         try {
             trimVideoTimeList.clear()
             trimVideoTimeList.add(Pair(0,0))//1
@@ -103,41 +173,33 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
 
     override fun getThumbnailList(mSrc: Uri, context:Context) {
         val thumbnailList = ArrayList<Bitmap>()
+        val mediaMetadataRetriever = MediaMetadataRetriever()
+        mediaMetadataRetriever.setDataSource(context, mSrc)
+
+        val videoLengthInMs = (Integer.parseInt(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION))).toLong()
+        val cropHeight = 150 //timelineview에서 한 프레임의 너비 (동적으로 변경되게끔 코드 수정해야함!)
+        val cropWidth = ScreenSizeUtil(context).widthPixels/4 //timelineview에서 한 프레임의 너비
+        val interval = if(videoLengthInMs< 3000) videoLengthInMs else 3000
+
+
+        for (i in 0 .. videoLengthInMs step interval) {
+            var bitmap = mediaMetadataRetriever.getFrameAtTime(i * 1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+            if (bitmap != null) {
                 try {
-                    val mediaMetadataRetriever = MediaMetadataRetriever()
-                    mediaMetadataRetriever.setDataSource(context, mSrc)
-
-                    val videoLengthInMs = (Integer.parseInt(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION))).toLong()
-                    val cropHeight = 150 //timelineview에서 한 프레임의 너비 (동적으로 변경되게끔 코드 수정해야함!)
-                    val cropWidth = ScreenSizeUtil(context).widthPixels/4 //timelineview에서 한 프레임의 너비
-
-                    //val interval = videoLengthInMs / numThumbs
-                    val interval = if(videoLengthInMs< 3000) videoLengthInMs else 3000
+                    bitmap = Bitmap.createScaledBitmap(bitmap, cropWidth, cropHeight, false)
+                    Log.i("bitmap111","${bitmap.width}, ${bitmap.height}")
 
 
-                    for (i in 0 .. videoLengthInMs step interval) {
-                        var bitmap = mediaMetadataRetriever.getFrameAtTime(i * 1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
-                        if (bitmap != null) {
-                            try {
-                                bitmap = Bitmap.createScaledBitmap(bitmap, cropWidth, cropHeight, false)
-                                //bitmap = Bitmap.createBitmap(bitmap,0,0, cropWidth, cropHeight)
-                                Log.i("bitmap111","${bitmap.width}, ${bitmap.height}")
-
-
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                            }
-                            thumbnailList.add(bitmap)
-                            Log.i("1:","${thumbnailList.size}")
-
-                        }
-                    }
-                    mediaMetadataRetriever.release()
-                } catch (e: Throwable) {
-                    Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), e)
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-                Log.i("return 직전:","${thumbnailList.size}")
-            view.setThumbnailListView(thumbnailList)
+                thumbnailList.add(bitmap)
+                Log.i("1:","${thumbnailList.size}")
+
+            }
+        }
+        mediaMetadataRetriever.release()
+        view.setThumbnailListView(thumbnailList)
     }
 
     override fun trimVideo(path: String, context:Context, mSrc: Uri,  start_sec: Int, end_sec: Int) {
@@ -179,7 +241,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
             .trimVideo(TrimVideoUtils.stringForTime(start_sec.toFloat()), TrimVideoUtils.stringForTime(end_sec.toFloat()), file.path, outPutPath, outputFileUri, view)
     }
 
-    //Todo 근데 왜 MediaType 이 video 인데도, 사진 동영상 둘다 왜 되는거지?
+
     //Todo 동영상과 사진 확장자를 업로드 할 수 있는 메소드
     @SuppressLint("CheckResult")
     override fun uploadFile(uri: String) {
@@ -223,7 +285,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
     }
 
     @SuppressLint("CheckResult")
-    fun improveFile(uri: Uri){
+    private fun improveFile(uri: Uri){
         val path = uri.toString().addFile()
         val request = MultipartBody.Part.createFormData("file", path, RequestBody.create(MediaType.parse("video/*"), Uri.parse(path).toFile() ))
         postFileUploadUseCase.postFile(request)
@@ -242,7 +304,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
 
 
     @SuppressLint("CheckResult")
-    fun sendVideoResultToServerWithInfo(maskPid: String, frameSec: Float, videoPid: String) {
+    private fun sendVideoResultToServerWithInfo(maskPid: String, frameSec: Float, videoPid: String) {
         val time = System.currentTimeMillis()
         val dateFormat = SimpleDateFormat("yyyy-mm-dd hh:mm:ss")
         val curTime = dateFormat.format(Date(time))

@@ -50,31 +50,31 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/video_edit_child_layout"
             android:layout_width="match_parent"
-            android:layout_height="250dp"
+            android:layout_height="200dp"
             android:background="@color/grey2"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <VideoView
+        <com.google.android.exoplayer2.ui.PlayerView
             android:id="@+id/video_loader"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_centerHorizontal="true"
-            android:layout_margin="20dp"
             app:layout_constraintBottom_toTopOf="@+id/video_fullscreen_btn"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.509"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/video_edit_back_btn"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintTop_toBottomOf="@+id/video_edit_back_btn" />
+
 
         <com.byox.drawview.views.DrawView
             android:id="@+id/video_frame_draw_view"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_centerHorizontal="true"
+            android:foregroundGravity="center"
             android:visibility="invisible"
             app:dv_draw_anti_alias="true"
             app:dv_draw_color="@color/black"
@@ -188,12 +188,28 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="8dp"
-            android:background="@drawable/video_button_selector"
+            android:background="@drawable/ic_play_arrow_white"
             android:onClick="@{() -> trimmer.playVideo()}"
             app:layout_constraintBottom_toTopOf="@+id/video_edit_child_layout"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/video_loader"
             app:layout_constraintVertical_bias="1.0" />
+
+        <ImageView
+            android:id="@+id/icon_video_pause_btn"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/ic_pause_white"
+            android:visibility="gone"
+            android:onClick="@{() -> trimmer.pauseVideo()}"
+            app:layout_constraintBottom_toTopOf="@+id/video_edit_child_layout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/video_loader"
+            app:layout_constraintVertical_bias="1.0" />
+
 
         <ImageView
             android:id="@+id/video_fullscreen_btn"
