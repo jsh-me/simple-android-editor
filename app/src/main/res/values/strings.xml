@@ -14,4 +14,5 @@
     <string name="save">저장</string>
 
     <string name="success_data">서버에 전송 되었습니다!\n저장함을 확인해주세요.</string>
+    <string name="more">더보기</string>
 </resources>

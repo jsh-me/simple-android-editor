@@ -17,7 +17,7 @@
             type="android.view.View" />
     </data>
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -25,7 +25,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:context=".feature.main.MainActivity">
-
 
             <ImageView
                 android:id="@+id/imageView"
@@ -116,45 +115,82 @@
                 android:layout_margin="20dp"
                 android:text="@string/my_project"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/videoStorageBtn"
+                app:layout_constraintBottom_toTopOf="@+id/main_result_recycler"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/imageView" />
 
-            <Button
-                android:id="@+id/videoStorageBtn"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/main_result_recycler"
                 android:layout_width="0dp"
-                android:layout_height="100dp"
-                android:layout_margin="20dp"
-                android:background="#7DF3D1"
-                android:onClick="@{() -> main.videoStorageBtn()}"
-                android:text="Video Storage"
-                app:layout_constraintEnd_toStartOf="@+id/guideline2"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="@+id/imageView"
-                app:layout_constraintTop_toBottomOf="@+id/myProjectTxt" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:layout_constraintEnd_toEndOf="@+id/button"
+                app:layout_constraintStart_toStartOf="@+id/button"
+                app:layout_constraintTop_toBottomOf="@+id/myProjectTxt"
+                tools:itemCount="1"
+                tools:listitem="@layout/item_photo_storage_list" />
 
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guideline2"
+<!--            <Button-->
+<!--                android:id="@+id/videoStorageBtn"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="100dp"-->
+<!--                android:layout_margin="20dp"-->
+<!--                android:background="#7DF3D1"-->
+<!--                android:onClick="@{() -> main.videoStorageBtn()}"-->
+<!--                android:text="Video Storage"-->
+<!--                app:layout_constraintEnd_toStartOf="@+id/guideline2"-->
+<!--                app:layout_constraintHorizontal_bias="1.0"-->
+<!--                app:layout_constraintStart_toStartOf="@+id/imageView"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/myProjectTxt" />-->
+
+<!--            <androidx.constraintlayout.widget.Guideline-->
+<!--                android:id="@+id/guideline2"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:orientation="vertical"-->
+<!--                app:layout_constraintGuide_percent="0.5"/>-->
+
+<!--            <Button-->
+<!--                android:id="@+id/photoStorage"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="100dp"-->
+<!--                android:text="Photo Storage"-->
+<!--                android:layout_margin="20dp"-->
+<!--                android:background="#7DF3D1"-->
+<!--                android:onClick="@{() -> main.photoStorageBtn()}"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintEnd_toEndOf="@+id/imageView"-->
+<!--                app:layout_constraintStart_toStartOf="@+id/guideline2"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/myProjectTxt" />-->
+            <kr.co.jsh.customview.BlockingView
+                android:id="@+id/blockingView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                android:background="#80333333"/>
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/loading_animation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.5"/>
-
-            <Button
-                android:id="@+id/photoStorage"
-                android:layout_width="0dp"
-                android:layout_height="100dp"
-                android:text="Photo Storage"
-                android:layout_margin="20dp"
-                android:background="#7DF3D1"
-                android:onClick="@{() -> main.photoStorageBtn()}"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/imageView"
-                app:layout_constraintStart_toStartOf="@+id/guideline2"
-                app:layout_constraintTop_toBottomOf="@+id/myProjectTxt" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:lottie_loop="true"
+                app:lottie_fileName="loading.json" />
 
+            <TextView
+                android:id="@+id/main_more_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/more"
+                app:layout_constraintBottom_toBottomOf="@+id/myProjectTxt"
+                app:layout_constraintEnd_toEndOf="@+id/button"
+                app:layout_constraintTop_toTopOf="@+id/myProjectTxt" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 </layout>
