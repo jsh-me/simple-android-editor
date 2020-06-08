@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.request.RequestOptions
 import kr.co.domain.utils.loadUrl
-import kr.co.jsh.databinding.ItemVideoStorageListBinding
+import kr.co.jsh.databinding.ItemStorageListBinding
 
 class VideoStorageAdapter (val click:(Int, String) -> Unit,
                            private var list: ArrayList<List<String>>,
@@ -15,8 +15,8 @@ class VideoStorageAdapter (val click:(Int, String) -> Unit,
     : RecyclerView.Adapter<VideoStorageAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val mBinding = ItemVideoStorageListBinding.inflate(inflater, parent, false)
-        return ViewHolder(mBinding, mBinding.resultVideoStorageView, mBinding.resultVideoName)
+        val mBinding = ItemStorageListBinding.inflate(inflater, parent, false)
+        return ViewHolder(mBinding, mBinding.resultStorageView, mBinding.resultVideoName)
     }
 
     override fun getItemCount(): Int = list.size
@@ -30,7 +30,7 @@ class VideoStorageAdapter (val click:(Int, String) -> Unit,
     }
 
     inner class ViewHolder(
-        mBinding: ItemVideoStorageListBinding,
+        mBinding: ItemStorageListBinding,
         val resultViewThumbnail : ImageView,
         val resultViewName : TextView
     ) : RecyclerView.ViewHolder(mBinding.root)

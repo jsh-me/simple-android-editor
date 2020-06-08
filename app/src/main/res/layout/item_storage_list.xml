@@ -10,7 +10,7 @@
         android:padding="5dp">
 
         <ImageView
-            android:id="@+id/result_video_storage_view"
+            android:id="@+id/result_storage_view"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:adjustViewBounds="true"
@@ -44,7 +44,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/result_video_storage_view"
+            app:layout_constraintTop_toTopOf="@+id/result_storage_view"
             app:layout_constraintVertical_bias="1.0"
             tools:text="name.jpg" />
 

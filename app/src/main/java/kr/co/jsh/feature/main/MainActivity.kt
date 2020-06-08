@@ -10,6 +10,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kr.co.domain.globalconst.Consts
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityMainBinding
@@ -19,6 +22,7 @@ import kr.co.domain.globalconst.Consts.Companion.REQUEST_VIDEO_CROPPER
 import kr.co.domain.globalconst.Consts.Companion.REQUEST_VIDEO_TRIMMER
 import kr.co.domain.utils.toastShort
 import kr.co.jsh.feature.login.LoginAccountDialog
+import kr.co.jsh.feature.photoStorageDetail.PhotoDetailActivity
 import kr.co.jsh.feature.photoedit.PhotoActivity
 import kr.co.jsh.feature.videoStorageDetail.VideoDetailActivity
 import kr.co.jsh.feature.videoedit.TrimmerActivity
@@ -49,35 +53,31 @@ class MainActivity : AppCompatActivity(), MainContract.View {
     private fun setupDataBinding(){
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.main = this@MainActivity
-        Timber.e("${UserObject.loginResponse}")
     }
 
     private fun initView(){
-        presenter = MainPresenter(this, get(), get(), get(), get())
-    }
-
-    override fun onResume() {
-        super.onResume()
-        val response = UserObject.loginResponse
-
-        when(response){
-            200 -> {presenter.getServerFileResult()}
-            500 -> {
-                presenter.loadLocalFileStorageDB()
-                presenter.getLocalFileResult()
-            }
-        }
+        presenter = MainPresenter(this, get(), get(), get(), get(), get())
+        // when response 500
+        presenter.loadLocalFileStorageDB()
+        presenter.getLocalFileResult()
     }
 
     override fun setFileResult(list: ArrayList<List<String>>) {
+        Timber.e("OnResume : ${UserObject.loginResponse}")
         binding.mainResultRecycler.apply {
             layoutManager = LinearLayoutManager(this@MainActivity, LinearLayoutManager.HORIZONTAL, true)
             adapter = MainAdapter(click(), list, context)
-            scrollToPosition(list.size -1)
         }
         stopAnimation()
     }
 
+    override fun refreshView(list: ArrayList<List<String>>) {
+        binding.mainResultRecycler.apply{
+            adapter?.notifyDataSetChanged()
+            scrollToPosition(list.size-1)
+        }
+
+    }
 
     override fun startAnimation() {
         binding.loadingAnimation.playAnimation()
@@ -91,29 +91,32 @@ class MainActivity : AppCompatActivity(), MainContract.View {
         binding.loadingAnimation.visibility = View.GONE
     }
 
-    private fun click() = { _: Int, url: String ->
-        val intent = Intent(this, VideoDetailActivity::class.java).apply{
-            putExtra(Consts.DETAIL_VIDEO, url)
+    private fun click() = { _: Int, url: String, type: String ->
+       val intent = if(type == "video") {
+            Intent(this, VideoDetailActivity::class.java).apply {
+                putExtra(Consts.DETAIL_VIDEO, url)
+            }
+        } else {
+            Intent(this, PhotoDetailActivity::class.java).apply{
+                putExtra(Consts.DETAIL_PHOTO, url)
+            }
         }
         startActivity(intent)
     }
 
-
     private fun getMyToken(){
-        Thread(Runnable {
-                FirebaseInstanceId.getInstance().instanceId
-                    .addOnCompleteListener(OnCompleteListener { task ->
-                        if (!task.isSuccessful) {
-                            Timber.i("getInstanceId failed", task.exception)
-                            return@OnCompleteListener
-                        }
-                        val token = task.result?.token
-                        Timber.e(token!!)
-                    })
-        }).start()
+        CoroutineScope(Dispatchers.Default).async {
+            FirebaseInstanceId.getInstance().instanceId
+                .addOnCompleteListener(OnCompleteListener { task ->
+                    if (!task.isSuccessful) {
+                        Timber.i("getInstanceId failed", task.exception)
+                        return@OnCompleteListener
+                    }
+                    val token = task.result?.token
+                    Timber.e(token!!)
+                })
+        }
     }
-
-
 
     fun pickFromVideo(intentCode: Int) {
         setupPermissions(this) {
@@ -138,16 +141,16 @@ class MainActivity : AppCompatActivity(), MainContract.View {
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_VIDEO_TRIMMER) {
                 val selectedUri = data!!.data
-                if (selectedUri != null) {
+                selectedUri?.let{
                     startTrimActivity(selectedUri)
-                } else {
+                }?:run {
                     this.toastShort("toast_cannot_retrieve_selected_video")
                 }
             } else if (requestCode == REQUEST_VIDEO_CROPPER) {
                 val selectedUri = data!!.data
-                if (selectedUri != null) {
+                selectedUri?.let{
                     startPhotoActivity(selectedUri)
-                } else {
+                } ?:run {
                     this.toastShort(  "toast_cannot_retrieve_selected_video")
                 }
             }
@@ -158,7 +161,7 @@ class MainActivity : AppCompatActivity(), MainContract.View {
                 isClickable = false
             }
             UserObject.loginResponse = 200
-
+            presenter.getServerFileResult()
         }
 
         super.onActivityResult(requestCode, resultCode, data)
@@ -172,39 +175,22 @@ class MainActivity : AppCompatActivity(), MainContract.View {
         }
     }
 
-//    fun photoStorageBtn(){
-//        val intent = Intent(this, PhotoStorageActivity::class.java).apply{
-//            putExtra(Consts.LOGIN_RESPONSE, UserObject.loginResponse)
-//        }
-//        startActivity(intent)
-//    }
-//
-//    fun videoStorageBtn(){
-//        val intent = Intent(this, VideoStorageActivity::class.java).apply{
-//            putExtra(Consts.LOGIN_RESPONSE, UserObject.loginResponse)
-//        }
-//        startActivity(intent)
-//    }
 
-//    fun moreBtn() {
-//        val intent = Intent(this, PhotoStorageActivity::class.java).apply {
-//            putExtra(Consts.LOGIN_RESPONSE, UserObject.loginResponse)
-//        }
-//        startActivity(intent)
-//    }
-
-    private fun startTrimActivity(uri: Uri) {
-        val intent = Intent(this, TrimmerActivity::class.java).apply{
-            Timber.e("$uri")
-            putExtra(EXTRA_VIDEO_PATH, FileUtils.getPath(this@MainActivity, uri))
-        }
+    private fun startTrimActivity(uri: Uri?) {
+        uri?.let{this.toastShort("이용할 수 없는 비디오 입니다.")}?:run {
+            val intent = Intent(this, TrimmerActivity::class.java).apply {
+                putExtra(EXTRA_VIDEO_PATH, FileUtils.getPath(this@MainActivity, uri!!))
+            }
             startActivity(intent)
+        }
     }
 
-    private fun startPhotoActivity(uri: Uri) {
-        val intent = Intent(this, PhotoActivity::class.java).apply{
-            putExtra(EXTRA_PHOTO_PATH, FileUtils.getPath(this@MainActivity, uri))
+    private fun startPhotoActivity(uri: Uri?) {
+        uri?.let{this.toastShort("이용할 수 없는 사진 입니다.")}?:run {
+            val intent = Intent(this, PhotoActivity::class.java).apply {
+                putExtra(EXTRA_PHOTO_PATH, FileUtils.getPath(this@MainActivity, uri!!))
+            }
+            startActivity(intent)
         }
-        startActivity(intent)
     }
 }

@@ -129,7 +129,7 @@
                 app:layout_constraintStart_toStartOf="@+id/button"
                 app:layout_constraintTop_toBottomOf="@+id/myProjectTxt"
                 tools:itemCount="1"
-                tools:listitem="@layout/item_photo_storage_list" />
+                tools:listitem="@layout/item_storage_list" />
 
 <!--            <Button-->
 <!--                android:id="@+id/videoStorageBtn"-->
@@ -181,15 +181,6 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:lottie_loop="true"
                 app:lottie_fileName="loading.json" />
-
-            <TextView
-                android:id="@+id/main_more_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/more"
-                app:layout_constraintBottom_toBottomOf="@+id/myProjectTxt"
-                app:layout_constraintEnd_toEndOf="@+id/button"
-                app:layout_constraintTop_toTopOf="@+id/myProjectTxt" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
