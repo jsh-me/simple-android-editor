@@ -8,6 +8,9 @@
     <string name="new_project">NEW PROJECT</string>
     <string name="my_project">MY PROJECT</string>
 
+    <string name="video">+ VIDEO</string>
+    <string name="photo">+ PHOTO</string>
+
     <string name="no_result">결과물이 없습니다.</string>
     <string name="photo_storage">사진 결과함</string>
     <string name="video_storage">동영상 결과함</string>

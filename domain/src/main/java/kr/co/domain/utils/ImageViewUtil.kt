@@ -25,8 +25,10 @@ fun ImageView.loadUrlCenterCrop(url : String) {
     GlideApp.with(this).load(url).apply(options.centerCrop()).into(this)
 }
 
-fun ImageView.loadUri(uri : Uri) {
-    GlideApp.with(this).load(uri).into(this)
+fun ImageView.loadDrawable(drawable: Drawable?){
+    drawable?.let{
+        GlideApp.with(this).load(drawable).into(this)
+    }
 }
 
 fun ImageView.loadUrl(url : String?) {

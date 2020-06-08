@@ -20,6 +20,7 @@ import kr.co.domain.globalconst.Consts.Companion.EXTRA_PHOTO_PATH
 import kr.co.domain.globalconst.Consts.Companion.EXTRA_VIDEO_PATH
 import kr.co.domain.globalconst.Consts.Companion.REQUEST_VIDEO_CROPPER
 import kr.co.domain.globalconst.Consts.Companion.REQUEST_VIDEO_TRIMMER
+import kr.co.domain.utils.loadDrawable
 import kr.co.domain.utils.toastShort
 import kr.co.jsh.feature.login.LoginAccountDialog
 import kr.co.jsh.feature.photoStorageDetail.PhotoDetailActivity
@@ -53,13 +54,15 @@ class MainActivity : AppCompatActivity(), MainContract.View {
     private fun setupDataBinding(){
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.main = this@MainActivity
+        binding.videoButton.setBackgroundResource(R.drawable.main_video)
+        binding.photoButton.setBackgroundResource(R.drawable.main_photo)
+        binding.mainImageView.loadDrawable(resources.getDrawable(R.drawable.main_view, null))
     }
 
     private fun initView(){
         presenter = MainPresenter(this, get(), get(), get(), get(), get())
         // when response 500
         presenter.loadLocalFileStorageDB()
-        presenter.getLocalFileResult()
     }
 
     override fun setFileResult(list: ArrayList<List<String>>) {
@@ -67,6 +70,7 @@ class MainActivity : AppCompatActivity(), MainContract.View {
         binding.mainResultRecycler.apply {
             layoutManager = LinearLayoutManager(this@MainActivity, LinearLayoutManager.HORIZONTAL, true)
             adapter = MainAdapter(click(), list, context)
+            scrollToPosition(list.size-1)
         }
         stopAnimation()
     }
@@ -77,6 +81,7 @@ class MainActivity : AppCompatActivity(), MainContract.View {
             scrollToPosition(list.size-1)
         }
 
+        presenter.insertResultToLocalDB(list)
     }
 
     override fun startAnimation() {

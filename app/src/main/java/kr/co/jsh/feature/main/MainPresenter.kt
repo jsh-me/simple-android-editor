@@ -1,10 +1,8 @@
 package kr.co.jsh.feature.main
 
 import android.annotation.SuppressLint
-import io.reactivex.schedulers.Schedulers
 import kr.co.data.entity.room.ResultFileStorage
 import kr.co.domain.api.usecase.*
-import kr.co.domain.globalconst.Consts
 import kr.co.domain.globalconst.UrlConst
 import timber.log.Timber
 
@@ -45,12 +43,10 @@ class MainPresenter(override var view: MainContract.View,
 
     @SuppressLint("CheckResult")
     override fun getServerFileResult() {
-        allDeleteStorage()
         view.startAnimation()
         loadServerVideoFile()
         loadServerImageFile()
         view.setFileResult(addServerStorage)
-       // insertDataBase(addServerStorage)
     }
 
     @SuppressLint("CheckResult")
@@ -65,7 +61,6 @@ class MainPresenter(override var view: MainContract.View,
                         resultVideoList.add(obj)
                         resultVideoList.add("video")
                         addServerStorage.add(resultVideoList)
-                        //insertDataBase(addServerStorage)
                         Timber.e("22video")
                     }
                 }
@@ -87,7 +82,6 @@ class MainPresenter(override var view: MainContract.View,
                         resultImageList.add(obj)
                         resultImageList.add("image")
                         addServerStorage.add(resultImageList)
-                       // insertDataBase(addServerStorage)
                         Timber.e("22image")
                     }
                 }
@@ -97,18 +91,18 @@ class MainPresenter(override var view: MainContract.View,
             })
     }
 
-    override fun getLocalFileResult() {
-        view.startAnimation()
-//        view.setFileResult(addRoomDBStorage)
+    override fun insertResultToLocalDB(list: ArrayList<List<String>>) {
+        allDeleteStorage()
+        insertDataBase(list)
+        Timber.e("server storage number: ${list.size}")
     }
 
     //all delete db
     private fun allDeleteStorage(){
-        allDeleteFileDataBaseUseCase.allDelete()
+            allDeleteFileDataBaseUseCase.allDelete()
     }
 
     //insert db
     private fun insertDataBase(storage: ArrayList<List<String>>){
-        insertFileDataBaseUseCase.insert(ResultFileStorage(null, storage[storage.size-1][0], storage[storage.size-1][1], storage[storage.size-1][2]))
-    }
+        insertFileDataBaseUseCase.insert(ResultFileStorage(null, storage[storage.size - 1][0], storage[storage.size - 1][1], storage[storage.size - 1][2])) }
 }

@@ -9,5 +9,6 @@ interface MainContract{
     }
     interface Presenter: BaseStoragePresenter {
         var view: View
+        fun insertResultToLocalDB(list: ArrayList<List<String>>)
     }
 }
