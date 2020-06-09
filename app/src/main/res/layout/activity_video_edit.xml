@@ -55,7 +55,34 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent" >
+
+            <TextView
+                android:id="@+id/video_edit_trim_redo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="자르기\nRedo"
+                android:gravity="center"
+                android:onClick="@{() -> trimmer.videoEditRedoBtn()}"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="@+id/video_edit_trim_undo"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/video_edit_trim_undo" />
+
+            <TextView
+                android:id="@+id/video_edit_trim_undo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:text="자르기\nUndo"
+                android:gravity="center"
+                android:onClick="@{() -> trimmer.videoEditUndoBtn()}"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/video_edit_trim_redo" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.google.android.exoplayer2.ui.PlayerView
             android:id="@+id/video_loader"
@@ -102,7 +129,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:onClick="@{() -> trimmer.redoBtn()}"
-            android:background="@{trimmer.canRedo? @drawable/ic_redo_white_24dp : @drawable/ic_redo_grey_24dp}"
+            android:background="@{trimmer.canDrawRedo? @drawable/ic_redo_white_24dp : @drawable/ic_redo_grey_24dp}"
             app:layout_constraintBottom_toBottomOf="@+id/video_edit_undo_btn"
             app:layout_constraintStart_toEndOf="@+id/video_edit_undo_btn"
             app:layout_constraintTop_toTopOf="@+id/video_edit_undo_btn" />
@@ -112,7 +139,7 @@
             android:layout_width="wrap_content"
             android:layout_height="24dp"
             android:onClick="@{() -> trimmer.undoBtn()}"
-            android:background="@{trimmer.canUndo ? @drawable/ic_undo_white_24dp : @drawable/ic_undo_grey_24dp}"
+            android:background="@{trimmer.canDrawUndo ? @drawable/ic_undo_white_24dp : @drawable/ic_undo_grey_24dp}"
             app:layout_constraintBottom_toBottomOf="@+id/video_edit_crop_btn"
             app:layout_constraintStart_toStartOf="@+id/video_edit_remove_btn" />
 
@@ -261,29 +288,12 @@
                     android:adjustViewBounds="true" />
 
                 <View
-                    android:id="@+id/border1"
-                    android:layout_width="3dp"
-                    android:layout_height="150dp"
-                    android:visibility="invisible"
-                    android:background="@color/grey2" />
-
-                <View
-                    android:id="@+id/border2"
-                    android:layout_width="3dp"
-                    android:layout_height="150dp"
-                    android:visibility="invisible"
-                    android:background="@color/grey2" />
-
-                <View
                     android:id="@+id/selected_time_line_view"
                     android:visibility="invisible"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/border_round" />
-
-
             </FrameLayout>
-
         </HorizontalScrollView>
 
         <TextView
@@ -300,7 +310,6 @@
             app:layout_constraintTop_toTopOf="@+id/video_edit_child_layout"
             app:layout_constraintVertical_bias="1.0"
             tools:text="tetetetet" />
-
 
         <TextView
             android:id="@+id/video_end_time_tv"
@@ -319,7 +328,6 @@
             app:layout_constraintTop_toTopOf="@+id/video_edit_child_layout"
             app:layout_constraintVertical_bias="1.0"
             tools:text="tetetetet" />
-
 
         <SeekBar
             android:id="@+id/handlerTop"

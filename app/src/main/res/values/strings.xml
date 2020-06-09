@@ -8,10 +8,14 @@
     <string name="new_project">NEW PROJECT</string>
     <string name="my_project">MY PROJECT</string>
 
+    <string name="video">+ VIDEO</string>
+    <string name="photo">+ PHOTO</string>
+
     <string name="no_result">결과물이 없습니다.</string>
     <string name="photo_storage">사진 결과함</string>
     <string name="video_storage">동영상 결과함</string>
     <string name="save">저장</string>
 
     <string name="success_data">서버에 전송 되었습니다!\n저장함을 확인해주세요.</string>
+    <string name="more">더보기</string>
 </resources>

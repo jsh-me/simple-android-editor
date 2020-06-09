@@ -3,45 +3,44 @@ package kr.co.domain.koin.repositoryimpl.room
 import android.annotation.SuppressLint
 import io.reactivex.Completable
 import io.reactivex.Observable
-import kr.co.data.entity.room.VideoStorage
-import kr.co.domain.api.room.VideoStorageDao
-import kr.co.domain.koin.repository.room.VideoStorageRepository
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kr.co.data.entity.room.ResultFileStorage
+import kr.co.domain.api.room.ResultFileStorageDao
+import kr.co.domain.koin.repository.room.ResultFileStorageRepository
 import timber.log.Timber
 
-class VideoStorageRepositoryImpl(private val videoDao: VideoStorageDao)
-    :VideoStorageRepository {
+class ResultFileStorageRepositoryImpl(private val resultFileStorageDao: ResultFileStorageDao)
+    : ResultFileStorageRepository {
 
     @SuppressLint("CheckResult")
-    override fun insert(videoStorage: VideoStorage) {
-        videoDao.insert(videoStorage)
+    override fun insert(fileStorage: ResultFileStorage) {
+        resultFileStorageDao.insert(fileStorage)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 Timber.e("insert success")
-            },{
-                Timber.e(it.localizedMessage)
-
-            })
-
-    }
-
-    @SuppressLint("CheckResult")
-    override fun update(videoStorage: VideoStorage) {
-        videoDao.update(videoStorage)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                Timber.e("update success")
             }, {
                 Timber.e(it.localizedMessage)
             })
     }
 
     @SuppressLint("CheckResult")
-    override fun delete(videoStorage: VideoStorage) {
-        videoDao.delete(videoStorage)
+    override fun update(fileStorage: ResultFileStorage) {
+        resultFileStorageDao.update(fileStorage)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                Timber.e("update success")
+            }, {
+                Timber.e(it.localizedMessage)
+
+            })
+    }
+
+    @SuppressLint("CheckResult")
+    override fun delete(fileStorage: ResultFileStorage) {
+        resultFileStorageDao.delete(fileStorage)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
@@ -52,8 +51,8 @@ class VideoStorageRepositoryImpl(private val videoDao: VideoStorageDao)
     }
 
     @SuppressLint("CheckResult")
-    override fun deleteAllVideoStorage() {
-        Completable.fromAction { videoDao.deleteAllVideoStorage() }
+    override fun deleteAllStorage() {
+        Completable.fromAction { resultFileStorageDao.deleteAllStorage() }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
@@ -63,6 +62,6 @@ class VideoStorageRepositoryImpl(private val videoDao: VideoStorageDao)
             })
     }
 
-    override fun getAllVideoStorage(): Observable<List<VideoStorage>> =
-        videoDao.getAllVideoStorage()
+    override fun getAllStorage(): Observable<List<ResultFileStorage>> =
+        resultFileStorageDao.getAllStorage()
 }

@@ -2,12 +2,9 @@ package kr.co.domain.api.room
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import kr.co.data.entity.room.ImageStorage
-import kr.co.data.entity.room.VideoStorage
+import kr.co.data.entity.room.ResultFileStorage
 
-@Database(entities = [VideoStorage::class, ImageStorage::class], version = 2)
+@Database(entities = [ResultFileStorage::class], version = 3)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun videoStorageDao() : VideoStorageDao
-    abstract fun imageStorageDao() : ImageStorageDao
-
+    abstract fun resultFileStorageDao() : ResultFileStorageDao
 }

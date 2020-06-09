@@ -17,7 +17,7 @@
             type="android.view.View" />
     </data>
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -26,12 +26,12 @@
             android:layout_height="match_parent"
             tools:context=".feature.main.MainActivity">
 
-
             <ImageView
-                android:id="@+id/imageView"
+                android:id="@+id/mainImageView"
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
-                android:background="@drawable/main_view"
+                android:scaleType="centerCrop"
+                tools:background="@drawable/main_view"
                 app:layout_constraintBottom_toTopOf="@+id/textView"
                 app:layout_constraintDimensionRatio="w,16:9"
                 app:layout_constraintStart_toStartOf="parent"
@@ -46,7 +46,7 @@
                 android:textColor="@color/white"
                 android:textSize="28sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/imageView"
+                app:layout_constraintBottom_toBottomOf="@+id/mainImageView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.1"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -75,39 +75,45 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/imageView"
-                app:layout_constraintTop_toBottomOf="@+id/imageView" />
+                app:layout_constraintStart_toStartOf="@+id/mainImageView"
+                app:layout_constraintTop_toBottomOf="@+id/mainImageView" />
 
             <Button
-                android:id="@+id/imageButton"
+                android:id="@+id/videoButton"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:layout_margin="20dp"
-                android:text="+ VIdeo"
-                android:textColor="@color/white"
+                android:layout_height="180dp"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginBottom="20dp"
+                tools:background="@drawable/main_video"
                 android:gravity="bottom|end"
-                android:padding="5dp"
-                android:background="@drawable/main_video"
                 android:onClick="@{() -> main.pickFromVideo(consts.REQUEST_VIDEO_TRIMMER)}"
-                app:layout_constraintBottom_toTopOf="@+id/button"
-                app:layout_constraintEnd_toEndOf="@+id/imageView"
-                app:layout_constraintStart_toStartOf="@+id/imageView"
+                android:padding="5dp"
+                android:text="@string/video"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toTopOf="@+id/photoButton"
+                app:layout_constraintEnd_toEndOf="@+id/mainImageView"
+                app:layout_constraintStart_toStartOf="@+id/mainImageView"
                 app:layout_constraintTop_toBottomOf="@+id/textView" />
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/photoButton"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:layout_margin="20dp"
-                android:background="@drawable/main_photo"
-                android:onClick="@{() -> main.pickFromPicture(consts.REQUEST_VIDEO_CROPPER)}"
-                android:text="+ PHOTO"
-                android:textColor="@color/white"
+                android:layout_height="180dp"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginBottom="30dp"
+                tools:background="@drawable/main_photo"
                 android:gravity="bottom|end"
+                android:onClick="@{() -> main.pickFromPicture(consts.REQUEST_VIDEO_CROPPER)}"
                 android:padding="5dp"
+                android:scaleType="centerCrop"
+                android:text="@string/photo"
+                android:textColor="@color/white"
                 app:layout_constraintBottom_toTopOf="@+id/myProjectTxt"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/imageView" />
+                app:layout_constraintStart_toStartOf="@+id/mainImageView" />
 
             <TextView
                 android:id="@+id/myProjectTxt"
@@ -116,45 +122,41 @@
                 android:layout_margin="20dp"
                 android:text="@string/my_project"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/videoStorageBtn"
+                app:layout_constraintBottom_toTopOf="@+id/main_result_recycler"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/imageView" />
+                app:layout_constraintStart_toStartOf="@+id/mainImageView" />
 
-            <Button
-                android:id="@+id/videoStorageBtn"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/main_result_recycler"
                 android:layout_width="0dp"
-                android:layout_height="100dp"
-                android:layout_margin="20dp"
-                android:background="#7DF3D1"
-                android:onClick="@{() -> main.videoStorageBtn()}"
-                android:text="Video Storage"
-                app:layout_constraintEnd_toStartOf="@+id/guideline2"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="@+id/imageView"
-                app:layout_constraintTop_toBottomOf="@+id/myProjectTxt" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/myProjectTxt"
+                tools:itemCount="1"
+                tools:listitem="@layout/item_storage_list" />
 
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guideline2"
+            <kr.co.jsh.customview.BlockingView
+                android:id="@+id/blockingView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                android:background="#80333333"/>
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/loading_animation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.5"/>
-
-            <Button
-                android:id="@+id/photoStorage"
-                android:layout_width="0dp"
-                android:layout_height="100dp"
-                android:text="Photo Storage"
-                android:layout_margin="20dp"
-                android:background="#7DF3D1"
-                android:onClick="@{() -> main.photoStorageBtn()}"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/imageView"
-                app:layout_constraintStart_toStartOf="@+id/guideline2"
-                app:layout_constraintTop_toBottomOf="@+id/myProjectTxt" />
-
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:lottie_loop="true"
+                app:lottie_fileName="loading.json" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 </layout>
