@@ -40,7 +40,7 @@ class MainPresenter(override var view: MainContract.View,
     @SuppressLint("CheckResult")
     override fun getServerFileResult() {
         view.startAnimation()
-        allDeleteStorage()
+       // allDeleteStorage()
         loadServerVideoFile()
         loadServerImageFile()
         view.setFileResult(addServerStorage)
@@ -76,26 +76,26 @@ class MainPresenter(override var view: MainContract.View,
                     }
                 }
                 view.refreshView(addServerStorage)
-                insertResultToLocalDB(addServerStorage)
+               // insertResultToLocalDB(addServerStorage)
                 Timber.e("pass-2")
             }, {
                 Timber.e(it.localizedMessage)
             })
     }
 
-    override fun insertResultToLocalDB(list: ArrayList<List<String>>) {
-        insertDataBase(list)
-        Timber.e("server storage number: ${list.size}")
-    }
+//    override fun insertResultToLocalDB(list: ArrayList<List<String>>) {
+//        insertDataBase(list)
+//        Timber.e("server storage number: ${list.size}")
+//    }
 
     //all delete db
-    private fun allDeleteStorage() {
-        allDeleteFileDataBaseUseCase.allDelete()
-    }
-
-    //insert db
-    private fun insertDataBase(storage: ArrayList<List<String>>) {
-        for (i in storage.indices) {
-            insertFileDataBaseUseCase.insert(ResultFileStorage(null, storage[i][0], storage[i][1], storage[i][2])) }
-    }
+//    private fun allDeleteStorage() {
+//        allDeleteFileDataBaseUseCase.allDelete()
+//    }
+//
+//    //insert db
+//    private fun insertDataBase(storage: ArrayList<List<String>>) {
+//        for (i in storage.indices) {
+//            insertFileDataBaseUseCase.insert(ResultFileStorage(null, storage[i][0], storage[i][1], storage[i][2])) }
+//    }
 }

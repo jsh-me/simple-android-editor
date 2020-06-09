@@ -178,8 +178,7 @@ class MainActivity : AppCompatActivity(), MainContract.View {
             startActivityForResult(intent, 1000)
         }
     }
-
-
+    
     private fun startTrimActivity(uri: Uri?) {
         val filePath = FileUtils.getPath(this@MainActivity, uri!!)
         filePath?.let {
