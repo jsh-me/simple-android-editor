@@ -11,8 +11,7 @@ interface ResultFileStorageRepository {
 
     fun delete(fileStorage: ResultFileStorage)
 
-    fun deleteAllImageStorage()
+    fun deleteAllStorage()
 
-    fun getAllImageStorage() : Observable<List<ResultFileStorage>>
-
+    fun getAllStorage() : Observable<List<ResultFileStorage>>
 }

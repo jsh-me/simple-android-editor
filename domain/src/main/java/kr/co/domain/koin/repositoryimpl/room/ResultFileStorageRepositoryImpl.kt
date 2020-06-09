@@ -20,7 +20,7 @@ class ResultFileStorageRepositoryImpl(private val resultFileStorageDao: ResultFi
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 Timber.e("insert success")
-            },{
+            }, {
                 Timber.e(it.localizedMessage)
             })
     }
@@ -32,7 +32,7 @@ class ResultFileStorageRepositoryImpl(private val resultFileStorageDao: ResultFi
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 Timber.e("update success")
-            },{
+            }, {
                 Timber.e(it.localizedMessage)
 
             })
@@ -45,23 +45,23 @@ class ResultFileStorageRepositoryImpl(private val resultFileStorageDao: ResultFi
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 Timber.e("delete success")
-            },{
+            }, {
                 Timber.e(it.localizedMessage)
             })
     }
 
     @SuppressLint("CheckResult")
-    override fun deleteAllImageStorage() {
-        Completable.fromAction{ resultFileStorageDao.deleteAllImageStorage()}
+    override fun deleteAllStorage() {
+        Completable.fromAction { resultFileStorageDao.deleteAllStorage() }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 Timber.e("delete all success")
-            },{
+            }, {
                 Timber.e(it.localizedMessage)
             })
     }
 
-    override fun getAllImageStorage(): Observable<List<ResultFileStorage>> =
-        resultFileStorageDao.getAllImageStorage()
+    override fun getAllStorage(): Observable<List<ResultFileStorage>> =
+        resultFileStorageDao.getAllStorage()
 }

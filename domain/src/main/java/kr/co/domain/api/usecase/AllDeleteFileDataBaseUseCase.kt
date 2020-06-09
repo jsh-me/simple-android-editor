@@ -5,5 +5,5 @@ import kr.co.domain.koin.repository.room.ResultFileStorageRepository
 class AllDeleteFileDataBaseUseCase(resultFileStorageRepository: ResultFileStorageRepository){
     private val resultFileStorageRepository = resultFileStorageRepository
 
-    fun allDelete() = resultFileStorageRepository.deleteAllImageStorage()
+    fun allDelete() = resultFileStorageRepository.deleteAllStorage()
 }

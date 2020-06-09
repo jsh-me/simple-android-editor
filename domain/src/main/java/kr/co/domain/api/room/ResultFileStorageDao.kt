@@ -17,8 +17,8 @@ interface ResultFileStorageDao {
     fun delete(fileStorage: ResultFileStorage) : Completable
 
     @Query("DELETE FROM result_storage_table")
-    fun deleteAllImageStorage()
+    fun deleteAllStorage()
 
     @Query("SELECT * FROM result_storage_table ORDER BY id DESC")
-    fun getAllImageStorage(): Observable<List<ResultFileStorage>>
+    fun getAllStorage(): Observable<List<ResultFileStorage>>
 }

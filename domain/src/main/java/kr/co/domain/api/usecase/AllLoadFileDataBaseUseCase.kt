@@ -10,7 +10,7 @@ class AllLoadFileDataBaseUseCase(resultFileStorageRepository: ResultFileStorageR
     private val resultFileStorageRepository = resultFileStorageRepository
 
     fun allLoad(): Observable<List<ResultFileStorage>> =
-        resultFileStorageRepository.getAllImageStorage()
+        resultFileStorageRepository.getAllStorage()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
 }

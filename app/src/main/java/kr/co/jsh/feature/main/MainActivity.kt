@@ -6,6 +6,7 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.ContextCompat.startActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.tasks.OnCompleteListener
@@ -80,8 +81,6 @@ class MainActivity : AppCompatActivity(), MainContract.View {
             adapter?.notifyDataSetChanged()
             scrollToPosition(list.size-1)
         }
-
-        presenter.insertResultToLocalDB(list)
     }
 
     override fun startAnimation() {
@@ -182,20 +181,26 @@ class MainActivity : AppCompatActivity(), MainContract.View {
 
 
     private fun startTrimActivity(uri: Uri?) {
-        uri?.let{this.toastShort("이용할 수 없는 비디오 입니다.")}?:run {
-            val intent = Intent(this, TrimmerActivity::class.java).apply {
-                putExtra(EXTRA_VIDEO_PATH, FileUtils.getPath(this@MainActivity, uri!!))
-            }
+        val filePath = FileUtils.getPath(this@MainActivity, uri!!)
+        filePath?.let {
+                    val intent = Intent(this, TrimmerActivity::class.java).apply {
+                    putExtra(EXTRA_VIDEO_PATH, filePath)
+                }
             startActivity(intent)
+        }?:run {
+                this.toastShort("지원하지 않는 형식 입니다.")
+            }
         }
-    }
 
     private fun startPhotoActivity(uri: Uri?) {
-        uri?.let{this.toastShort("이용할 수 없는 사진 입니다.")}?:run {
-            val intent = Intent(this, PhotoActivity::class.java).apply {
-                putExtra(EXTRA_PHOTO_PATH, FileUtils.getPath(this@MainActivity, uri!!))
+        val filePath = FileUtils.getPath(this@MainActivity, uri!!)
+        filePath?.let {
+                val intent = Intent(this, PhotoActivity::class.java).apply {
+                putExtra(EXTRA_PHOTO_PATH, filePath)
             }
             startActivity(intent)
+        }?: run {
+                this.toastShort("지원하지 않는 형식 입니다.")
+            }
         }
     }
-}
