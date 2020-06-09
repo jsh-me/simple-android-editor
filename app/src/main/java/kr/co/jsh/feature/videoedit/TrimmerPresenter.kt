@@ -54,6 +54,8 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
     private var playWhenReady = false
     private val mediaMetadataRetriever = MediaMetadataRetriever()
 
+    private val originalTrimList = ArrayList<Pair<Long, Long>>()
+
 
     override fun initPlayer(uri: Uri, context: Context) {
         mplayer = SimpleExoPlayer.Builder(context).build()
@@ -115,60 +117,38 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
 
     //----------
 
-    override fun setCuttingVideo(context: Context, cropCount: Int, trimVideoTimeList: ArrayList<Pair<Long, Long>>, recycler: RecyclerView){
-        var firstTrim = 0L
-        var secondTrim = 0L
+    override fun setCuttingVideo(context: Context, trimVideoTimeList: ArrayList<Pair<Long, Long>>, recycler: RecyclerView){
+        val trimmedPosition = ( mplayer?.currentPosition!! * (recycler.width - ScreenSizeUtil(context).widthPixels)) /  mplayer?.duration!!
 
-        when(cropCount){
-            1 -> {
-                firstTrim =
-                    ( mplayer?.currentPosition!! * (recycler.width - ScreenSizeUtil(context).widthPixels)) /  mplayer?.duration!!
+        trimVideoTimeList.add(Pair(trimmedPosition, mplayer?.currentPosition!!))// 자를때마다 계속 들어가게 됨.
+        originalTrimList.add(Pair(trimmedPosition, mplayer?.currentPosition!!)) //undo redo 시 사용
+        trimVideoTimeList.sortBy { it.first } //desc? asc?
 
-                trimVideoTimeList.add(Pair(firstTrim, mplayer?.currentPosition!!))//2
-                trimVideoTimeList.add(Pair(firstTrim, mplayer?.currentPosition!!))//3
-                trimVideoTimeList.add(Pair(recycler.width - ScreenSizeUtil(context).widthPixels.toLong(), mplayer?.duration!!)) //4
-            }
-             2-> {
-                 secondTrim =
-                     ( mplayer?.currentPosition!! * (recycler.width - ScreenSizeUtil(context).widthPixels)) /  mplayer?.duration!!
-                if(trimVideoTimeList[1].first > secondTrim) {
-                    trimVideoTimeList[1] = Pair(secondTrim,  mplayer?.currentPosition!!)
-                }
-                 else trimVideoTimeList[2] = Pair(secondTrim,  mplayer?.currentPosition!!)
-             }
+       view.setGreyLine(trimVideoTimeList, trimmedPosition)
+    }
 
-            else -> {
-                context.toastShort("두번만 선택 가능")
-            }
-        }
-       view.setPairList(trimVideoTimeList)
+    override fun resetTrimVideoLIst() {
+        originalTrimList.clear()
+    }
 
+    override fun getIndexOfTrimVideoList(index : Int): Pair<Long, Long> {
+        return originalTrimList[originalTrimList.lastIndex - index]
     }
 
     //사용자가 자른 동영상이 갤러리와 서버 동시에 저장, 업로드 되는 메소드
     override fun getResultUri(uri: Uri, context: Context, option: String) {
         ScopeStorageFileUtil.addVideoAlbum(uri, context)
 
-        if(option.equals(Consts.SUPER_RESOL)) { improveFile(uri) }
+        if(option == Consts.SUPER_RESOL) { improveFile(uri) }
         else { uploadFile(uri.toString()) }
     }
 
     override fun preparePath(extraIntent: Intent) {
         var path =""
-        extraIntent?.let{
+        extraIntent.let{
             path =  it.getStringExtra(EXTRA_VIDEO_PATH)
             }
         view.setVideoPath(path)
-    }
-
-    override fun getCropArrayList(context:Context, trimVideoTimeList:  ArrayList<Pair<Long, Long>>) {
-        try {
-            trimVideoTimeList.clear()
-            trimVideoTimeList.add(Pair(0,0))//1
-            view.resetCropView()
-        } catch (e: Exception) {
-            context.toastShort("잘라진 것이 없어요!")
-        }
     }
 
     override fun getThumbnailList(mSrc: Uri, context:Context) {

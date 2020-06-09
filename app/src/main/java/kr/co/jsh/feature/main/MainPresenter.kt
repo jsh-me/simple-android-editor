@@ -1,7 +1,6 @@
 package kr.co.jsh.feature.main
 
 import android.annotation.SuppressLint
-import kotlinx.atomicfu.AtomicInt
 import kr.co.data.entity.room.ResultFileStorage
 import kr.co.domain.api.usecase.*
 import kr.co.domain.globalconst.UrlConst
@@ -18,7 +17,7 @@ class MainPresenter(override var view: MainContract.View,
     private val addRoomDBStorage: ArrayList<List<String>> =
         ArrayList()  //0: url, 1: fileName, 2: fileType
     private val addServerStorage: ArrayList<List<String>> = ArrayList()
-    private val mFlag = AtomicInteger(0)
+    private val mFlag = AtomicInteger(0) //thread control variable
 
     @SuppressLint("CheckResult")
     override fun loadLocalFileStorageDB() {
@@ -77,8 +76,8 @@ class MainPresenter(override var view: MainContract.View,
                     }
                 }
                 view.refreshView(addServerStorage)
-                    insertResultToLocalDB(addServerStorage)
-                    Timber.e("pass-2")
+                insertResultToLocalDB(addServerStorage)
+                Timber.e("pass-2")
             }, {
                 Timber.e(it.localizedMessage)
             })
