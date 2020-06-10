@@ -6,7 +6,6 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import androidx.core.content.ContextCompat.startActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.tasks.OnCompleteListener
@@ -24,9 +23,10 @@ import kr.co.domain.globalconst.Consts.Companion.REQUEST_VIDEO_TRIMMER
 import kr.co.domain.utils.loadDrawable
 import kr.co.domain.utils.toastShort
 import kr.co.jsh.feature.login.LoginAccountDialog
-import kr.co.jsh.feature.photoStorageDetail.PhotoDetailActivity
+import kr.co.jsh.feature.storageDetail.photo.PhotoStorageActivity
 import kr.co.jsh.feature.photoedit.PhotoActivity
-import kr.co.jsh.feature.videoStorageDetail.VideoDetailActivity
+import kr.co.jsh.feature.storage.StorageActivity
+import kr.co.jsh.feature.storageDetail.video.VideoStorageActivity
 import kr.co.jsh.feature.videoedit.TrimmerActivity
 import kr.co.jsh.singleton.UserObject
 import kr.co.jsh.utils.permission.FileUtils
@@ -70,11 +70,26 @@ class MainActivity : AppCompatActivity(), MainContract.View {
         Timber.e("OnResume : ${UserObject.loginResponse}")
         binding.mainResultRecycler.apply {
             layoutManager = LinearLayoutManager(this@MainActivity, LinearLayoutManager.HORIZONTAL, true)
-            adapter = MainAdapter(click(), list, context)
+            adapter = MainAdapter(click(), list)
             scrollToPosition(list.size-1)
         }
         stopAnimation()
     }
+
+//    private fun recyclerViewListener(){
+//        binding.mainResultRecycler.setOnScrollChangeListener(object: RecyclerView.OnScrollListener(),
+//            View.OnScrollChangeListener {
+//            override fun onScrollChange(v: View?, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int) {
+//                if(binding.mainResultRecycler.canScrollHorizontally((1))){
+//                  //  Timber.e("Start of List")
+//                }
+//                else if(binding.mainResultRecycler.canScrollHorizontally(-1)){
+//                  //  Timber.e("End of List")
+//                    presenter.getServerFileResult()
+//                } else {Timber.e("idle")}
+//            }
+//        })
+//    }
 
     override fun refreshView(list: ArrayList<List<String>>) {
         binding.mainResultRecycler.apply{
@@ -97,11 +112,11 @@ class MainActivity : AppCompatActivity(), MainContract.View {
 
     private fun click() = { _: Int, url: String, type: String ->
        val intent = if(type == "video") {
-            Intent(this, VideoDetailActivity::class.java).apply {
+            Intent(this, VideoStorageActivity::class.java).apply {
                 putExtra(Consts.DETAIL_VIDEO, url)
             }
         } else {
-            Intent(this, PhotoDetailActivity::class.java).apply{
+            Intent(this, PhotoStorageActivity::class.java).apply{
                 putExtra(Consts.DETAIL_PHOTO, url)
             }
         }
@@ -178,7 +193,15 @@ class MainActivity : AppCompatActivity(), MainContract.View {
             startActivityForResult(intent, 1000)
         }
     }
-    
+
+    fun moreResultFileBtn(){
+        if(UserObject.loginResponse != 200) {this.toastShort( "로그인을 먼저 해주세요.")}
+        else{
+            val intent = Intent(this, StorageActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
     private fun startTrimActivity(uri: Uri?) {
         val filePath = FileUtils.getPath(this@MainActivity, uri!!)
         filePath?.let {
@@ -202,4 +225,4 @@ class MainActivity : AppCompatActivity(), MainContract.View {
                 this.toastShort("지원하지 않는 형식 입니다.")
             }
         }
-    }
+}

@@ -1,27 +1,29 @@
-package kr.co.jsh.feature.main
+package kr.co.jsh.feature.storage
 
 import android.annotation.SuppressLint
-import androidx.recyclerview.widget.DiffUtil
-import kr.co.data.entity.room.ResultFileStorage
-import kr.co.data.entity.server.AllVideoResultList
 import kr.co.domain.api.usecase.*
 import kr.co.domain.globalconst.UrlConst
 import timber.log.Timber
 import java.util.concurrent.atomic.AtomicInteger
 
-class MainPresenter(override var view: MainContract.View,
-                    private var insertFileDataBaseUseCase: InsertFileDataBaseUseCase,
-                    private var allLoadFileDataBaseUseCase: AllLoadFileDataBaseUseCase,
-                    private var allDeleteFileDataBaseUseCase: AllDeleteFileDataBaseUseCase,
-                    private var postVideoSearchListUseCase: PostVideoSearchListUseCase,
-                    private var postImageSearchListUseCase: PostImageSearchListUseCase
-): MainContract.Presenter {
+
+class VideoStoragePresenter(override var view: StorageContract.View,
+                            private var insertFileDataBaseUseCase: InsertFileDataBaseUseCase,
+                            private var allLoadFileDataBaseUseCase: AllLoadFileDataBaseUseCase,
+                            private var allDeleteFileDataBaseUseCase: AllDeleteFileDataBaseUseCase,
+                            private var postVideoSearchListUseCase: PostVideoSearchListUseCase,
+                            private var postImageSearchListUseCase: PostImageSearchListUseCase)
+    :StorageContract.Presenter{
     private val addRoomDBStorage: ArrayList<List<String>> = ArrayList()  //0: url, 1: fileName, 2: fileType
     private val addServerStorage: ArrayList<List<String>> = ArrayList()
-    private val mFlag = AtomicInteger(0) //thread control variable
+    private val mFlag = AtomicInteger(2) //thread control variable
+    private var mExpected = 0
 
-    private var mPageSize = 2
-    private var mPageNum = 1
+    private var mPageSize = 4 //몇 개씩 반영?
+    private var mPageNum = 1 // 몇 페이지 씩 반영?
+
+    private var isEndVideoResult = false
+    private var isEndImageResult = false
 
     @SuppressLint("CheckResult")
     override fun loadLocalFileStorageDB() {
@@ -29,7 +31,9 @@ class MainPresenter(override var view: MainContract.View,
         allLoadFileDataBaseUseCase.allLoad()
             .subscribe({
                 it.map {
+                    Timber.e("11local")
                     addRoomDBStorage.add(listOf(it.path, it.filename, it.fileType))
+                    Timber.e("22local")
                 }
                 Timber.e("onComplete")
                 view.setFileResult(addRoomDBStorage)
@@ -45,8 +49,10 @@ class MainPresenter(override var view: MainContract.View,
 //        allDeleteStorage()
         loadServerVideoFile()
         loadServerImageFile()
-        view.setFileResult(addServerStorage)
+       // mPageNum++
+
     }
+
 
     @SuppressLint("CheckResult")
     private fun loadServerVideoFile() {
@@ -58,8 +64,16 @@ class MainPresenter(override var view: MainContract.View,
                         addServerStorage.add(listOf("${UrlConst.DOWNLOAD_URL}$obj", obj, "video"))
                     }
                 }
-                view.refreshView(addServerStorage)
-                Timber.e("pass-1")
+                mExpected++
+                if(mFlag.compareAndSet(mExpected, 2)) {
+                    Timber.e("pass-1")
+
+                    view.setFileResult(addServerStorage)
+                    view.refreshView(addServerStorage)
+                    mPageNum++
+                    mExpected = 0
+                    Timber.e("pageNum is $mPageNum")
+                }
             }, {
                 Timber.e(it.localizedMessage)
             })
@@ -75,12 +89,37 @@ class MainPresenter(override var view: MainContract.View,
                         addServerStorage.add(listOf("${UrlConst.DOWNLOAD_URL}$obj",obj, "image"))
                     }
                 }
-                view.refreshView(addServerStorage)
-               // insertResultToLocalDB(addServerStorage)
-                Timber.e("pass-2")
+                // insertResultToLocalDB(addServerStorage)
+                mExpected++
+                if(mFlag.compareAndSet(mExpected, 2)) {
+                    Timber.e("pass-2")
+
+                    view.setFileResult(addServerStorage)
+                    view.refreshView(addServerStorage)
+                    mPageNum++
+                    mExpected = 0
+                    Timber.e("pageNum is $mPageNum")
+                }
+
             }, {
                 Timber.e(it.localizedMessage)
             })
+    }
+
+    @SuppressLint("CheckResult")
+    override fun isAnyMoreNoData() {
+      postVideoSearchListUseCase.postVideoSearchList(mPageSize, mPageNum+1)
+            .filter{ it.datas.isNullOrEmpty() }
+            .subscribe{  isEndVideoResult = true
+                Timber.e("loading 판단 video: $mPageNum and $isEndVideoResult")}
+
+      postImageSearchListUseCase.postImageSearchList(mPageSize, mPageNum+1)
+            .filter{ it.datas.isNullOrEmpty() }
+            .subscribe { isEndImageResult = true
+                Timber.e("loading 판단 image: $mPageNum and $isEndVideoResult")}
+
+        if(isEndImageResult && isEndVideoResult) view.stopAnimation()
+        view.isEnd(isEndImageResult && isEndVideoResult)
     }
 
     //    override fun insertResultToLocalDB(list: ArrayList<List<String>>) {
@@ -88,7 +127,8 @@ class MainPresenter(override var view: MainContract.View,
 //        Timber.e("server storage number: ${list.size}")
 //    }
 
-  //  all delete db
+
+    //  all delete db
     private fun allDeleteStorage() {
         allDeleteFileDataBaseUseCase.allDelete()
     }

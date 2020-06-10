@@ -1,9 +1,9 @@
-package kr.co.jsh.feature.videoStorageDetail
+package kr.co.jsh.feature.storageDetail.video
 
 import android.content.Context
 import com.google.android.exoplayer2.SimpleExoPlayer
 
-interface VideoDetailContract {
+interface VideoStorageContract {
     interface View {
         fun setPlayer(player: SimpleExoPlayer)
     }

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
     <data>
         <variable
-            name="photoStorage"
-            type="kr.co.jsh.feature.photoStorage.PhotoStorageActivity" />
+            name="videoStorage"
+            type="kr.co.jsh.feature.storage.StorageActivity" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:background="@color/grey2"
@@ -12,13 +13,13 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/photo_storage_title"
+            android:id="@+id/video_storage_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/grey1"
             android:gravity="center"
             android:padding="10dp"
-            android:text="@string/photo_storage"
+            android:text="@string/my_project"
             android:textColor="@color/white"
             android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -26,38 +27,40 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
-            android:id="@+id/photo_storage_back_btn"
+            android:id="@+id/video_storage_back_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/ic_back"
-            android:onClick="@{() -> photoStorage.backBtn()}"
-            app:layout_constraintBottom_toBottomOf="@+id/photo_storage_title"
-            app:layout_constraintStart_toStartOf="@+id/photo_storage_title"
+            android:onClick="@{() -> videoStorage.backBtn()}"
+            app:layout_constraintBottom_toBottomOf="@+id/video_storage_title"
+            app:layout_constraintStart_toStartOf="@+id/video_storage_title"
             app:layout_constraintTop_toTopOf="parent" />
 
+
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/photo_storage_recycler"
+            android:id="@+id/video_storage_recycler"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/photo_storage_title"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintTop_toBottomOf="@+id/video_storage_title"
+            app:layout_constraintVertical_bias="0.0"
+            tools:listitem="@layout/item_storage_list"/>
 
         <TextView
             android:id="@+id/noResultText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:visibility="gone"
             android:text="@string/no_result"
+            android:visibility="gone"
             android:textColor="@color/white"
             android:textSize="18sp"
-            app:layout_constraintBottom_toBottomOf="@+id/photo_storage_recycler"
+            app:layout_constraintBottom_toBottomOf="@+id/video_storage_recycler"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/photo_storage_title" />
+            app:layout_constraintTop_toBottomOf="@+id/video_storage_title" />
 
         <kr.co.jsh.customview.BlockingView
             android:id="@+id/blockingView"
@@ -77,7 +80,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:lottie_loop="true"
             app:lottie_fileName="loading.json" />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

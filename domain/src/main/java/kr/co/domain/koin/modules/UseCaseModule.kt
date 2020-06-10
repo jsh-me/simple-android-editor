@@ -22,4 +22,8 @@ val useCaseModule = module{
 
     factory { GetAllVideoResultListUseCase(get()) }
 
+    factory { PostImageSearchListUseCase(get()) }
+
+    factory { PostVideoSearchListUseCase(get()) }
+
 }

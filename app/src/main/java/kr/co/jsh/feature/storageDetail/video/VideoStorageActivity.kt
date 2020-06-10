@@ -1,9 +1,8 @@
-package kr.co.jsh.feature.videoStorageDetail
+package kr.co.jsh.feature.storageDetail.video
 
 import android.app.DownloadManager
 import android.content.Context
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.google.android.exoplayer2.SimpleExoPlayer
@@ -12,11 +11,11 @@ import kr.co.domain.utils.toastShort
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityDetailVideoResultBinding
 import kr.co.jsh.utils.permission.ScopeStorageFileUtil
-import timber.log.Timber
 
-class VideoDetailActivity : AppCompatActivity(), VideoDetailContract.View{
+class VideoStorageActivity : AppCompatActivity(),
+    VideoStorageContract.View {
     private lateinit var binding : ActivityDetailVideoResultBinding
-    private lateinit var presenter : VideoDetailPresenter
+    private lateinit var presenterVideo : VideoStoragePresenter
     private var videoUri :String ?= null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,11 +26,11 @@ class VideoDetailActivity : AppCompatActivity(), VideoDetailContract.View{
 
     private fun setupDataBinding(){
         binding = DataBindingUtil.setContentView(this, R.layout.activity_detail_video_result)
-        binding.resultVideo = this@VideoDetailActivity
+        binding.resultVideo = this@VideoStorageActivity
     }
 
     private fun initPresenter(){
-        presenter = VideoDetailPresenter(this)
+        presenterVideo = VideoStoragePresenter(this)
         videoUri = intent.getStringExtra(Consts.DETAIL_VIDEO)?:""
     }
 
@@ -49,22 +48,22 @@ class VideoDetailActivity : AppCompatActivity(), VideoDetailContract.View{
 
     override fun onResume() {
         super.onResume()
-        presenter.initPlayer(videoUri!!, this)
+        presenterVideo.initPlayer(videoUri!!, this)
     }
 
     override fun onRestart() {
         super.onRestart()
-        presenter.initPlayer(videoUri!!, this)
+        presenterVideo.initPlayer(videoUri!!, this)
     }
 
 
     override fun onStop() {
         super.onStop()
-        presenter.releasePlayer()
+        presenterVideo.releasePlayer()
     }
 
     fun backBtn(){
         finish()
-        presenter.releasePlayer()
+        presenterVideo.releasePlayer()
     }
 }
