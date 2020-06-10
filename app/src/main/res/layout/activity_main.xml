@@ -72,6 +72,7 @@
                 android:layout_margin="20dp"
                 android:layout_marginTop="20dp"
                 android:text="@string/new_project"
+                android:textColor="@color/grey2"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -122,10 +123,31 @@
                 android:layout_margin="20dp"
                 android:text="@string/my_project"
                 android:textStyle="bold"
+                android:textColor="@color/grey2"
                 app:layout_constraintBottom_toTopOf="@+id/main_result_recycler"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/mainImageView" />
+
+            <TextView
+                android:id="@+id/moreResultTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/more"
+                android:textColor="@color/grey2"
+                android:onClick="@{() -> main.moreResultFileBtn()}"
+                app:layout_constraintBottom_toBottomOf="@+id/myProjectTxt"
+                app:layout_constraintEnd_toEndOf="@+id/photoButton"
+                app:layout_constraintTop_toTopOf="@+id/myProjectTxt" />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_chevron_right"
+                android:onClick="@{() -> main.moreResultFileBtn()}"
+                app:layout_constraintBottom_toBottomOf="@+id/moreResultTxt"
+                app:layout_constraintStart_toEndOf="@+id/moreResultTxt"
+                app:layout_constraintTop_toTopOf="@+id/moreResultTxt" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/main_result_recycler"

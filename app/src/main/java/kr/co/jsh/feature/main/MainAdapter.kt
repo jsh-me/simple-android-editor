@@ -12,10 +12,10 @@ import kr.co.domain.utils.loadUrl
 import kr.co.jsh.databinding.ItemStorageListBinding
 
 class MainAdapter (val click:(Int, String, String) -> Unit,
-                   private var list: ArrayList<List<String>>,
-                   private var context: Context
+                   private var list: ArrayList<List<String>>
 )
     : RecyclerView.Adapter<MainAdapter.ViewHolder>() {
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val mBinding = ItemStorageListBinding.inflate(inflater, parent, false)
@@ -29,9 +29,8 @@ class MainAdapter (val click:(Int, String, String) -> Unit,
         requestOptions.isMemoryCacheable
         holder.resultViewThumbnail.loadUrl(list[position][0], requestOptions)
         holder.resultViewName.text = list[position][1]
-        holder.videoIcon.visibility = if(list[position][2].equals("video")) View.VISIBLE else View.INVISIBLE
+        holder.videoIcon.visibility = if(list[position][2] == "video") View.VISIBLE else View.INVISIBLE
         holder.resultViewThumbnail.setOnClickListener { click(position, list[position][0], list[position][2] ) }
-
     }
 
     inner class ViewHolder(

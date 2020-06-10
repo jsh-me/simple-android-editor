@@ -1,4 +1,4 @@
-package kr.co.jsh.feature.videoStorageDetail
+package kr.co.jsh.feature.storageDetail.video
 
 import android.content.Context
 import android.net.Uri
@@ -6,13 +6,12 @@ import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 
-class VideoDetailPresenter(override var view: VideoDetailContract.View)
-    : VideoDetailContract.Presenter{
+class VideoStoragePresenter(override var view: VideoStorageContract.View)
+    : VideoStorageContract.Presenter {
     private var mplayer: SimpleExoPlayer ?= null
     private var playbackPosition = 0L
     private var currentWindow = 0
     private var playWhenReady = true
-
 
     override fun initPlayer(result: String, context: Context) {
         mplayer = SimpleExoPlayer.Builder(context).build()
