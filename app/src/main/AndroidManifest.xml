@@ -53,8 +53,6 @@
             android:screenOrientation="portrait"/>
         <activity android:name="kr.co.jsh.feature.login.LoginAccountDialog"
             android:theme="@style/Theme.Transparent" />
-        <activity android:name="kr.co.jsh.feature.photoStorage.PhotoStorageActivity"
-            android:screenOrientation="portrait"/>
         <activity android:name="kr.co.jsh.feature.storage.StorageActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".feature.fullscreen.VideoViewActivity"

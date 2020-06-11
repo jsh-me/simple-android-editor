@@ -6,8 +6,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import kr.co.domain.utils.loadUrl
+import kr.co.jsh.R
 import kr.co.jsh.databinding.ItemStorageDetailListBinding
 
 class StorageAdapter (
@@ -26,10 +28,19 @@ class StorageAdapter (
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val requestOptions = RequestOptions()
-        requestOptions.isMemoryCacheable
-        holder.resultViewThumbnail.loadUrl(list[position][0], requestOptions)
+            .placeholder(R.drawable.ic_loader)
+            .error(R.drawable.ic_error)
+
+        if(list[position][2] =="video"){
+            holder.videoIcon.visibility = View.VISIBLE
+            holder.resultViewThumbnail.loadUrl(list[position][0], requestOptions)
+        } else {
+            holder.videoIcon.visibility = View.INVISIBLE
+            holder.resultViewThumbnail.loadUrl(list[position][0], requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE))
+        }
+       // holder.resultViewThumbnail.loadUrl(list[position][0], requestOptions)
         holder.resultViewName.text = list[position][1]
-        holder.videoIcon.visibility = if(list[position][2] == "video") View.VISIBLE else View.INVISIBLE
+        //holder.videoIcon.visibility = if(list[position][2] == "video") View.VISIBLE else View.INVISIBLE
         holder.resultViewThumbnail.setOnClickListener { click(position, list[position][0], list[position][2] ) }
     }
 

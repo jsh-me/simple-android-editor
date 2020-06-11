@@ -46,7 +46,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/video_storage_title"
             app:layout_constraintVertical_bias="0.0"
-            tools:listitem="@layout/item_storage_list"/>
+            tools:listitem="@layout/item_storage_detail_list"/>
 
         <TextView
             android:id="@+id/noResultText"

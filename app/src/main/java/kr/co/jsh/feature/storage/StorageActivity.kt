@@ -40,7 +40,7 @@ class StorageActivity : AppCompatActivity(), StorageContract.View {
     }
 
     private fun initPresenter(){
-        presenter = VideoStoragePresenter(this, get(), get(), get(), get(), get())
+        presenter = StoragePresenter(this, get(), get(), get(), get(), get())
     }
 
     private fun initVIew(){
@@ -123,5 +123,9 @@ class StorageActivity : AppCompatActivity(), StorageContract.View {
 
     fun backBtn(){
         finish()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 }

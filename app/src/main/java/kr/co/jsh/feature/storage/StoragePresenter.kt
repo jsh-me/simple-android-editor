@@ -7,7 +7,7 @@ import timber.log.Timber
 import java.util.concurrent.atomic.AtomicInteger
 
 
-class VideoStoragePresenter(override var view: StorageContract.View,
+class StoragePresenter(override var view: StorageContract.View,
                             private var insertFileDataBaseUseCase: InsertFileDataBaseUseCase,
                             private var allLoadFileDataBaseUseCase: AllLoadFileDataBaseUseCase,
                             private var allDeleteFileDataBaseUseCase: AllDeleteFileDataBaseUseCase,
@@ -24,6 +24,8 @@ class VideoStoragePresenter(override var view: StorageContract.View,
 
     private var isEndVideoResult = false
     private var isEndImageResult = false
+
+    private var isFirstAttached = true
 
     @SuppressLint("CheckResult")
     override fun loadLocalFileStorageDB() {
@@ -49,8 +51,6 @@ class VideoStoragePresenter(override var view: StorageContract.View,
 //        allDeleteStorage()
         loadServerVideoFile()
         loadServerImageFile()
-       // mPageNum++
-
     }
 
 
@@ -68,10 +68,11 @@ class VideoStoragePresenter(override var view: StorageContract.View,
                 if(mFlag.compareAndSet(mExpected, 2)) {
                     Timber.e("pass-1")
 
-                    view.setFileResult(addServerStorage)
+                    if(isFirstAttached) view.setFileResult(addServerStorage)
                     view.refreshView(addServerStorage)
                     mPageNum++
                     mExpected = 0
+                    isFirstAttached = false
                     Timber.e("pageNum is $mPageNum")
                 }
             }, {
@@ -94,13 +95,13 @@ class VideoStoragePresenter(override var view: StorageContract.View,
                 if(mFlag.compareAndSet(mExpected, 2)) {
                     Timber.e("pass-2")
 
-                    view.setFileResult(addServerStorage)
+                    if(isFirstAttached) view.setFileResult(addServerStorage)
                     view.refreshView(addServerStorage)
                     mPageNum++
                     mExpected = 0
+                    isFirstAttached = false
                     Timber.e("pageNum is $mPageNum")
                 }
-
             }, {
                 Timber.e(it.localizedMessage)
             })
