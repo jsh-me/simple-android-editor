@@ -10,7 +10,7 @@ class AddCookiesInterceptor : Interceptor {
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
         val builder = chain.request().newBuilder()
-        val preferences = CookieClass.coockie
+        val preferences = CookieClass.cookie
         for (cookie in preferences) {
             builder.addHeader("Cookie", cookie)
             Log.v(

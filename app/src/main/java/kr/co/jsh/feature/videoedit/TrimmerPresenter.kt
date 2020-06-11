@@ -309,7 +309,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
         val dateFormat = SimpleDateFormat("yyyy-mm-dd hh:mm:ss")
         val curTime = dateFormat.format(Date(time))
 
-        postImproveVideoPidNumber.PostImproveVideoPidNumber(Consts.SUPER_RESOL, videoPid, curTime)
+        postImproveVideoPidNumber.postImproveVideoPidNumber(Consts.SUPER_RESOL, videoPid, curTime)
             .subscribe({
                if(it.status.toInt() == 200) {
                    Timber.e("Complete Video Improve Request")

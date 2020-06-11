@@ -12,12 +12,12 @@ class ReceivedCookiesInterceptor: Interceptor {
         val originalResponse = chain.proceed(chain.request())
         val cookies = HashSet<String>()
 
-        if (!originalResponse.headers("Set-Cookie").isEmpty()) {
+        if (originalResponse.headers("Set-Cookie").isNotEmpty()) {
             for (header in originalResponse.headers("Set-Cookie")) {
                cookies.add(header)
             }
             //singleton
-            CookieClass.coockie = cookies
+            CookieClass.cookie = cookies
         }
         return originalResponse
     }

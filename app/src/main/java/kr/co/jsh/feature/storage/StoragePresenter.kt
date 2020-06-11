@@ -104,6 +104,7 @@ class StoragePresenter(override var view: StorageContract.View,
                 }
             }, {
                 Timber.e(it.localizedMessage)
+                view.onError()
             })
     }
 

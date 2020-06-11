@@ -6,8 +6,7 @@ import io.reactivex.schedulers.Schedulers
 import kr.co.data.entity.room.ResultFileStorage
 import kr.co.domain.koin.repository.room.ResultFileStorageRepository
 
-class AllLoadFileDataBaseUseCase(resultFileStorageRepository: ResultFileStorageRepository){
-    private val resultFileStorageRepository = resultFileStorageRepository
+class AllLoadFileDataBaseUseCase(private val resultFileStorageRepository: ResultFileStorageRepository){
 
     fun allLoad(): Observable<List<ResultFileStorage>> =
         resultFileStorageRepository.getAllStorage()

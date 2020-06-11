@@ -174,16 +174,19 @@ class MainActivity : AppCompatActivity(), MainContract.View {
                 }
             }
         }
-        else if(resultCode == 1000 && requestCode == 1000) {
+        else if(resultCode == 1000 && requestCode == 1000) setMyInfo()
+
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    private fun setMyInfo() {
+        if(UserObject.loginResponse == 200){
             binding.accountImg.apply{
                 setImageDrawable(resources.getDrawable(R.drawable.sehee, null))
                 isClickable = false
             }
-            UserObject.loginResponse = 200
-            presenter.getServerFileResult()
         }
-
-        super.onActivityResult(requestCode, resultCode, data)
+        presenter.getServerFileResult()
     }
 
     fun accountCircleImage(){
@@ -225,4 +228,11 @@ class MainActivity : AppCompatActivity(), MainContract.View {
                 this.toastShort("지원하지 않는 형식 입니다.")
             }
         }
+
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+//        UserObject.loginResponse = 500
+//        Timber.e("Leave")
+        setMyInfo()
+    }
 }

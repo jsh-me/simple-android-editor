@@ -13,7 +13,7 @@ class PostImproveVideoPidNumber(retrofitRepository: RetrofitRepository) {
         .getRetrofit()
         .create(FileService::class.java)
 
-    fun PostImproveVideoPidNumber(reqEditType: String, videoFileObjectPid : String, title: String) : Single<VideoPidNumberResponse> = fileService
+    fun postImproveVideoPidNumber(reqEditType: String, videoFileObjectPid : String, title: String) : Single<VideoPidNumberResponse> = fileService
         .postImproveVideoPidNumber(reqEditType, videoFileObjectPid, title)
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
