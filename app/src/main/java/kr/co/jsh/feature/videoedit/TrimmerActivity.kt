@@ -300,7 +300,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
             add(trimVideoTimeList[start].second)
             add(trimVideoTimeList[end].second)
         }
-        Timber.e("${frameSecToSendServer[0]} and ${frameSecToSendServer[1]}")
+        Timber.d("${frameSecToSendServer[0]} and ${frameSecToSendServer[1]}")
 
     }
 

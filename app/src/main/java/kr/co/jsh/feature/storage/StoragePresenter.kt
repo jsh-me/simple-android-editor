@@ -42,7 +42,7 @@ class StoragePresenter(override var view: StorageContract.View,
             }, {
                 Timber.e("Error getting info from interactor (video)")
             })
-        view.refreshView(addRoomDBStorage)
+    //    view.refreshView(addRoomDBStorage)
     }
 
     @SuppressLint("CheckResult")
@@ -64,17 +64,8 @@ class StoragePresenter(override var view: StorageContract.View,
                         addServerStorage.add(listOf("${UrlConst.DOWNLOAD_URL}$obj", obj, "video"))
                     }
                 }
-                mExpected++
-                if(mFlag.compareAndSet(mExpected, 2)) {
-                    Timber.e("pass-1")
 
-                    if(isFirstAttached) view.setFileResult(addServerStorage)
-                    view.refreshView(addServerStorage)
-                    mPageNum++
-                    mExpected = 0
-                    isFirstAttached = false
-                    Timber.e("pageNum is $mPageNum")
-                }
+                compareAndUpdate()
             }, {
                 Timber.e(it.localizedMessage)
             })
@@ -91,21 +82,23 @@ class StoragePresenter(override var view: StorageContract.View,
                     }
                 }
                 // insertResultToLocalDB(addServerStorage)
-                mExpected++
-                if(mFlag.compareAndSet(mExpected, 2)) {
-                    Timber.e("pass-2")
-
-                    if(isFirstAttached) view.setFileResult(addServerStorage)
-                    view.refreshView(addServerStorage)
-                    mPageNum++
-                    mExpected = 0
-                    isFirstAttached = false
-                    Timber.e("pageNum is $mPageNum")
-                }
+                compareAndUpdate()
             }, {
                 Timber.e(it.localizedMessage)
-                view.onError()
             })
+    }
+
+    private fun compareAndUpdate(){
+        mExpected++
+        if(mFlag.compareAndSet(mExpected, 2)) {
+            Timber.e("pass-1")
+            if (isFirstAttached) view.setFileResult(addServerStorage)
+            view.refreshView(addServerStorage)
+            mPageNum++
+            mExpected = 0
+            isFirstAttached = false
+            Timber.e("pageNum is $mPageNum")
+        }
     }
 
     @SuppressLint("CheckResult")
@@ -113,7 +106,7 @@ class StoragePresenter(override var view: StorageContract.View,
       postVideoSearchListUseCase.postVideoSearchList(mPageSize, mPageNum+1)
             .filter{ it.datas.isNullOrEmpty() }
             .subscribe{  isEndVideoResult = true
-                Timber.e("loading 판단 video: $mPageNum and $isEndVideoResult")}
+                Timber.d("loading 판단 video: $mPageNum and $isEndVideoResult")}
 
       postImageSearchListUseCase.postImageSearchList(mPageSize, mPageNum+1)
             .filter{ it.datas.isNullOrEmpty() }

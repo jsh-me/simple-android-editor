@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kr.co.domain.globalconst.Consts
+import kr.co.domain.globalconst.Consts.Companion.LOGIN_RESPONSE
 import kr.co.jsh.R
 import kr.co.jsh.databinding.ActivityResultStorageBinding
 import kr.co.jsh.feature.storageDetail.photo.PhotoStorageActivity
@@ -41,10 +42,10 @@ class StorageActivity : AppCompatActivity(), StorageContract.View {
 
     private fun initPresenter(){
         presenter = StoragePresenter(this, get(), get(), get(), get(), get())
+        response = intent.getIntExtra(LOGIN_RESPONSE, -1)
     }
 
     private fun initVIew(){
-        response = intent.getIntExtra(Consts.LOGIN_RESPONSE, -1)
         presenter.getServerFileResult()
         presenter.isAnyMoreNoData()
     }
@@ -68,8 +69,8 @@ class StorageActivity : AppCompatActivity(), StorageContract.View {
                 if(dy > 0 && mContentSize > 0) {
                     val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                     if(layoutManager.findLastCompletelyVisibleItemPosition() == mContentSize -1 && !isEnd.value!!){
-                        Timber.e("mContentSize: ${mContentSize -1}")
-                        Timber.e("find last..: ${layoutManager.findLastCompletelyVisibleItemPosition()}")
+                        Timber.d("mContentSize: ${mContentSize -1}")
+                        Timber.d("find last..: ${layoutManager.findLastCompletelyVisibleItemPosition()}")
                         presenter.getServerFileResult()
                         presenter.isAnyMoreNoData()
                     }
@@ -79,7 +80,7 @@ class StorageActivity : AppCompatActivity(), StorageContract.View {
 
     override fun isEnd(b: Boolean) {
         isEnd.value = b
-        Timber.e("isEnd is ${isEnd.value}")
+        Timber.d("isEnd is ${isEnd.value}")
     }
 
     private fun click() = { _: Int, url: String, type: String ->
@@ -96,7 +97,7 @@ class StorageActivity : AppCompatActivity(), StorageContract.View {
     }
 
     override fun refreshView(list: ArrayList<List<String>>) {
-        Timber.e("마지막 리사이클러 뷰 사이즈는 ${list.size}")
+        Timber.d("last recycler view size is ${list.size}")
         mContentSize = list.size
         mContentList.clear()
         mContentList.addAll(list)

@@ -92,7 +92,7 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
                     ): Boolean {
                         val w = resource?.width
                         val h = resource?.height
-                        Timber.e("$w and $h")
+                        Timber.d("$w and $h")
 
                         ConstraintLayout.LayoutParams(w!!, h!!).apply {
                             leftToLeft = R.id.photo_edit_parent_layout
@@ -144,7 +144,7 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
             }
         }
         realImageSize = fileToBitmapSize(file)
-        Timber.e("${realImageSize[0]} and ${realImageSize[1]}")
+        Timber.d("${realImageSize[0]} and ${realImageSize[1]}")
     }
 
     fun resetBtn() {
@@ -171,7 +171,7 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
                     val resizeBitmap = resizeBitmapImage(cropBitmap, realImageSize[0], realImageSize[1])
                     val binaryMask = createBinaryMask(resizeBitmap)
                     presenter.uploadFrameFile(binaryMask, applicationContext)
-                    Timber.e("마스크 결과 : ${(saveImage[0] as Bitmap).width} and ${(saveImage[0] as Bitmap).height}")
+                    Timber.d("마스크 결과 : ${(saveImage[0] as Bitmap).width} and ${(saveImage[0] as Bitmap).height}")
                 } ?: run {
                     applicationContext.toastShort("마스크를 그려주세요")
                 }

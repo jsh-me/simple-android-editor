@@ -19,7 +19,7 @@ class ResultFileStorageRepositoryImpl(private val resultFileStorageDao: ResultFi
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                Timber.e("insert success")
+                Timber.d("insert success")
             }, {
                 Timber.e(it.localizedMessage)
             })
@@ -31,7 +31,7 @@ class ResultFileStorageRepositoryImpl(private val resultFileStorageDao: ResultFi
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                Timber.e("update success")
+                Timber.d("update success")
             }, {
                 Timber.e(it.localizedMessage)
 
@@ -44,7 +44,7 @@ class ResultFileStorageRepositoryImpl(private val resultFileStorageDao: ResultFi
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                Timber.e("delete success")
+                Timber.d("delete success")
             }, {
                 Timber.e(it.localizedMessage)
             })
@@ -56,7 +56,7 @@ class ResultFileStorageRepositoryImpl(private val resultFileStorageDao: ResultFi
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                Timber.e("delete all success")
+                Timber.d("delete all success")
             }, {
                 Timber.e(it.localizedMessage)
             })
