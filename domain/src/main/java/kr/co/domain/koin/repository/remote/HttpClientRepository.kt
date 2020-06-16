@@ -4,4 +4,6 @@ import okhttp3.OkHttpClient
 
 interface HttpClientRepository {
     fun getOkHttp() : OkHttpClient
+
+    fun getLoginOkHttp() : OkHttpClient
 }

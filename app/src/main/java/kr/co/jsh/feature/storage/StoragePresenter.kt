@@ -7,10 +7,8 @@ import timber.log.Timber
 import java.util.concurrent.atomic.AtomicInteger
 
 
-class VideoStoragePresenter(override var view: StorageContract.View,
-                            private var insertFileDataBaseUseCase: InsertFileDataBaseUseCase,
+class StoragePresenter(override var view: StorageContract.View,
                             private var allLoadFileDataBaseUseCase: AllLoadFileDataBaseUseCase,
-                            private var allDeleteFileDataBaseUseCase: AllDeleteFileDataBaseUseCase,
                             private var postVideoSearchListUseCase: PostVideoSearchListUseCase,
                             private var postImageSearchListUseCase: PostImageSearchListUseCase)
     :StorageContract.Presenter{
@@ -24,6 +22,8 @@ class VideoStoragePresenter(override var view: StorageContract.View,
 
     private var isEndVideoResult = false
     private var isEndImageResult = false
+
+    private var isFirstAttached = true
 
     @SuppressLint("CheckResult")
     override fun loadLocalFileStorageDB() {
@@ -40,17 +40,14 @@ class VideoStoragePresenter(override var view: StorageContract.View,
             }, {
                 Timber.e("Error getting info from interactor (video)")
             })
-        view.refreshView(addRoomDBStorage)
+    //    view.refreshView(addRoomDBStorage)
     }
 
     @SuppressLint("CheckResult")
     override fun getServerFileResult() {
         view.startAnimation()
-//        allDeleteStorage()
         loadServerVideoFile()
         loadServerImageFile()
-       // mPageNum++
-
     }
 
 
@@ -64,16 +61,8 @@ class VideoStoragePresenter(override var view: StorageContract.View,
                         addServerStorage.add(listOf("${UrlConst.DOWNLOAD_URL}$obj", obj, "video"))
                     }
                 }
-                mExpected++
-                if(mFlag.compareAndSet(mExpected, 2)) {
-                    Timber.e("pass-1")
 
-                    view.setFileResult(addServerStorage)
-                    view.refreshView(addServerStorage)
-                    mPageNum++
-                    mExpected = 0
-                    Timber.e("pageNum is $mPageNum")
-                }
+                compareAndUpdate()
             }, {
                 Timber.e(it.localizedMessage)
             })
@@ -90,20 +79,23 @@ class VideoStoragePresenter(override var view: StorageContract.View,
                     }
                 }
                 // insertResultToLocalDB(addServerStorage)
-                mExpected++
-                if(mFlag.compareAndSet(mExpected, 2)) {
-                    Timber.e("pass-2")
-
-                    view.setFileResult(addServerStorage)
-                    view.refreshView(addServerStorage)
-                    mPageNum++
-                    mExpected = 0
-                    Timber.e("pageNum is $mPageNum")
-                }
-
+                compareAndUpdate()
             }, {
                 Timber.e(it.localizedMessage)
             })
+    }
+
+    private fun compareAndUpdate(){
+        mExpected++
+        if(mFlag.compareAndSet(mExpected, 2)) {
+            Timber.e("pass-1")
+            if (isFirstAttached) view.setFileResult(addServerStorage)
+            view.refreshView(addServerStorage)
+            mPageNum++
+            mExpected = 0
+            isFirstAttached = false
+            Timber.e("pageNum is $mPageNum")
+        }
     }
 
     @SuppressLint("CheckResult")
@@ -111,7 +103,7 @@ class VideoStoragePresenter(override var view: StorageContract.View,
       postVideoSearchListUseCase.postVideoSearchList(mPageSize, mPageNum+1)
             .filter{ it.datas.isNullOrEmpty() }
             .subscribe{  isEndVideoResult = true
-                Timber.e("loading 판단 video: $mPageNum and $isEndVideoResult")}
+                Timber.d("loading 판단 video: $mPageNum and $isEndVideoResult")}
 
       postImageSearchListUseCase.postImageSearchList(mPageSize, mPageNum+1)
             .filter{ it.datas.isNullOrEmpty() }
@@ -121,21 +113,4 @@ class VideoStoragePresenter(override var view: StorageContract.View,
         if(isEndImageResult && isEndVideoResult) view.stopAnimation()
         view.isEnd(isEndImageResult && isEndVideoResult)
     }
-
-    //    override fun insertResultToLocalDB(list: ArrayList<List<String>>) {
-//        insertDataBase(list)
-//        Timber.e("server storage number: ${list.size}")
-//    }
-
-
-    //  all delete db
-    private fun allDeleteStorage() {
-        allDeleteFileDataBaseUseCase.allDelete()
-    }
-
-//    //insert db
-//    private fun insertDataBase(storage: ArrayList<List<String>>) {
-//        for (i in storage.indices) {
-//            insertFileDataBaseUseCase.insert(ResultFileStorage(null, storage[i][0], storage[i][1], storage[i][2])) }
-//    }
 }

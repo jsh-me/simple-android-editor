@@ -1,5 +1,5 @@
 package kr.co.domain.globalconst
 
 object CookieClass {
-    var coockie = HashSet<String>()
+    var cookie = HashSet<String>()
 }

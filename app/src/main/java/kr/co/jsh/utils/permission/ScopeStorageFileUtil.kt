@@ -63,7 +63,7 @@ object ScopeStorageFileUtil{
             .setAllowedOverMetered(true)
             .setAllowedOverRoaming(true)
         downloadId = downloadManager.enqueue(request)
-        Timber.e("path : " + fileUri?.path)
+        Timber.d("path : " + fileUri?.path)
 
     }
     else {
@@ -77,7 +77,7 @@ object ScopeStorageFileUtil{
                 .setAllowedOverMetered(true)
                 .setAllowedOverRoaming(true)
             downloadId = downloadManager.enqueue(request)
-            Timber.e("path : " + file.path)
+            Timber.d("path : " + file.path)
 
         }
     }

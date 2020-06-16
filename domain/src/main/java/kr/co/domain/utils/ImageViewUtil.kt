@@ -32,7 +32,7 @@ fun ImageView.loadUrl(url : String?) {
 
 fun ImageView.loadUrl(url : String?, requestOptions: RequestOptions ) {
     url?.let {
-        GlideApp.with(this).setDefaultRequestOptions(requestOptions).load(it).into(this)
+        GlideApp.with(this).setDefaultRequestOptions(requestOptions).load(it).disallowHardwareConfig().into(this)
     }
 }
 

@@ -16,12 +16,6 @@ val useCaseModule = module{
 
     factory { PostImproveVideoPidNumber(get()) }
 
-    factory { GetVideoResultIUseCase(get()) }
-
-    factory { GetAllImageResultListUseCase(get())}
-
-    factory { GetAllVideoResultListUseCase(get()) }
-
     factory { PostImageSearchListUseCase(get()) }
 
     factory { PostVideoSearchListUseCase(get()) }

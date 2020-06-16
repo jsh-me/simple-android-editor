@@ -9,7 +9,7 @@ import kr.co.domain.koin.repository.remote.RetrofitRepository
 
 class PostLoginUseCase(retrofitRepository: RetrofitRepository) {
     private val loginService = retrofitRepository
-        .getRetrofit()
+        .getLoginRetrofit()
         .create(LoginService::class.java)
 
     fun postLogin(id: String, passwd: String) : Single<UserResponse> = loginService

@@ -18,14 +18,14 @@ class MainPresenter(override var view: MainContract.View,
 ): MainContract.Presenter {
     private val addRoomDBStorage: ArrayList<List<String>> = ArrayList()  //0: url, 1: fileName, 2: fileType
     private val addServerStorage: ArrayList<List<String>> = ArrayList()
-    private val mFlag = AtomicInteger(0) //thread control variable
+    private val mFlag = AtomicInteger(2) //thread control variable
+    private var mExpected = 0
 
     private var mPageSize = 2
     private var mPageNum = 1
 
     @SuppressLint("CheckResult")
     override fun loadLocalFileStorageDB() {
-        view.startAnimation()
         allLoadFileDataBaseUseCase.allLoad()
             .subscribe({
                 it.map {
@@ -36,16 +36,14 @@ class MainPresenter(override var view: MainContract.View,
             }, {
                 Timber.e("Error getting info from interactor (video)")
             })
-        view.refreshView(addRoomDBStorage)
+      //  view.refreshView(addRoomDBStorage)
     }
 
     @SuppressLint("CheckResult")
     override fun getServerFileResult() {
-        view.startAnimation()
-//        allDeleteStorage()
+        allDeleteStorage()
         loadServerVideoFile()
         loadServerImageFile()
-        view.setFileResult(addServerStorage)
     }
 
     @SuppressLint("CheckResult")
@@ -58,8 +56,7 @@ class MainPresenter(override var view: MainContract.View,
                         addServerStorage.add(listOf("${UrlConst.DOWNLOAD_URL}$obj", obj, "video"))
                     }
                 }
-                view.refreshView(addServerStorage)
-                Timber.e("pass-1")
+                compareAndUpdate()
             }, {
                 Timber.e(it.localizedMessage)
             })
@@ -75,27 +72,30 @@ class MainPresenter(override var view: MainContract.View,
                         addServerStorage.add(listOf("${UrlConst.DOWNLOAD_URL}$obj",obj, "image"))
                     }
                 }
-                view.refreshView(addServerStorage)
-               // insertResultToLocalDB(addServerStorage)
-                Timber.e("pass-2")
+                compareAndUpdate()
             }, {
                 Timber.e(it.localizedMessage)
             })
     }
 
-    //    override fun insertResultToLocalDB(list: ArrayList<List<String>>) {
-//        insertDataBase(list)
-//        Timber.e("server storage number: ${list.size}")
-//    }
+    private fun compareAndUpdate(){
+        mExpected++
+        if(mFlag.compareAndSet(mExpected, 2)) {
+            view.setFileResult(addServerStorage)
+            view.refreshView(addServerStorage)
+            insertDataBase(addServerStorage)
+            mExpected = 0
+        }
+    }
 
   //  all delete db
     private fun allDeleteStorage() {
         allDeleteFileDataBaseUseCase.allDelete()
     }
 
-//    //insert db
-//    private fun insertDataBase(storage: ArrayList<List<String>>) {
-//        for (i in storage.indices) {
-//            insertFileDataBaseUseCase.insert(ResultFileStorage(null, storage[i][0], storage[i][1], storage[i][2])) }
-//    }
+    //insert db
+    private fun insertDataBase(storage: ArrayList<List<String>>) {
+        for (i in storage.indices) {
+            insertFileDataBaseUseCase.insert(ResultFileStorage(null, storage[i][0], storage[i][1], storage[i][2])) }
+    }
 }

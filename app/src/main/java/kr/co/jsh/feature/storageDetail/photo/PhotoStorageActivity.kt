@@ -4,6 +4,8 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import kr.co.domain.globalconst.Consts
 import kr.co.domain.utils.loadUrl
 import kr.co.domain.utils.toastShort
@@ -29,8 +31,12 @@ class PhotoStorageActivity :AppCompatActivity(),
 
     private fun initPresenter(){
         val result = intent.getStringExtra(Consts.DETAIL_PHOTO)?:""
+        val requestOptions = RequestOptions()
+            .placeholder(R.drawable.ic_loader)
+            .error(R.drawable.ic_error)
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
         presenter = PhotoStoragePresenter(this)
-        binding.imageDetailView.loadUrl(result)
+        binding.imageDetailView.loadUrl(result, requestOptions)
     }
 
     fun saveBtn(){

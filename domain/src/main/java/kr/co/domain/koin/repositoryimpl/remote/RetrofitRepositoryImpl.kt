@@ -20,4 +20,16 @@ class RetrofitRepositoryImpl(private val okHttpRepo : HttpClientRepository) :
             .client(client)
             .build()
     }
+
+    override fun getLoginRetrofit(): Retrofit {
+        val client = okHttpRepo.getLoginOkHttp()
+        val baseUrl = BASEURL
+
+        return Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .client(client)
+            .build()
+    }
 }

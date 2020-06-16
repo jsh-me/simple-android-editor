@@ -63,51 +63,23 @@ class MainActivity : AppCompatActivity(), MainContract.View {
     private fun initView(){
         presenter = MainPresenter(this, get(), get(), get(), get(), get())
         // when response 500
-        presenter.loadLocalFileStorageDB()
+        if(UserObject.loginResponse == 500) presenter.loadLocalFileStorageDB()
     }
 
     override fun setFileResult(list: ArrayList<List<String>>) {
-        Timber.e("OnResume : ${UserObject.loginResponse}")
+        Timber.d("OnResume : ${UserObject.loginResponse}")
         binding.mainResultRecycler.apply {
             layoutManager = LinearLayoutManager(this@MainActivity, LinearLayoutManager.HORIZONTAL, true)
             adapter = MainAdapter(click(), list)
             scrollToPosition(list.size-1)
         }
-        stopAnimation()
     }
-
-//    private fun recyclerViewListener(){
-//        binding.mainResultRecycler.setOnScrollChangeListener(object: RecyclerView.OnScrollListener(),
-//            View.OnScrollChangeListener {
-//            override fun onScrollChange(v: View?, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int) {
-//                if(binding.mainResultRecycler.canScrollHorizontally((1))){
-//                  //  Timber.e("Start of List")
-//                }
-//                else if(binding.mainResultRecycler.canScrollHorizontally(-1)){
-//                  //  Timber.e("End of List")
-//                    presenter.getServerFileResult()
-//                } else {Timber.e("idle")}
-//            }
-//        })
-//    }
 
     override fun refreshView(list: ArrayList<List<String>>) {
         binding.mainResultRecycler.apply{
             adapter?.notifyDataSetChanged()
             scrollToPosition(list.size-1)
         }
-    }
-
-    override fun startAnimation() {
-        binding.loadingAnimation.playAnimation()
-        binding.blockingView.visibility = View.VISIBLE
-        binding.loadingAnimation.visibility = View.VISIBLE
-    }
-
-    override fun stopAnimation() {
-        binding.loadingAnimation.cancelAnimation()
-        binding.blockingView.visibility = View.GONE
-        binding.loadingAnimation.visibility = View.GONE
     }
 
     private fun click() = { _: Int, url: String, type: String ->
@@ -174,16 +146,19 @@ class MainActivity : AppCompatActivity(), MainContract.View {
                 }
             }
         }
-        else if(resultCode == 1000 && requestCode == 1000) {
+        else if(resultCode == 1000 && requestCode == 1000) setMyInfo()
+
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    private fun setMyInfo() {
+        if(UserObject.loginResponse == 200){
             binding.accountImg.apply{
                 setImageDrawable(resources.getDrawable(R.drawable.sehee, null))
                 isClickable = false
             }
-            UserObject.loginResponse = 200
             presenter.getServerFileResult()
         }
-
-        super.onActivityResult(requestCode, resultCode, data)
     }
 
     fun accountCircleImage(){
@@ -225,4 +200,15 @@ class MainActivity : AppCompatActivity(), MainContract.View {
                 this.toastShort("지원하지 않는 형식 입니다.")
             }
         }
+
+    override fun startAnimation() {
+    }
+
+    override fun stopAnimation() {
+    }
+
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+        setMyInfo()
+    }
 }
