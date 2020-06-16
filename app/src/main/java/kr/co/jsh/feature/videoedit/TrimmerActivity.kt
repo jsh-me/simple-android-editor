@@ -196,7 +196,6 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
             rightToRight = R.id.video_edit_main_layout
             bottomToTop = R.id.icon_video_play_btn
             topToBottom = R.id.video_edit_back_btn
-          //  binding.videoFrameDrawView.layoutParams = this
         }
         binding.videoFrameDrawView.setBackgroundImage(bitmap, BackgroundType.BITMAP, BackgroundScale.FIT_START)
     }
@@ -217,6 +216,15 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
             initTimeList(true)
             resetCropView()
             presenter.resetTrimVideoLIst()
+            for(i in dynamicViewSpace.indices) {
+                binding.videoEditChildFrameLayout.removeView(dynamicViewSpace[i])
+            }
+            //all list clear
+            dynamicViewSpace.clear()
+            stackDynamicViewSpace.clear()
+            stackTrimList.clear()
+            initTimeList(true)
+
             changeTextColor.set(arrayOf(false, false, false, false, false))
             changeTextColor.set(arrayOf(false, true, false, false, false))
         }
