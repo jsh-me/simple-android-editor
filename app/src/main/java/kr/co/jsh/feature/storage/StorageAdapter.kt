@@ -38,9 +38,7 @@ class StorageAdapter (
             holder.videoIcon.visibility = View.INVISIBLE
             holder.resultViewThumbnail.loadUrl(list[position][0], requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE))
         }
-       // holder.resultViewThumbnail.loadUrl(list[position][0], requestOptions)
         holder.resultViewName.text = list[position][1]
-        //holder.videoIcon.visibility = if(list[position][2] == "video") View.VISIBLE else View.INVISIBLE
         holder.resultViewThumbnail.setOnClickListener { click(position, list[position][0], list[position][2] ) }
     }
 

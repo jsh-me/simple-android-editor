@@ -8,9 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 
 class StoragePresenter(override var view: StorageContract.View,
-                            private var insertFileDataBaseUseCase: InsertFileDataBaseUseCase,
                             private var allLoadFileDataBaseUseCase: AllLoadFileDataBaseUseCase,
-                            private var allDeleteFileDataBaseUseCase: AllDeleteFileDataBaseUseCase,
                             private var postVideoSearchListUseCase: PostVideoSearchListUseCase,
                             private var postImageSearchListUseCase: PostImageSearchListUseCase)
     :StorageContract.Presenter{
@@ -48,7 +46,6 @@ class StoragePresenter(override var view: StorageContract.View,
     @SuppressLint("CheckResult")
     override fun getServerFileResult() {
         view.startAnimation()
-//        allDeleteStorage()
         loadServerVideoFile()
         loadServerImageFile()
     }
@@ -116,21 +113,4 @@ class StoragePresenter(override var view: StorageContract.View,
         if(isEndImageResult && isEndVideoResult) view.stopAnimation()
         view.isEnd(isEndImageResult && isEndVideoResult)
     }
-
-    //    override fun insertResultToLocalDB(list: ArrayList<List<String>>) {
-//        insertDataBase(list)
-//        Timber.e("server storage number: ${list.size}")
-//    }
-
-
-    //  all delete db
-    private fun allDeleteStorage() {
-        allDeleteFileDataBaseUseCase.allDelete()
-    }
-
-//    //insert db
-//    private fun insertDataBase(storage: ArrayList<List<String>>) {
-//        for (i in storage.indices) {
-//            insertFileDataBaseUseCase.insert(ResultFileStorage(null, storage[i][0], storage[i][1], storage[i][2])) }
-//    }
 }

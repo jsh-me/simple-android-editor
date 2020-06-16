@@ -56,7 +56,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     private var realVideoSize = ArrayList<Int>()
     private var videoOption = ""
     private var drawMaskCheck = false
-    private var destinationPath: String=""
+    private var destinationPath: String = ""
     private var setPlayFlag = false
     private var timeListFlag = ObservableField<Boolean>(true)
 
@@ -79,23 +79,24 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         setupDrawView()
     }
 
+    private fun setupDataBinding(){
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_video_edit)
+        binding.trimmer = this@TrimmerActivity
+    }
+
     private fun initView(){
         presenter = TrimmerPresenter(this, get(), get(), get())
         mScreenSize = ObservableField(ScreenSizeUtil(this).widthPixels/2)
         dispatcher = PausableDispatcher(Handler(Looper.getMainLooper()))
         binding.handlerTop.progress =  binding.handlerTop.max / 2
         binding.handlerTop.isEnabled = false
-        binding.videoLoader.resizeMode= AspectRatioFrameLayout.RESIZE_MODE_FIT
-        binding.videoLoader.hideController()
-        binding.videoLoader.useController = false
-    }
-
-    private fun setupDataBinding(){
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_video_edit)
-        binding.trimmer = this@TrimmerActivity
     }
 
     private fun prepareVideo(){
+        binding.videoLoader.resizeMode= AspectRatioFrameLayout.RESIZE_MODE_FIT
+        binding.videoLoader.hideController()
+        binding.videoLoader.useController = false
+
         setupPermissions(this) {
             val extraIntent = intent
             presenter.preparePath(extraIntent)
@@ -104,25 +105,11 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
 
     private fun setupDrawView(){
         binding.videoFrameDrawView.setOnDrawViewListener(object : DrawView.OnDrawViewListener {
-            override fun onEndDrawing() {
-                canDrawUndoRedo()
-            }
-
-            override fun onStartDrawing() {
-                canDrawUndoRedo()
-            }
-
-            override fun onClearDrawing() {
-                canDrawUndoRedo()
-            }
-
-            override fun onAllMovesPainted() {
-                canDrawUndoRedo()
-            }
-
-            override fun onRequestText() {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
+            override fun onEndDrawing() { canDrawUndoRedo() }
+            override fun onStartDrawing() { canDrawUndoRedo() }
+            override fun onClearDrawing() { canDrawUndoRedo() }
+            override fun onAllMovesPainted() { canDrawUndoRedo() }
+            override fun onRequestText() {}
         })
     }
 
@@ -142,10 +129,12 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
 
     private fun initTimeList(b: Boolean){
        if(b) {
-           trimVideoTimeList.clear()
-           trimVideoTimeList.add(Pair(0, 0))
-           trimVideoTimeList.add(Pair(binding.videoEditRecycler.width - ScreenSizeUtil(this).widthPixels.toLong(), mDuration))
-           timeListFlag.set(false)
+           trimVideoTimeList.apply {
+               clear()
+               add(Pair(0, 0))
+               add(Pair(binding.videoEditRecycler.width - ScreenSizeUtil(applicationContext).widthPixels.toLong(), mDuration))
+           }
+               timeListFlag.set(false)
        }
     }
 
@@ -201,19 +190,15 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         realVideoSize.add(bitmap.width)
         realVideoSize.add(bitmap.height)
 
-        ConstraintLayout.LayoutParams(playerWidth, playerHeight).apply {
+       binding.videoFrameDrawView.layoutParams =
+           ConstraintLayout.LayoutParams(playerWidth, playerHeight).apply {
             leftToLeft = R.id.video_edit_main_layout
             rightToRight = R.id.video_edit_main_layout
             bottomToTop = R.id.icon_video_play_btn
             topToBottom = R.id.video_edit_back_btn
-            binding.videoFrameDrawView.layoutParams = this
+          //  binding.videoFrameDrawView.layoutParams = this
         }
-
-        binding.videoFrameDrawView.setBackgroundImage(
-            bitmap,
-            BackgroundType.BITMAP,
-            BackgroundScale.FIT_START
-        )
+        binding.videoFrameDrawView.setBackgroundImage(bitmap, BackgroundType.BITMAP, BackgroundScale.FIT_START)
     }
 
     private fun hideVideoView(){
@@ -395,7 +380,6 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     fun videoEditRedoBtn(){
         trimVideoTimeList.add(stackTrimList.last())
         stackTrimList.removeAt(stackTrimList.lastIndex)
-        //trimVideoTimeList 에 다시 값을 넣으면, 정렬을 해주어야 함.
         trimVideoTimeList.sortBy{ it.first }
 
         binding.videoEditChildFrameLayout.addView(stackDynamicViewSpace.last())
@@ -411,7 +395,6 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
 
             job = CoroutineScope(Dispatchers.Main).launch {
                 startAnimation()
-
                 CoroutineScope(Dispatchers.Default).async {
                     //Todo 서버로 자른 비디오, frametimesec, maskimg 전송
                     val maskImg = binding.videoFrameDrawView.createCapture(DrawingCapture.BITMAP)

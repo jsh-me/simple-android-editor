@@ -61,7 +61,7 @@ class HttpClientRepositoryImpl : HttpClientRepository {
 
         httpClient.readTimeout(1, TimeUnit.MINUTES)
         httpClient.connectTimeout(20, TimeUnit.SECONDS)
-        
+
         return httpClient.build()
     }
 }

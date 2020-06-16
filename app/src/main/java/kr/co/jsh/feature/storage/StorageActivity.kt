@@ -42,7 +42,7 @@ class StorageActivity : AppCompatActivity(), StorageContract.View {
     }
 
     private fun initPresenter(){
-        presenter = StoragePresenter(this, get(), get(), get(), get(), get())
+        presenter = StoragePresenter(this, get(), get(), get())
         response = intent.getIntExtra(LOGIN_RESPONSE, -1)
     }
 
