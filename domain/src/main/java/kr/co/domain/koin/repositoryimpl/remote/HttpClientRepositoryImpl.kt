@@ -30,6 +30,10 @@ class HttpClientRepositoryImpl : HttpClientRepository {
 
       //  httpClient.interceptors().add(ReceivedCookiesInterceptor())
         httpClient.interceptors().add(AddCookiesInterceptor())
+
+        httpClient.readTimeout(1, TimeUnit.MINUTES)
+        httpClient.connectTimeout(20, TimeUnit.SECONDS)
+
         return httpClient.build()
     }
 
@@ -54,6 +58,10 @@ class HttpClientRepositoryImpl : HttpClientRepository {
 
         httpClient.interceptors().add(ReceivedCookiesInterceptor())
         httpClient.interceptors().add(AddCookiesInterceptor())
+
+        httpClient.readTimeout(1, TimeUnit.MINUTES)
+        httpClient.connectTimeout(20, TimeUnit.SECONDS)
+        
         return httpClient.build()
     }
 }
