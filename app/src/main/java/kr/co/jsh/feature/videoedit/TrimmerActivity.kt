@@ -51,7 +51,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     private var mBitmaps: ArrayList<ArrayList<Bitmap>> = ArrayList()
     private var mScreenSize = ObservableField<Int>()
     private var mDuration : Long = 0L
-    private var userVideoTrimTime: MutableLiveData<Long> = MutableLiveData()
+    private var userVideoTrimTime: MutableLiveData<Long> = MutableLiveData(0)
     private val frameSecToSendServer = ArrayList<Long> ()
     private var realVideoSize = ArrayList<Int>()
     private var videoOption = ""
@@ -168,8 +168,11 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     fun removeMode(){
         drawMaskCheck = true
         if(trimVideoTimeList.size <= 2) {
-            this.toastShort("구간을 먼저 잘라주세요")
-        } else {
+            presenter.uploadFile(mSrc.toString())
+        }
+        else {
+            presenter.trimVideo(destinationPath, this, mSrc, frameSecToSendServer[0].toInt(), frameSecToSendServer[1].toInt())
+        }
             binding.videoFrameDrawView.setBackgroundResource(R.color.grey1)
             presenter.getFrameBitmap(userVideoTrimTime.value!!)
 
@@ -178,9 +181,6 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
             changeTextColor.set(arrayOf(true, false, false, false, false))
 
             hideVideoView()
-            //미리 서버에 올리기
-            presenter.trimVideo(destinationPath, this, mSrc, frameSecToSendServer[0].toInt(), frameSecToSendServer[1].toInt())
-        }
     }
 
     @SuppressLint("CheckResult")
@@ -397,7 +397,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
 
     fun sendRemoveVideoInfoToServer(){
         videoOption = Consts.DEL_OBJ
-        if(drawMaskCheck && frameSecToSendServer.isNotEmpty()) {
+        if(drawMaskCheck) {
             changeTextColor.set(arrayOf(false, false, false, false, false))
             changeTextColor.set(arrayOf(false, false, false, true, false))
 
@@ -434,11 +434,10 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     fun sendImproveVideoInfoToServer(){
         videoOption = Consts.SUPER_RESOL
         if(trimVideoTimeList.size <= 2) {
-            this.toastShort("구간을 먼저 잘라주세요")
-        } else {
-            changeTextColor.set(arrayOf(false, false, false, false, false))
-            changeTextColor.set(arrayOf(false, false, false, false, true))
-            //미리 서버에 올리기
+            //this.toastShort("구간을 먼저 잘라주세요")
+            presenter.uploadFile(mSrc.toString())
+        }
+        else {
             job = CoroutineScope(Dispatchers.Main).launch {
                 startAnimation()
                 CoroutineScope(Dispatchers.Default).async {
@@ -446,6 +445,8 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
                 }.await()
             }
         }
+            changeTextColor.set(arrayOf(false, false, false, false, false))
+            changeTextColor.set(arrayOf(false, false, false, false, true))
     }
 
 
