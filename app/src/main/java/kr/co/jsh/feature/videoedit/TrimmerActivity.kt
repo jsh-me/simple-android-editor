@@ -564,6 +564,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
             videoMaskObjectPid = ""
             videoObjectPid = ""
         }
+        presenter.releasePlayer()
     }
 
 }
