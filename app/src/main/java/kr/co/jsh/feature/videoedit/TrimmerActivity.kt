@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.*
 import android.view.*
 import android.widget.FrameLayout
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.DataBindingUtil
@@ -93,7 +94,6 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     }
 
     private fun prepareVideo(){
-        binding.videoLoader.resizeMode= AspectRatioFrameLayout.RESIZE_MODE_FIT
         binding.videoLoader.hideController()
         binding.videoLoader.useController = false
 
@@ -138,7 +138,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
        }
     }
 
-    fun playVideo() { //플레이 버튼을 눌렀을
+    fun playVideo() {
         changeTextColor.set(arrayOf(false, false, false, false, false))
         showVideoView()
         binding.iconVideoPauseBtn.visibility = View.VISIBLE
@@ -148,7 +148,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         dispatcher.resume()
     }
 
-    fun pauseVideo(){ //정지 버튼을 눌렀을 때
+    fun pauseVideo(){
         changeTextColor.set(arrayOf(false, false, false, false, false))
         binding.iconVideoPauseBtn.visibility = View.INVISIBLE
         binding.iconVideoPlayBtn.visibility = View.VISIBLE

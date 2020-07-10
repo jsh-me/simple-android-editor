@@ -46,7 +46,7 @@
             android:name="kr.co.jsh.feature.videoedit.TrimmerActivity"
             android:parentActivityName="kr.co.jsh.feature.main.MainActivity"
             android:screenOrientation="portrait"
-            android:configChanges="keyboardHidden|orientation|screenSize"/>
+            android:configChanges="keyboardHidden|orientation|screenSize|layoutDirection"/>
 
         <activity android:name="kr.co.jsh.feature.photoedit.PhotoActivity"
             android:parentActivityName="kr.co.jsh.feature.main.MainActivity"

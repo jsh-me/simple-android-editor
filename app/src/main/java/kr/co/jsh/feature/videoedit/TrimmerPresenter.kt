@@ -144,11 +144,9 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
     }
 
     override fun preparePath(extraIntent: Intent) {
-        var path =""
         extraIntent.let{
-            path =  it.getStringExtra(EXTRA_VIDEO_PATH)
-            }
-        view.setVideoPath(path)
+            val path =  it.getStringExtra(EXTRA_VIDEO_PATH)
+            path }.let{ view.setVideoPath(it)}
     }
 
     override fun getThumbnailList(mSrc: Uri, context:Context) {
@@ -164,20 +162,14 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
 
         for (i in 0 .. videoLengthInMs step interval) {
             var bitmap = mediaMetadataRetriever.getFrameAtTime(i * 1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
-            if (bitmap != null) {
-                try {
+            bitmap?.let{
                     bitmap = Bitmap.createScaledBitmap(bitmap, cropWidth, cropHeight, false)
-                    Log.i("bitmap111","${bitmap.width}, ${bitmap.height}")
-
-
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                    Timber.i("${bitmap.width}, ${bitmap.height}")
                 }
                 thumbnailList.add(bitmap)
-                Log.i("1:","${thumbnailList.size}")
+                Timber.i("ArrayList Size is ${thumbnailList.size}")
 
             }
-        }
         mediaMetadataRetriever.release()
         view.setThumbnailListView(thumbnailList)
     }
@@ -192,8 +184,8 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
         val outputFileUri = Uri.fromFile(File(root, "t_${Calendar.getInstance().timeInMillis}_" + file.nameWithoutExtension + ".mp4"))
         val outPutPath = RealPathUtil.realPathFromUriApi19(context, outputFileUri)
             ?: File(root, "t_${Calendar.getInstance().timeInMillis}_" + mSrc.path?.substring(mSrc.path!!.lastIndexOf("/") + 1)).absolutePath
-        Log.e("SOURCE", file.path)
-        Log.e("DESTINATION", outPutPath)
+        Timber.d("SOURCE${file.path}")
+        Timber.d("DESTINATION$outPutPath")
 
         val extractor = MediaExtractor()
         var frameRate = 24
@@ -215,8 +207,8 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
             extractor.release()
         }
         val duration = java.lang.Long.parseLong(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION))
-        Log.e("FRAME RATE", frameRate.toString())
-        Log.e("FRAME COUNT", (duration / 1000 * frameRate).toString())
+        Timber.d("FRAME RATE: $frameRate")
+        Timber.d("FRAME COUNT: ${(duration / 1000 * frameRate)}")
         VideoOptions(context)
             .trimVideo(TrimVideoUtils.stringForTime(start_sec.toFloat()), TrimVideoUtils.stringForTime(end_sec.toFloat()), file.path, outPutPath, outputFileUri, view)
     }
@@ -283,7 +275,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
     }
 
 
-    @SuppressLint("CheckResult")
+    @SuppressLint("CheckResult", "SimpleDateFormat")
     private fun sendVideoResultToServerWithInfo(maskPid: String, frameSec: Float, videoPid: String) {
         val time = System.currentTimeMillis()
         val dateFormat = SimpleDateFormat("yyyy-mm-dd hh:mm:ss")
@@ -303,7 +295,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
             })
     }
 
-    @SuppressLint("CheckResult")
+    @SuppressLint("CheckResult", "SimpleDateFormat")
     private fun requestImproveVideo(videoPid:String){
         val time = System.currentTimeMillis()
         val dateFormat = SimpleDateFormat("yyyy-mm-dd hh:mm:ss")
