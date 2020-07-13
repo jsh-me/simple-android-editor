@@ -12,7 +12,7 @@ class RetrofitRepositoryImpl(private val okHttpRepo : HttpClientRepository) :
     RetrofitRepository {
     override fun getRetrofit(): Retrofit {
         val client = okHttpRepo.getOkHttp()
-        val baseUrl = EMULATER_VER
+        val baseUrl = BASEURL
 
         return Retrofit.Builder()
             .baseUrl(baseUrl)
@@ -24,7 +24,7 @@ class RetrofitRepositoryImpl(private val okHttpRepo : HttpClientRepository) :
 
     override fun getLoginRetrofit(): Retrofit {
         val client = okHttpRepo.getLoginOkHttp()
-        val baseUrl = EMULATER_VER
+        val baseUrl = BASEURL
 
         return Retrofit.Builder()
             .baseUrl(baseUrl)

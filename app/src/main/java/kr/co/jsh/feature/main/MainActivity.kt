@@ -5,7 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.tasks.OnCompleteListener
@@ -55,9 +54,9 @@ class MainActivity : AppCompatActivity(), MainContract.View {
     private fun setupDataBinding(){
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.main = this@MainActivity
-        binding.videoButton.setBackgroundResource(R.drawable.main_video)
-        binding.photoButton.setBackgroundResource(R.drawable.main_photo)
-        binding.mainImageView.loadDrawable(resources.getDrawable(R.drawable.main_view, null))
+//        binding.videoButton.setBackgroundResource(R.drawable.main_video)
+//        binding.photoButton.setBackgroundResource(R.drawable.main_photo)
+//        binding.mainImageView.loadDrawable(resources.getDrawable(R.drawable.main_view, null))
     }
 
     private fun initView(){
@@ -100,7 +99,7 @@ class MainActivity : AppCompatActivity(), MainContract.View {
             FirebaseInstanceId.getInstance().instanceId
                 .addOnCompleteListener(OnCompleteListener { task ->
                     if (!task.isSuccessful) {
-                        Timber.i("getInstanceId failed", task.exception)
+                        Timber.i("getInstanceId failed: ${task.exception}")
                         return@OnCompleteListener
                     }
                     val token = task.result?.token
