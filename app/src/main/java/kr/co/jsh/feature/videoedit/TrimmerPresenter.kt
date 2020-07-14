@@ -281,7 +281,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
         val dateFormat = SimpleDateFormat("yyyy-mm-dd hh:mm:ss")
         val curTime = dateFormat.format(Date(time))
 
-        postPidNumberAndInfoUseCase.postPidNumberAndInfo(maskPid, frameSec, Consts.DEL_OBJ ,videoPid, curTime)
+        postPidNumberAndInfoUseCase.postPidNumberAndInfo(maskPid, frameSec/1000f, Consts.DEL_OBJ ,videoPid, curTime)
             .subscribe({
                if(it.status.toInt() == 200) {
                    Timber.d("Complete Video Remove Request")
