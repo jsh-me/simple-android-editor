@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat.startActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableField
 import com.bumptech.glide.Glide
@@ -21,6 +22,7 @@ import com.byox.drawview.enums.DrawingCapture
 import com.byox.drawview.views.DrawView
 import kotlinx.android.synthetic.main.activity_photo_edit.*
 import kotlinx.coroutines.*
+import kr.co.domain.globalconst.Consts
 import kr.co.domain.globalconst.Consts.Companion.EXTRA_PHOTO_PATH
 import kr.co.domain.utils.addFile
 import kr.co.domain.utils.loadUrl
@@ -45,6 +47,7 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
     private lateinit var job: Job
     private var destinationPath = ""
     private var realImageSize = ArrayList<Int>()
+    private var photoOption = ""
     var changeTextColor: ObservableField<Array<Boolean>> = ObservableField(arrayOf(false, false, false))
     var drawCheck: ObservableField<Boolean> = ObservableField(false)
     var canUndo : ObservableField<Boolean> = ObservableField(false)
@@ -55,7 +58,7 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
         super.onCreate(savedInstanceState)
         setupDataBinding()
         initView()
-        setupDrawView()
+        //setupDrawView()
     }
 
     private fun setupDataBinding() {
@@ -66,7 +69,7 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
     private fun initView() {
         val extraIntent = intent
 
-        presenter = PhotoPresenter(this, get(), get())
+        presenter = PhotoPresenter(this, get(), get(), get())
         setupPermissions(this) {
             presenter.preparePath(extraIntent)
 
@@ -112,29 +115,14 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
 
     }
 
-    private fun setupDrawView(){
-        binding.photoEditDrawView.setOnDrawViewListener(object : DrawView.OnDrawViewListener {
-            override fun onEndDrawing() {
-                canUndoRedo()
-            }
-
-            override fun onStartDrawing() {
-                canUndoRedo()
-            }
-
-            override fun onClearDrawing() {
-                canUndoRedo()
-            }
-
-            override fun onAllMovesPainted() {
-                canUndoRedo()
-            }
-
-            override fun onRequestText() {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-        })
-    }
+    val setDrawListener : DrawView.OnDrawViewListener =
+        object: DrawView.OnDrawViewListener{
+            override fun onEndDrawing() { canUndoRedo() }
+            override fun onStartDrawing() { canUndoRedo() }
+            override fun onClearDrawing() { canUndoRedo() }
+            override fun onAllMovesPainted() { canUndoRedo() }
+            override fun onRequestText() {}
+        }
 
     override fun setPhotoView(file: File) {
         binding.photoEditDrawView.post {
@@ -187,8 +175,7 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
         changeTextColor.set(arrayOf(false,false,false))
         changeTextColor.set(arrayOf(false,true,false))
         drawCheck.set(true)
-        presenter.uploadFile(path.addFile()) //원본 그림
-
+        presenter.uploadFile(path.addFile(), photoOption) //원본 그림
     }
 
     fun undoBtn(){
@@ -220,12 +207,23 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
         finish()
     }
 
+    fun sendRemovePhotoInfoToServer(){
+        photoOption = Consts.DEL_OBJ
+        saveBtn()
+    }
+
+    fun sendImprovePhotoInfoToServer(){
+        startAnimation()
+        photoOption = Consts.SUPER_RESOL
+        presenter.uploadFile(path.addFile(), photoOption)
+    }
+
     override fun cancelJob() {
         job.cancel()
     }
 
     override fun uploadSuccess(msg: String) {
-       // Toast.makeText(this, "$msg", Toast.LENGTH_SHORT).show()
+        // Toast.makeText(this, "$msg", Toast.LENGTH_SHORT).show()
     }
 
     override fun uploadFailed(msg: String) {
@@ -239,14 +237,14 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
         binding.loadingAnimation.visibility = View.VISIBLE
     }
 
-     override fun stopAnimation(){
+    override fun stopAnimation(){
         binding.loadingAnimation.cancelAnimation()
         binding.blockingView.visibility = View.GONE
         binding.loadingAnimation.visibility = View.GONE
-         binding.photoEditDrawView.restartDrawing()
-         val intent = Intent(this, SuccessSendMsgActivity::class.java)
-         startActivity(intent)
-         finish()
+        binding.photoEditDrawView.restartDrawing()
+        val intent = Intent(this, SuccessSendMsgActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 
     private fun failUploadServer(){

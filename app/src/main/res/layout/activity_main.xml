@@ -15,6 +15,9 @@
         <variable
             name="view"
             type="android.view.View" />
+
+        <import
+            type="kr.co.jsh.R" />
     </data>
 
     <androidx.core.widget.NestedScrollView
@@ -31,7 +34,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
                 android:scaleType="centerCrop"
-                tools:background="@drawable/main_view"
+                app:imgLoad="@{R.drawable.main_view}"
                 app:layout_constraintBottom_toTopOf="@+id/textView"
                 app:layout_constraintDimensionRatio="w,16:9"
                 app:layout_constraintStart_toStartOf="parent"
@@ -60,7 +63,7 @@
                 android:layout_marginEnd="16dp"
                 app:civ_border_width="1dp"
                 app:civ_border_color="#FFFFFF"
-                android:src="@drawable/ic_account_circle_24dp"
+                app:imgLoad="@{R.drawable.ic_account_circle_24dp}"
                 android:onClick="@{() -> main.accountCircleImage()}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -79,7 +82,7 @@
                 app:layout_constraintStart_toStartOf="@+id/mainImageView"
                 app:layout_constraintTop_toBottomOf="@+id/mainImageView" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/videoButton"
                 android:layout_width="match_parent"
                 android:layout_height="180dp"
@@ -87,29 +90,29 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="30dp"
                 android:layout_marginBottom="20dp"
-                tools:background="@drawable/main_video"
+                android:scaleType="fitXY"
+                android:src="@drawable/main_video"
                 android:gravity="bottom|end"
                 android:onClick="@{() -> main.pickFromVideo(consts.REQUEST_VIDEO_TRIMMER)}"
                 android:padding="5dp"
-                android:text="@string/video"
                 android:textColor="@color/white"
                 app:layout_constraintBottom_toTopOf="@+id/photoButton"
                 app:layout_constraintEnd_toEndOf="@+id/mainImageView"
                 app:layout_constraintStart_toStartOf="@+id/mainImageView"
                 app:layout_constraintTop_toBottomOf="@+id/textView" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/photoButton"
                 android:layout_width="match_parent"
                 android:layout_height="180dp"
                 android:layout_marginStart="30dp"
                 android:layout_marginEnd="30dp"
                 android:layout_marginBottom="30dp"
-                tools:background="@drawable/main_photo"
+                android:src="@drawable/main_photo"
                 android:gravity="bottom|end"
                 android:onClick="@{() -> main.pickFromPicture(consts.REQUEST_VIDEO_CROPPER)}"
                 android:padding="5dp"
-                android:scaleType="centerCrop"
+                android:scaleType="fitXY"
                 android:text="@string/photo"
                 android:textColor="@color/white"
                 app:layout_constraintBottom_toTopOf="@+id/myProjectTxt"
@@ -151,10 +154,11 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/main_result_recycler"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/myProjectTxt"
                 tools:itemCount="1"

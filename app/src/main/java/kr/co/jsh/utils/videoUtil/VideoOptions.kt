@@ -3,19 +3,26 @@ package kr.co.jsh.utils.videoUtil
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import androidx.core.net.toUri
 import com.github.hiteshsondhi88.libffmpeg.ExecuteBinaryResponseHandler
 import com.github.hiteshsondhi88.libffmpeg.FFmpeg
 import com.github.hiteshsondhi88.libffmpeg.FFmpegLoadBinaryResponseHandler
 import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegCommandAlreadyRunningException
 import kr.co.jsh.feature.videoedit.TrimmerContract
+import timber.log.Timber
+import java.text.SimpleDateFormat
+import java.util.*
 
 class VideoOptions(private var ctx: Context) {
     companion object {
         const val TAG = "VideoOptions"
     }
 
-    fun trimVideo(startPosition: String, endPosition: String, inputPath: String, outputPath: String, outputFileUri: Uri, listener: TrimmerContract.View) {
+    fun trimVideo(startPosition: String, endPosition: String, inputPath: String, listener: TrimmerContract.View) {
         val ff = FFmpeg.getInstance(ctx)
+        val date = "${SimpleDateFormat("HH_mm_ss").format(Date(System.currentTimeMillis()))}.mp4"
+        val filePath = "/storage/emulated/0/DCIM/$date"
+
         ff.loadBinary(object : FFmpegLoadBinaryResponseHandler {
             override fun onFinish() {
                 Log.e("FFmpegLoad", "onFinish")
@@ -23,8 +30,13 @@ class VideoOptions(private var ctx: Context) {
 
             //outputPath : 출력 파일 명
             override fun onSuccess() {
-                Log.e("FFmpegLoad", "onSuccess")
-                val command = arrayOf("-y", "-i", inputPath, "-ss", startPosition, "-to", endPosition, "-c", "copy", outputPath)
+                //Log.e("FFmpegLoad", "onSuccess")
+                val command =
+                    if(startPosition=="00:0.00")
+                        arrayOf("-y", "-i", inputPath,"-vcodec","copy","-acodec","copy","-t", endPosition, filePath)
+                    else
+                        arrayOf("-y", "-i", inputPath, "-ss", startPosition, "-to", endPosition, "-vcodec","copy","-acodec","copy", filePath)
+                Timber.e("startPosition: $startPosition / endPosition: $endPosition")
                 try {
                     ff.execute(command, object : ExecuteBinaryResponseHandler() {
                         override fun onSuccess(message: String?) {
@@ -50,7 +62,7 @@ class VideoOptions(private var ctx: Context) {
 
                         override fun onFinish() {
                             super.onFinish()
-                            listener?.getResult(outputFileUri)
+                            listener?.getResult(filePath.toUri())
                             Log.e(TAG, "onFinish: ")
                         }
                     })

@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
 import kotlinx.coroutines.CoroutineScope
@@ -42,6 +43,7 @@ import org.koin.android.ext.android.get
 class MainActivity : AppCompatActivity(), MainContract.View {
     private lateinit var binding: ActivityMainBinding
     override lateinit var presenter: MainContract.Presenter
+    private var mFlag = true //activity lifecycle check
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,9 +56,6 @@ class MainActivity : AppCompatActivity(), MainContract.View {
     private fun setupDataBinding(){
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.main = this@MainActivity
-//        binding.videoButton.setBackgroundResource(R.drawable.main_video)
-//        binding.photoButton.setBackgroundResource(R.drawable.main_photo)
-//        binding.mainImageView.loadDrawable(resources.getDrawable(R.drawable.main_view, null))
     }
 
     private fun initView(){
@@ -145,7 +144,10 @@ class MainActivity : AppCompatActivity(), MainContract.View {
                 }
             }
         }
-        else if(resultCode == 1000 && requestCode == 1000) setMyInfo()
+        else if(resultCode == 1000 && requestCode == 1000 && mFlag ) {
+            setMyInfo()
+            mFlag = false
+        }
 
         super.onActivityResult(requestCode, resultCode, data)
     }
@@ -200,14 +202,19 @@ class MainActivity : AppCompatActivity(), MainContract.View {
             }
         }
 
+    override fun onLowMemory() {
+        super.onLowMemory()
+        Glide.get(this).clearMemory()
+    }
+
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        Glide.get(this).trimMemory(level)
+    }
+
     override fun startAnimation() {
     }
 
     override fun stopAnimation() {
-    }
-
-    override fun onUserLeaveHint() {
-        super.onUserLeaveHint()
-        setMyInfo()
     }
 }
