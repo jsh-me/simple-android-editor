@@ -27,6 +27,11 @@ interface FileService{
     fun postImageSearchList(@Field("page.pageSize") pageSize: Int,
                             @Field("page.pageNum") pageNum: Int) : Single<SearchResultImageResponse>
 
+    @POST("cImageEdit/create.do")
+    fun postImproveImagePidNumber(@Query("reqEditType") reqEditType: String,
+                                  @Query("targetImg.objectPid") imageFileObjectPid: String,
+                                  @Query("title") title:String) : Single<ImagePidNumberResponse>
+
     //-----------------------------------------------------------
 
     @POST("cVideoEdit/create.do")

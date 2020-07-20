@@ -12,6 +12,7 @@ import android.util.Log
 import android.widget.Toast
 import android.widget.VideoView
 import androidx.core.net.toFile
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.Player
@@ -111,7 +112,8 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
     }
 
     override fun getFrameBitmap(sec: Long) {
-        val bitmap = mediaMetadataRetriever.getFrameAtTime(sec * 1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+        val bitmap
+                = mediaMetadataRetriever.getFrameAtTime(sec * 1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
         view.setDrawBitmap(bitmap)
     }
 
@@ -124,7 +126,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
         originalTrimList.add(Pair(trimmedPosition, mplayer?.currentPosition!!)) //undo redo 시 사용
         trimVideoTimeList.sortBy { it.first } //desc? asc?
 
-       view.setGreyLine(trimVideoTimeList, trimmedPosition)
+        view.setGreyLine(trimVideoTimeList, trimmedPosition)
     }
 
     override fun resetTrimVideoLIst() {
@@ -139,8 +141,8 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
     override fun getResultUri(uri: Uri, context: Context, option: String) {
         ScopeStorageFileUtil.addVideoAlbum(uri, context)
 
-        if(option == Consts.SUPER_RESOL) { improveFile(uri) }
-        else { uploadFile(uri.toString()) }
+        if(option == Consts.SUPER_RESOL) { improveFile(uri.toString()) }
+        else { uploadFile(uri.toString(), Consts.DEL_OBJ) }
     }
 
     override fun preparePath(extraIntent: Intent) {
@@ -155,7 +157,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
         mediaMetadataRetriever.setDataSource(context, mSrc)
 
         val videoLengthInMs = (Integer.parseInt(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION))).toLong()
-        val cropHeight = 150 //timelineview에서 한 프레임의 너비 (동적으로 변경되게끔 코드 수정해야함!)
+        val cropHeight = 150
         val cropWidth = ScreenSizeUtil(context).widthPixels/4 //timelineview에서 한 프레임의 너비
         val interval = if(videoLengthInMs< 3000) videoLengthInMs else 3000
 
@@ -163,13 +165,13 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
         for (i in 0 .. videoLengthInMs step interval) {
             var bitmap = mediaMetadataRetriever.getFrameAtTime(i * 1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
             bitmap?.let{
-                    bitmap = Bitmap.createScaledBitmap(bitmap, cropWidth, cropHeight, false)
-                    Timber.i("${bitmap.width}, ${bitmap.height}")
-                }
-                thumbnailList.add(bitmap)
-                Timber.i("ArrayList Size is ${thumbnailList.size}")
-
+                bitmap = Bitmap.createScaledBitmap(bitmap, cropWidth, cropHeight, false)
+                Timber.i("${bitmap.width}, ${bitmap.height}")
             }
+            thumbnailList.add(bitmap)
+            Timber.i("ArrayList Size is ${thumbnailList.size}")
+
+        }
         mediaMetadataRetriever.release()
         view.setThumbnailListView(thumbnailList)
     }
@@ -179,14 +181,6 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
         mediaMetadataRetriever.setDataSource(context, mSrc)
 
         val file = File(mSrc.path ?: "")
-        val root = File(path)
-        root.mkdirs()
-        val outputFileUri = Uri.fromFile(File(root, "t_${Calendar.getInstance().timeInMillis}_" + file.nameWithoutExtension + ".mp4"))
-        val outPutPath = RealPathUtil.realPathFromUriApi19(context, outputFileUri)
-            ?: File(root, "t_${Calendar.getInstance().timeInMillis}_" + mSrc.path?.substring(mSrc.path!!.lastIndexOf("/") + 1)).absolutePath
-        Timber.d("SOURCE${file.path}")
-        Timber.d("DESTINATION$outPutPath")
-
         val extractor = MediaExtractor()
         var frameRate = 24
         try {
@@ -210,13 +204,13 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
         Timber.d("FRAME RATE: $frameRate")
         Timber.d("FRAME COUNT: ${(duration / 1000 * frameRate)}")
         VideoOptions(context)
-            .trimVideo(TrimVideoUtils.stringForTime(start_sec.toFloat()), TrimVideoUtils.stringForTime(end_sec.toFloat()), file.path, outPutPath, outputFileUri, view)
+            .trimVideo(TrimVideoUtils.stringForTime(start_sec.toFloat()), TrimVideoUtils.stringForTime(end_sec.toFloat()), file.path, view)
     }
 
 
     //Todo 동영상과 사진 확장자를 업로드 할 수 있는 메소드
     @SuppressLint("CheckResult")
-    override fun uploadFile(uri: String) {
+    override fun uploadFile(uri: String, type: String) {
         //val path = "file://" + Uri.parse(uri)
         val path = uri.addFile()
         val request = MultipartBody.Part.createFormData("file", path, RequestBody.create(MediaType.parse("video/*"), Uri.parse(path).toFile() ))
@@ -227,6 +221,7 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
                     UserObject.ResponseCode = it.status.toInt()
                     view.uploadSuccess(it.message)
                     PidClass.videoObjectPid = it.datas.objectPid
+                    if(type == Consts.SUPER_RESOL) improveFile(uri)
                 }
                 else {
                     view.uploadFailed(it.message)
@@ -257,8 +252,8 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
     }
 
     @SuppressLint("CheckResult")
-    private fun improveFile(uri: Uri){
-        val path = uri.toString().addFile()
+    private fun improveFile(uri: String){
+        val path = uri.addFile()
         val request = MultipartBody.Part.createFormData("file", path, RequestBody.create(MediaType.parse("video/*"), Uri.parse(path).toFile() ))
         postFileUploadUseCase.postFile(request)
             .subscribe({
@@ -283,13 +278,13 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
 
         postPidNumberAndInfoUseCase.postPidNumberAndInfo(maskPid, frameSec/1000f, Consts.DEL_OBJ ,videoPid, curTime)
             .subscribe({
-               if(it.status.toInt() == 200) {
-                   Timber.d("Complete Video Remove Request")
-                   PidClass.topVideoObjectPid.add(it.datas.objectPid)
-                   view.stopAnimation()
+                if(it.status.toInt() == 200) {
+                    Timber.d("Complete Video Remove Request")
+                    PidClass.topVideoObjectPid.add(it.datas.objectPid)
+                    view.stopAnimation()
 
-               }
-               else Timber.e("ERROR ${it.status}")
+                }
+                else Timber.e("ERROR ${it.status}")
             },{
                 it.localizedMessage
             })
@@ -298,15 +293,15 @@ class TrimmerPresenter(override var view: TrimmerContract.View,
     @SuppressLint("CheckResult", "SimpleDateFormat")
     private fun requestImproveVideo(videoPid:String){
         val time = System.currentTimeMillis()
-        val dateFormat = SimpleDateFormat("yyyy-mm-dd hh:mm:ss")
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
         val curTime = dateFormat.format(Date(time))
 
         postImproveVideoPidNumber.postImproveVideoPidNumber(Consts.SUPER_RESOL, videoPid, curTime)
             .subscribe({
-               if(it.status.toInt() == 200) {
-                   Timber.d("Complete Video Improve Request")
-                   view.stopAnimation()
-               }
+                if(it.status.toInt() == 200) {
+                    Timber.d("Complete Video Improve Request")
+                    view.stopAnimation()
+                }
                 else Timber.e("ERROR ${it.status}")
             },{
                 it.localizedMessage

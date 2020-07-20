@@ -16,6 +16,7 @@ import android.widget.Toast
 import kr.co.jsh.utils.RunOnUiThread
 import timber.log.Timber
 import java.io.*
+import java.net.URL
 import kotlin.concurrent.thread
 
 object ScopeStorageFileUtil{
@@ -45,28 +46,27 @@ object ScopeStorageFileUtil{
     fun downloadURL(src: String, downloadManager: DownloadManager, displayName: String, context: Context) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-    {
-        val values = ContentValues()
-        values.put(MediaStore.Video.Media.DISPLAY_NAME, displayName)
-        values.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4")
-        values.put(MediaStore.Video.Media.IS_PENDING, 1)
-        val collection =
-            MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-        val fileUri = context.contentResolver.insert(collection, values)
+        {
+            //if you need, uncomment line
+//        val values = ContentValues()
+//        values.put(MediaStore.Video.Media.DISPLAY_NAME, displayName)
+//        values.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4")
+//        values.put(MediaStore.Video.Media.IS_PENDING, 1)
+//        val collection =
+//            MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+//        val fileUri = context.contentResolver.insert(collection, values)
 
-        val url = src
-        val request = DownloadManager.Request(Uri.parse(url))
-            .setTitle("Downloading a video")
-            .setDescription("Downloading Dev Summit")
-            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
-            .setDestinationUri(fileUri)
-            .setAllowedOverMetered(true)
-            .setAllowedOverRoaming(true)
-        downloadId = downloadManager.enqueue(request)
-        Timber.d("path : " + fileUri?.path)
-
-    }
-    else {
+            val url = src
+            val request = DownloadManager.Request(Uri.parse(url))
+                .setTitle("Downloading a video")
+                .setDescription("Downloading Dev Summit")
+                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
+                .setDestinationInExternalFilesDir(context,Environment.DIRECTORY_DOWNLOADS,"DELIT_result.mp4" )
+                .setAllowedOverMetered(true)
+                .setAllowedOverRoaming(true)
+            downloadId = downloadManager.enqueue(request)
+        }
+        else {
             val file = File(Environment.getExternalStorageDirectory().path, displayName)
             val url = src
             val request = DownloadManager.Request(Uri.parse(url))
@@ -77,56 +77,53 @@ object ScopeStorageFileUtil{
                 .setAllowedOverMetered(true)
                 .setAllowedOverRoaming(true)
             downloadId = downloadManager.enqueue(request)
-            Timber.d("path : " + file.path)
-
         }
     }
 
+    fun addVideoAlbum(src: Uri, context: Context) {
+        RunOnUiThread(context).safely {
+            // Toast.makeText(context, "Video saved at ${uri.path}", Toast.LENGTH_SHORT).show()
+            //Todo override 된 함수에 넣어줌 ( 사용자가 자른 동영상 )
 
-        fun addVideoAlbum(src: Uri, context: Context) {
-            RunOnUiThread(context).safely {
-                // Toast.makeText(context, "Video saved at ${uri.path}", Toast.LENGTH_SHORT).show()
-                //Todo override 된 함수에 넣어줌 ( 사용자가 자른 동영상 )
+            val displayName = "${System.currentTimeMillis()}.mp4"
+            //Android Q 이상 대응
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val values = ContentValues()
+                values.put(MediaStore.Video.Media.DISPLAY_NAME, displayName)
+                values.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4")
+                values.put(MediaStore.Video.Media.IS_PENDING, 1)
 
-                val displayName = "${System.currentTimeMillis()}.mp4"
-                //Android Q 이상 대응
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    val values = ContentValues()
-                    values.put(MediaStore.Video.Media.DISPLAY_NAME, displayName)
-                    values.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4")
-                    values.put(MediaStore.Video.Media.IS_PENDING, 1)
-
-                    val collection =
-                        MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-                    val fileUri = context.contentResolver.insert(collection, values)
-                    context.contentResolver.openFileDescriptor(fileUri!!, "w", null).use {
-                        // write something to OutputStream
-                        context.contentResolver.openFileDescriptor(fileUri, "w").use { descriptor ->
-                            descriptor?.let {
-                                FileOutputStream(descriptor.fileDescriptor).use { out ->
-                                    val videoFile = File(src.toString())
-                                    FileInputStream(videoFile).use { inputStream ->
-                                        val buf = ByteArray(8192)
-                                        while (true) {
-                                            val sz = inputStream.read(buf)
-                                            if (sz <= 0) break
-                                            out.write(buf, 0, sz)
-                                        }
+                val collection =
+                    MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+                val fileUri = context.contentResolver.insert(collection, values)
+                context.contentResolver.openFileDescriptor(fileUri!!, "w", null).use {
+                    // write something to OutputStream
+                    context.contentResolver.openFileDescriptor(fileUri, "w").use { descriptor ->
+                        descriptor?.let {
+                            FileOutputStream(descriptor.fileDescriptor).use { out ->
+                                val videoFile = File(src.toString())
+                                FileInputStream(videoFile).use { inputStream ->
+                                    val buf = ByteArray(8192)
+                                    while (true) {
+                                        val sz = inputStream.read(buf)
+                                        if (sz <= 0) break
+                                        out.write(buf, 0, sz)
                                     }
                                 }
                             }
                         }
                     }
-                    values.clear()
-                    values.put(MediaStore.Video.Media.IS_PENDING, 0)
-                    context.contentResolver.update(fileUri, values, null, null)
                 }
+                values.clear()
+                values.put(MediaStore.Video.Media.IS_PENDING, 0)
+                context.contentResolver.update(fileUri, values, null, null)
+            }
 
-                //그 이외
-                else {
+            //그 이외
+            else {
 
-                    val mediaMetadataRetriever = MediaMetadataRetriever()
-                    mediaMetadataRetriever.setDataSource(context, src)
+                val mediaMetadataRetriever = MediaMetadataRetriever()
+                mediaMetadataRetriever.setDataSource(context, src)
 
 //                    val duration =
 //                        mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
@@ -137,65 +134,65 @@ object ScopeStorageFileUtil{
 //                    val height =
 //                        mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
 //                            .toLong()
-                    val values = ContentValues()
-                    values.put(MediaStore.Video.Media.DATA, src.path)
-                   // values.put(MediaStore.Video.VideoColumns.DURATION, duration)
-                    //values.put(MediaStore.Video.VideoColumns.WIDTH, width)
-                    //values.put(MediaStore.Video.VideoColumns.HEIGHT, height)
-                    val id = ContentUris.parseId(
-                        context.contentResolver.insert(
-                            MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-                            values
-                        )
+                val values = ContentValues()
+                values.put(MediaStore.Video.Media.DATA, src.path)
+                // values.put(MediaStore.Video.VideoColumns.DURATION, duration)
+                //values.put(MediaStore.Video.VideoColumns.WIDTH, width)
+                //values.put(MediaStore.Video.VideoColumns.HEIGHT, height)
+                val id = ContentUris.parseId(
+                    context.contentResolver.insert(
+                        MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                        values
                     )
-                    Log.e("VIDEO ID", id.toString())
-                }
-
+                )
+                Log.e("VIDEO ID", id.toString())
             }
+
         }
+    }
 
 
-        //갤러리로 이동하기
-        fun pickFileAndCopyUriToExternalFilesDir(): Intent {
-            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-            intent.addCategory(Intent.CATEGORY_OPENABLE)
-            intent.type = "*/*"
-            return intent
+    //갤러리로 이동하기
+    fun pickFileAndCopyUriToExternalFilesDir(): Intent {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+        intent.type = "*/*"
+        return intent
+    }
+
+    //uri로 파일 이름 구하기
+    fun getFileNameByUri(uri: Uri, context: Context): String {
+        var fileName = System.currentTimeMillis().toString()
+        val cursor = context.contentResolver.query(uri, null, null, null, null)
+        if (cursor != null && cursor.count > 0) {
+            cursor.moveToFirst()
+            fileName =
+                cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME))
+            cursor.close()
         }
+        return fileName
+    }
 
-        //uri로 파일 이름 구하기
-        fun getFileNameByUri(uri: Uri, context: Context): String {
-            var fileName = System.currentTimeMillis().toString()
-            val cursor = context.contentResolver.query(uri, null, null, null, null)
-            if (cursor != null && cursor.count > 0) {
-                cursor.moveToFirst()
-                fileName =
-                    cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME))
-                cursor.close()
-            }
-            return fileName
-        }
-
-        //복사하기
-        fun copyUriToExternalFilesDir(uri: Uri, fileName: String, context: Context) {
-            thread {
-                val inputStream = context.contentResolver.openInputStream(uri)
-                val tempDir = context.getExternalFilesDir("temp")
-                if (inputStream != null && tempDir != null) {
-                    val file = File("$tempDir/$fileName")
-                    val fos = FileOutputStream(file)
-                    val bis = BufferedInputStream(inputStream)
-                    val bos = BufferedOutputStream(fos)
-                    val byteArray = ByteArray(1024)
-                    var bytes = bis.read(byteArray)
-                    while (bytes > 0) {
-                        bos.write(byteArray, 0, bytes)
-                        bos.flush()
-                        bytes = bis.read(byteArray)
-                    }
-                    bos.close()
-                    fos.close()
+    //복사하기
+    fun copyUriToExternalFilesDir(uri: Uri, fileName: String, context: Context) {
+        thread {
+            val inputStream = context.contentResolver.openInputStream(uri)
+            val tempDir = context.getExternalFilesDir("temp")
+            if (inputStream != null && tempDir != null) {
+                val file = File("$tempDir/$fileName")
+                val fos = FileOutputStream(file)
+                val bis = BufferedInputStream(inputStream)
+                val bos = BufferedOutputStream(fos)
+                val byteArray = ByteArray(1024)
+                var bytes = bis.read(byteArray)
+                while (bytes > 0) {
+                    bos.write(byteArray, 0, bytes)
+                    bos.flush()
+                    bytes = bis.read(byteArray)
                 }
+                bos.close()
+                fos.close()
             }
         }
     }
+}

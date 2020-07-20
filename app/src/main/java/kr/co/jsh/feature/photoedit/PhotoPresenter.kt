@@ -13,6 +13,7 @@ import android.util.Log
 import androidx.core.net.toFile
 import kr.co.domain.api.usecase.PostFileUploadUseCase
 import kr.co.domain.api.usecase.PostImagePidNumberAndInfoUseCase
+import kr.co.domain.api.usecase.PostImproveImagePidNumber
 import kr.co.domain.globalconst.Consts
 import kr.co.domain.globalconst.PidClass
 import kr.co.domain.utils.addFile
@@ -22,12 +23,14 @@ import kr.co.jsh.utils.RunOnUiThread
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 
 class PhotoPresenter(override var view: PhotoContract.View,
                      private var postFileUploadUseCase: PostFileUploadUseCase,
-                     private var postImagePidNumberAndInfoUseCase: PostImagePidNumberAndInfoUseCase
+                     private var postImagePidNumberAndInfoUseCase: PostImagePidNumberAndInfoUseCase,
+                     private var postImproveImagePidNumber: PostImproveImagePidNumber
 ) : PhotoContract.Presenter {
 
     override fun preparePath(extraIntent: Intent) {
@@ -62,11 +65,11 @@ class PhotoPresenter(override var view: PhotoContract.View,
                     values
                 )
             )
-            Log.e("IMAGE ID", id.toString())
+            Timber.e("IMAGE ID: $id")
         }    }
 
     @SuppressLint("CheckResult")
-    override fun uploadFile(uri: String) {
+    override fun uploadFile(uri: String, type: String) {
         val path = uri.addFile()
         val request = MultipartBody.Part.createFormData("file", path, RequestBody.create(MediaType.parse("image/*"), Uri.parse(path).toFile()))
         postFileUploadUseCase.postFile(request)
@@ -75,7 +78,7 @@ class PhotoPresenter(override var view: PhotoContract.View,
                     view.uploadSuccess(it.message)
                     PidClass.imageObjectPid = it.datas.objectPid //file pid 저장
                     UserObject.ResponseCode = it.status.toInt()
-
+                    if(type == Consts.SUPER_RESOL) requestImproveImage()
                 }
                 else {
                     view.uploadFailed(it.message)
@@ -86,6 +89,24 @@ class PhotoPresenter(override var view: PhotoContract.View,
             })
     }
 
+    @SuppressLint("CheckResult")
+    private fun requestImproveImage() {
+        val time = System.currentTimeMillis()
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        val curTime = dateFormat.format(Date(time))
+
+        postImproveImagePidNumber.postImproveImagePidNumber(Consts.SUPER_RESOL, PidClass.imageObjectPid, curTime)
+            .subscribe({
+                if (it.status.toInt() == 200) {
+                    Timber.d("Complete Image Improve Request")
+                    view.stopAnimation()
+                } else Timber.e("ERROR ${it.status}")
+            }, {
+                it.localizedMessage
+            })
+    }
+
+    //mask file 전송
     @SuppressLint("CheckResult")
     override fun uploadFrameFile(bitmap: Bitmap, context: Context) {
         val file = bitmapToFileUtil(bitmap, context)
@@ -102,24 +123,22 @@ class PhotoPresenter(override var view: PhotoContract.View,
                 else {
                     view.uploadFailed(it.message)
                     UserObject.ResponseCode = it.status.toInt()
-
                 }
             },{
                 view.uploadFailed("로그인 후 가능")
                 view.cancelJob()
-
             })
     }
-    @SuppressLint("CheckResult")
+    @SuppressLint("CheckResult", "SimpleDateFormat")
     private fun sendImageResultToServerWithInfo(maskPid: String, imagePid: String){
         //title 구분을 위해 현재 시간을 넣음
         val time = System.currentTimeMillis()
-        val dateFormat = SimpleDateFormat("yyyy-mm-dd hh:mm:ss")
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
         val curTime = dateFormat.format(Date(time))
 
         postImagePidNumberAndInfoUseCase.postImagePidNumberAndInfo(maskPid, Consts.DEL_OBJ, imagePid, curTime)
             .subscribe({
-                Log.e("Image Send Result", it.message)
+                Timber.e("Image Send Result: ${it.message}")
                 view.stopAnimation()
                 PidClass.topImageObjectPid.add(it.datas.objectPid)
             },{

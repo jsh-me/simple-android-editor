@@ -5,6 +5,5 @@ import android.content.Intent
 //TODO: 공통 메소드 추출
 interface BasePresenter {
     fun preparePath(extraIntent: Intent)
-    fun uploadFile(uri: String)
-
+    fun uploadFile(uri: String, type: String)
 }

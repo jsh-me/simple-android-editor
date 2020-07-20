@@ -128,14 +128,14 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     }
 
     private fun initTimeList(b: Boolean){
-       if(b) {
-           trimVideoTimeList.apply {
-               clear()
-               add(Pair(0, 0))
-               add(Pair(binding.videoEditRecycler.width - ScreenSizeUtil(applicationContext).widthPixels.toLong(), mDuration))
-           }
-               timeListFlag.set(false)
-       }
+        if(b) {
+            trimVideoTimeList.apply {
+                clear()
+                add(Pair(0, 0))
+                add(Pair(binding.videoEditRecycler.width - ScreenSizeUtil(applicationContext).widthPixels.toLong(), mDuration))
+            }
+            timeListFlag.set(false)
+        }
     }
 
     fun playVideo() {
@@ -168,19 +168,19 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     fun removeMode(){
         drawMaskCheck = true
         if(trimVideoTimeList.size <= 2) {
-            presenter.uploadFile(mSrc.toString())
+            presenter.uploadFile(mSrc.toString(), videoOption)
         }
         else {
             presenter.trimVideo(destinationPath, this, mSrc, frameSecToSendServer[0].toInt(), frameSecToSendServer[1].toInt())
         }
-            binding.videoFrameDrawView.setBackgroundResource(R.color.grey1)
-            presenter.getFrameBitmap(userVideoTrimTime.value!!)
+        binding.videoFrameDrawView.setBackgroundResource(R.color.grey1)
+        presenter.getFrameBitmap(userVideoTrimTime.value!!)
 
-            this.toastShort("지울 곳을 칠해주세요")
-            changeTextColor.set(arrayOf(false, false, false, false, false))
-            changeTextColor.set(arrayOf(true, false, false, false, false))
+        this.toastShort("지울 곳을 칠해주세요")
+        changeTextColor.set(arrayOf(false, false, false, false, false))
+        changeTextColor.set(arrayOf(true, false, false, false, false))
 
-            hideVideoView()
+        hideVideoView()
     }
 
     @SuppressLint("CheckResult")
@@ -190,13 +190,13 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         realVideoSize.add(bitmap.width)
         realVideoSize.add(bitmap.height)
 
-       binding.videoFrameDrawView.layoutParams =
-           ConstraintLayout.LayoutParams(playerWidth, playerHeight).apply {
-            leftToLeft = R.id.video_edit_main_layout
-            rightToRight = R.id.video_edit_main_layout
-            bottomToTop = R.id.icon_video_play_btn
-            topToBottom = R.id.video_edit_back_btn
-        }
+        binding.videoFrameDrawView.layoutParams =
+            ConstraintLayout.LayoutParams(playerWidth, playerHeight).apply {
+                leftToLeft = R.id.video_edit_main_layout
+                rightToRight = R.id.video_edit_main_layout
+                bottomToTop = R.id.icon_video_play_btn
+                topToBottom = R.id.video_edit_back_btn
+            }
         binding.videoFrameDrawView.setBackgroundImage(bitmap, BackgroundType.BITMAP, BackgroundScale.FIT_START)
     }
 
@@ -239,7 +239,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     }
 
     private fun startThread() {
-      GlobalScope.launch(dispatcher) {
+        GlobalScope.launch(dispatcher) {
             if (this.isActive) {
                 while (setPlayFlag) {
                     applicationContext.runOnUiThread {
@@ -330,7 +330,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
 
     override fun onVideoPrepared() {
         RunOnUiThread(this).safely {
-           Timber.e("onVideoPrepared")
+            Timber.e("onVideoPrepared")
         }
     }
 
@@ -349,7 +349,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
 
     override fun onTrimStarted() {
         RunOnUiThread(this).safely {
-           Timber.i("Started Trimming")
+            Timber.i("Started Trimming")
         }
     }
 
@@ -433,9 +433,10 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
 
     fun sendImproveVideoInfoToServer(){
         videoOption = Consts.SUPER_RESOL
+        startAnimation()
         if(trimVideoTimeList.size <= 2) {
             //this.toastShort("구간을 먼저 잘라주세요")
-            presenter.uploadFile(mSrc.toString())
+            presenter.uploadFile(mSrc.toString(), videoOption)
         }
         else {
             job = CoroutineScope(Dispatchers.Main).launch {
@@ -445,8 +446,8 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
                 }.await()
             }
         }
-            changeTextColor.set(arrayOf(false, false, false, false, false))
-            changeTextColor.set(arrayOf(false, false, false, false, true))
+        changeTextColor.set(arrayOf(false, false, false, false, false))
+        changeTextColor.set(arrayOf(false, false, false, false, true))
     }
 
 
@@ -463,7 +464,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     }
 
     override fun uploadSuccess(msg: String) {
-       Timber.e(msg)
+        Timber.e(msg)
     }
 
     override fun uploadFailed(msg: String) {
@@ -483,13 +484,13 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     }
 
     fun undoBtn(){
-            binding.videoFrameDrawView.undo()
-            canDrawUndoRedo()
+        binding.videoFrameDrawView.undo()
+        canDrawUndoRedo()
     }
 
     fun redoBtn(){
-            binding.videoFrameDrawView.redo()
-            canDrawUndoRedo()
+        binding.videoFrameDrawView.redo()
+        canDrawUndoRedo()
     }
 
     private fun canDrawUndoRedo(){
@@ -518,6 +519,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         binding.blockingView.visibility = View.GONE
         binding.loadingAnimation.visibility = View.GONE
         binding.videoFrameDrawView.restartDrawing()
+
         val intent = Intent(this, SuccessSendMsgActivity::class.java)
         startActivity(intent)
         finish()
