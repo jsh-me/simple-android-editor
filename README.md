@@ -1,24 +1,20 @@
-# VIVOTO - We'll make you vivid memories
-> android video & photo editor application with deep learning processing 
+<h1 align="center">
+    Simple Android Editor</h1>
 
-![lang](https://img.shields.io/github/languages/top/jsh-me/android-video-editor)![platform](https://img.shields.io/badge/platform-android-yellowgreen)![licence](https://img.shields.io/github/license/jsh-me/android-video-editor)
+<p align="center">
+     <a href="https://opensource.org/licenses/Apache-2.0"><img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-blue.svg"/></a>
+    <a href="https://android-arsenal.com/api?level=23"><img alt="API" src="https://img.shields.io/badge/API-23%2B-brightgreen.svg?style=flat"/></a><a href=""><img alt="API" src="https://img.shields.io/github/languages/top/jsh-me/android-video-editor"/></a>
+<a href=""><img alt="Android" src="https://img.shields.io/badge/platform-android-yellowgreen"/></a></p>
 
-
-
-Simple Video Editor is android application that can help video, image inpainting work. Even if it's not for this purpose, it has enough function as a video editor. 
-
-you can use video-time-line view, video trim based on ffmpeg engine, and select a specific frame to draw a line.
-
-
+<p align="center">Android video & photo editor application using deep learning</br>(Super Resolution, Video & Image Inpainting)</br></br>
+Simple Video Editor is android application that can help video, image inpainting work.</br> Even if it's not for this purpose, it has enough function as a video editor. </br></br>you can use video-time-line view, video trim based on ffmpeg engine,</br> and select a specific frame to draw a line.</p></br>
 
 ## Main UI Feature
 
-
-
-|                          Play Video                          |                         Select Video                         |
+|                          Play Video                          |                     Select to video trim                     |
 | :----------------------------------------------------------: | :----------------------------------------------------------: |
 | <img src="https://user-images.githubusercontent.com/39688690/83832793-6ba7a980-a725-11ea-978d-aa49abb4bc1a.gif"/> | <img src="https://user-images.githubusercontent.com/39688690/83832938-ba554380-a725-11ea-802d-0514b239d8df.gif"/> |
-|        **Select the specific frame and Draw a line**         |                       **Save Result**                        |
+|        **Select the specific frame and draw a mask**         |                      **Sebd to server**                      |
 | ![gif (1)](https://user-images.githubusercontent.com/39688690/83498844-66651780-a4f7-11ea-8f11-6f648c8a3ec0.gif) | ![gif](https://user-images.githubusercontent.com/39688690/83498614-18501400-a4f7-11ea-8646-04fba2cca479.gif) |
 
 
@@ -38,23 +34,25 @@ Inpainting is a conservation process where damaged, deteriorating, or missing pa
 
 3. Resize the bitmap with the same height and width as the original file.
 
-
-
-## Original image and generated result mask image
-
-<img src="https://user-images.githubusercontent.com/39688690/82655327-f9cb5c80-9c5c-11ea-9215-6367014d5fdd.gif" width="80%">
+<img src="https://user-images.githubusercontent.com/39688690/82655327-f9cb5c80-9c5c-11ea-9215-6367014d5fdd.gif" width="50%">
 
 
 
-### Result
+## Result
 
 <img src="https://user-images.githubusercontent.com/39688690/82655031-8b869a00-9c5c-11ea-80bd-299288f10f8a.png" width="48%">  <img src="https://user-images.githubusercontent.com/39688690/82655208-ca1c5480-9c5c-11ea-937d-c9d317247330.png" width="48%">
 
 
 
-## FAQ
+## ✔ Check
 
-feel free to contact me if you have and questions.
+@jsh-me 💬
+
+This project is **WIP**
+
+Feel free to contact me if you have and questions.
+
+**Always welcome to FEEDBACK ;^) waiting for your contribution.**
 
 Email: ppm_it@naver.com
 
