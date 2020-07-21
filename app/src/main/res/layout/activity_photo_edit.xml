@@ -88,7 +88,8 @@
             app:layout_constraintEnd_toEndOf="@+id/photo_edit_iv"
             app:layout_constraintStart_toStartOf="@+id/photo_edit_iv"
             app:layout_constraintTop_toTopOf="@+id/photo_edit_iv"
-            app:layout_constraintVertical_bias="0.49" />
+            app:layout_constraintVertical_bias="0.49"
+            app:drawListener="@{photo.setDrawListener}"/>
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -148,6 +149,25 @@
             app:layout_constraintBottom_toBottomOf="@+id/photo_edit_undo_btn"
             app:layout_constraintStart_toEndOf="@+id/photo_edit_undo_btn"
             app:layout_constraintTop_toTopOf="@+id/photo_edit_undo_btn" />
+
+        <TextView
+            android:id="@+id/photo_edit_send_server_remove_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> photo.sendRemovePhotoInfoToServer()}"
+            android:text="Remove"
+            app:layout_constraintStart_toStartOf="@+id/photo_edit_undo_btn"
+            app:layout_constraintTop_toBottomOf="@+id/photo_edit_undo_btn" />
+
+        <TextView
+            android:id="@+id/photo_edit_send_server_improve_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:onClick="@{() -> photo.sendImprovePhotoInfoToServer()}"
+            android:text="Improve"
+            app:layout_constraintStart_toEndOf="@+id/photo_edit_send_server_remove_btn"
+            app:layout_constraintTop_toBottomOf="@+id/photo_edit_redo_btn" />
 
         <kr.co.jsh.customview.BlockingView
             android:id="@+id/blockingView"
