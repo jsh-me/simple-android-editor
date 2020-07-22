@@ -62,10 +62,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:text="자르기\nRedo"
+                android:text="@string/redo_trim"
                 android:gravity="center"
+                android:clickable="@{trimmer.cutRedoButtonColor}"
                 android:onClick="@{() -> trimmer.videoEditRedoBtn()}"
-                android:textColor="@color/white"
+                android:textColor="@{trimmer.cutRedoButtonColor ? @color/white : @color/grey3}"
                 app:layout_constraintBottom_toBottomOf="@+id/video_edit_trim_undo"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/video_edit_trim_undo" />
@@ -76,10 +77,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="8dp"
-                android:text="자르기\nUndo"
+                android:text="@string/undo_trim"
                 android:gravity="center"
                 android:onClick="@{() -> trimmer.videoEditUndoBtn()}"
-                android:textColor="@color/white"
+                android:clickable="@{trimmer.cutUndoButtonColor}"
+                android:textColor="@{trimmer.cutUndoButtonColor ? @color/white : @color/grey3}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/video_edit_trim_redo" />
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -146,16 +148,16 @@
         <TextView
             android:id="@+id/video_edit_remove_btn"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="30dp"
             android:layout_marginStart="10dp"
+            android:layout_marginBottom="8dp"
+            android:clickable="@{trimmer.drawButtonColor}"
             android:gravity="center"
             android:onClick="@{() -> trimmer.removeMode()}"
             android:text="@string/draw"
-            android:textColor="@{trimmer.changeTextColor[0] ? @color/white : @color/black}"
+            android:textColor="@{trimmer.drawButtonColor ? @color/white : @color/grey3}"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/video_edit_scroll_view"
-            app:layout_constraintTop_toBottomOf="@+id/video_edit_crop_btn"
-            app:layout_constraintVertical_bias="0.9" />
+            app:layout_constraintStart_toStartOf="@+id/video_edit_scroll_view" />
 
 
         <TextView
@@ -163,23 +165,25 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:text="@string/initialze_cut"
+            android:clickable="@{trimmer.cutClearButtonColor}"
             android:onClick="@{() -> trimmer.resetTimeLineView()}"
-            android:textColor="@{trimmer.changeTextColor[1] ? @color/white : @color/black}"
+            android:text="@string/clear_cut"
+            android:textColor="@{trimmer.cutClearButtonColor ? @color/white : @color/grey3}"
             app:layout_constraintBottom_toBottomOf="@+id/video_edit_remove_btn"
             app:layout_constraintStart_toEndOf="@+id/video_edit_remove_btn"
             app:layout_constraintTop_toTopOf="@+id/video_edit_remove_btn"
-            app:layout_constraintVertical_bias="0.9"/>
+            app:layout_constraintVertical_bias="0.9" />
 
         <TextView
             android:id="@+id/video_edit_reset_draw_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
+            android:clickable="@{trimmer.drawClearButtonColor}"
             android:gravity="center"
             android:onClick="@{() -> trimmer.clearDraw()}"
-            android:text="@string/initialize_draw"
-            android:textColor="@{trimmer.changeTextColor[2] ? @color/white : @color/black}"
+            android:text="@string/clear_draw"
+            android:textColor="@{trimmer.drawClearButtonColor ? @color/white : @color/grey3}"
             app:layout_constraintBottom_toBottomOf="@+id/video_edit_reset_btn"
             app:layout_constraintStart_toEndOf="@+id/video_edit_reset_btn"
             app:layout_constraintTop_toTopOf="@+id/video_edit_reset_btn"
@@ -189,9 +193,11 @@
             android:id="@+id/video_edit_send_server_remove_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Remove"
+            android:clickable="@{trimmer.removeButtonColor}"
             android:onClick="@{() -> trimmer.sendRemoveVideoInfoToServer()}"
-            android:textColor="@{trimmer.changeTextColor[3] ? @color/white : @color/black}"
+            android:paddingBottom="5dp"
+            android:text="@string/remove"
+            android:textColor="@{trimmer.removeButtonColor ? @color/white : @color/grey3}"
             app:layout_constraintBottom_toBottomOf="@+id/video_edit_send_server_improve_btn"
             app:layout_constraintStart_toStartOf="@+id/video_edit_undo_btn" />
 
@@ -200,9 +206,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="Improve"
+            android:clickable="@{trimmer.improveButtonColor}"
             android:onClick="@{() -> trimmer.sendImproveVideoInfoToServer()}"
-            android:textColor="@{trimmer.changeTextColor[4] ? @color/white : @color/black}"
+            android:paddingBottom="5dp"
+            android:text="@string/improve"
+            android:textColor="@{trimmer.improveButtonColor ? @color/white : @color/grey3}"
             app:layout_constraintBottom_toBottomOf="@+id/video_edit_reset_draw_btn"
             app:layout_constraintStart_toEndOf="@+id/video_edit_send_server_remove_btn"
             app:layout_constraintTop_toBottomOf="@+id/video_edit_redo_btn"
