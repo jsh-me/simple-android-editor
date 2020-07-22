@@ -52,16 +52,47 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
     private var photoOption = ""
     private var path = ""
 
-    var changeTextColor: ObservableField<Array<Boolean>> = ObservableField(arrayOf(false, false, false))
     var drawCheck: ObservableField<Boolean> = ObservableField(false)
     var canUndo : ObservableField<Boolean> = ObservableField(false)
     var canRedo : ObservableField<Boolean> = ObservableField(false)
+
+    var removeButtonColor: ObservableField<Boolean> = ObservableField(false)
+    var improveButtonColor: ObservableField<Boolean> = ObservableField(true)
+    var drawButtonColor: ObservableField<Boolean> = ObservableField(true)
+    var clearDrawButtonColor: ObservableField<Boolean> = ObservableField(false)
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupDataBinding()
         initView()
-        //setupDrawView()
+
+    }
+
+    private fun checkButtonColor(stateCheckNumber: Int) {
+        //0: init
+        //1: 그리기 버튼을 눌렀을 때
+        //2: 그리기 초기화
+        when(stateCheckNumber){
+            0->{
+                removeButtonColor.set(false)
+                improveButtonColor.set(true)
+                drawButtonColor.set(true)
+                clearDrawButtonColor.set(false)
+            }
+            1->{
+                drawButtonColor.set(false)
+                removeButtonColor.set(true)
+                improveButtonColor.set(false)
+                clearDrawButtonColor.set(true)
+            }
+            2->{
+                improveButtonColor.set(true)
+                removeButtonColor.set(false)
+                drawButtonColor.set(true)
+            }
+        }
+
     }
 
     private fun setupDataBinding() {
@@ -142,8 +173,8 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
         binding.photoEditDrawView.apply {
             restartDrawing()
         }
-        changeTextColor.set(arrayOf(false, false, false))
-        changeTextColor.set(arrayOf(true, false, false))
+        drawCheck.set(false)
+        checkButtonColor(2)
         initView()
     }
 
@@ -175,10 +206,9 @@ class PhotoActivity : AppCompatActivity() , PhotoContract.View {
     }
 
     fun drawPhotoMask(){
-        changeTextColor.set(arrayOf(false,false,false))
-        changeTextColor.set(arrayOf(false,true,false))
         drawCheck.set(true)
         presenter.uploadFile(path.addFile(), photoOption) //원본 그림
+        checkButtonColor(1)
     }
 
     fun undoBtn(){
