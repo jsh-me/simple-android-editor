@@ -10,9 +10,9 @@ import java.io.File
 interface PhotoContract {
     interface View : BaseView<Presenter> {
         fun setPhotoView(file: File)
-
     }
-    interface Presenter: BasePresenter {
+
+    interface Presenter : BasePresenter {
         var view: View
         fun saveImage(context: Context, uri: Uri)
         fun uploadFrameFile(bitmap: Bitmap, context: Context)

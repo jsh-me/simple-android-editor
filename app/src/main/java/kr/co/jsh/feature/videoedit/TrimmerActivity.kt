@@ -70,7 +70,13 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     private var dynamicViewSpace: ArrayList<View> = ArrayList()
     private var stackDynamicViewSpace: ArrayList<View> = ArrayList()
 
-    val changeTextColor : ObservableField<Array<Boolean>> = ObservableField(arrayOf(false,false,false,false,false))
+    var removeButtonColor: ObservableField<Boolean> = ObservableField(false) //remove button
+    var improveButtonColor: ObservableField<Boolean> = ObservableField(true) // improve button
+    var drawButtonColor: ObservableField<Boolean> = ObservableField(true) //draw button
+    var cutClearButtonColor: ObservableField<Boolean> = ObservableField(false) // clear cut button
+    var drawClearButtonColor:ObservableField<Boolean> = ObservableField(false) // clear draw button
+    var cutRedoButtonColor: ObservableField<Boolean> = ObservableField(false) //cut redo button
+    var cutUndoButtonColor: ObservableField<Boolean> = ObservableField(false) //cut undo button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,6 +84,51 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         initView()
         prepareVideo()
         setupDrawView()
+    }
+
+    private fun checkButtonColor(stateCheckNumber: Int){
+        // stateCheckNumber
+        //0: 자르기 초기화
+        //1: 구간을 잘랐을때 (가위버튼 선택 시), 버튼 색상 변화
+        //2: 그리기 버튼을 눌렀을 때, 색상변화
+        //3: 자르기 초기화
+        //4: 그리기 초기화
+        //5: 그리다가, 스크롤을 다시 움직일 때.
+
+        when(stateCheckNumber){
+            0->{
+                improveButtonColor.set(true)
+                drawClearButtonColor.set(true)
+                removeButtonColor.set(false)
+                cutClearButtonColor.set(false)
+                drawClearButtonColor.set(false)
+                cutRedoButtonColor.set(false)
+                cutUndoButtonColor.set(false)
+            }
+            1->{
+                cutClearButtonColor.set(true)
+                cutUndoButtonColor.set(true)
+            }
+            2->{
+                removeButtonColor.set(true)
+                drawClearButtonColor.set(true)
+                drawButtonColor.set(false)
+            }
+            3->{
+                cutClearButtonColor.set(false)
+                cutRedoButtonColor.set(false)
+                cutUndoButtonColor.set(false)
+            }
+            4->{
+                removeButtonColor.set(false)
+            }
+            5->{
+                drawClearButtonColor.set(false)
+                removeButtonColor.set(false)
+                drawButtonColor.set(true)
+            }
+        }
+
     }
 
     private fun setupDataBinding(){
@@ -134,12 +185,15 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
                 add(Pair(0, 0))
                 add(Pair(binding.videoEditRecycler.width - ScreenSizeUtil(applicationContext).widthPixels.toLong(), mDuration))
             }
+            stackTrimList.clear()
             timeListFlag.set(false)
+            dynamicViewSpace.clear()
+            stackDynamicViewSpace.clear()
+            trimUndoCount = 0
         }
     }
 
     fun playVideo() {
-        changeTextColor.set(arrayOf(false, false, false, false, false))
         showVideoView()
         binding.iconVideoPauseBtn.visibility = View.VISIBLE
         binding.iconVideoPlayBtn.visibility = View.INVISIBLE
@@ -149,7 +203,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     }
 
     fun pauseVideo(){
-        changeTextColor.set(arrayOf(false, false, false, false, false))
+        //changeTextColor.set(arrayOf(false, false, false, false, false))
         binding.iconVideoPauseBtn.visibility = View.INVISIBLE
         binding.iconVideoPlayBtn.visibility = View.VISIBLE
         dispatcher.pause()
@@ -167,6 +221,7 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     //지울 객체 그리기
     fun removeMode(){
         drawMaskCheck = true
+        checkButtonColor(2)
         if(trimVideoTimeList.size <= 2) {
             presenter.uploadFile(mSrc.toString(), videoOption)
         }
@@ -177,9 +232,6 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         presenter.getFrameBitmap(userVideoTrimTime.value!!)
 
         this.toastShort("지울 곳을 칠해주세요")
-        changeTextColor.set(arrayOf(false, false, false, false, false))
-        changeTextColor.set(arrayOf(true, false, false, false, false))
-
         hideVideoView()
     }
 
@@ -211,27 +263,14 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     }
 
     fun resetTimeLineView(){
-        if(trimVideoTimeList.size <= 2) this.toastShort("자르기를 먼저 실행하세요.")
-        else {
-            initTimeList(true)
-            resetCropView()
-            presenter.resetTrimVideoLIst()
-            for(i in dynamicViewSpace.indices) {
-                binding.videoEditChildFrameLayout.removeView(dynamicViewSpace[i])
-            }
-            //all list clear
-            dynamicViewSpace.clear()
-            stackDynamicViewSpace.clear()
-            stackTrimList.clear()
-            initTimeList(true)
-
-            changeTextColor.set(arrayOf(false, false, false, false, false))
-            changeTextColor.set(arrayOf(false, true, false, false, false))
-        }
-    }
-
-    private fun resetCropView() {
+        checkButtonColor(3)
         binding.selectedTimeLineView.visibility = View.INVISIBLE
+        presenter.resetTrimVideoLIst()
+        for (i in dynamicViewSpace.indices) {
+            binding.videoEditChildFrameLayout.removeView(dynamicViewSpace[i])
+        }
+        initTimeList(true)
+
     }
 
     override fun onError(message: String) {
@@ -263,14 +302,18 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     private fun setListener() {
         binding.videoEditScrollView.setOnScrollChangeListener { _: View, scrollX: Int, _: Int, oldScrollX: Int, _: Int ->
             if (scrollX != oldScrollX && !setPlayFlag) {
+                checkButtonColor(5)
                 binding.videoLoader.visibility = View.VISIBLE
                 binding.videoFrameDrawView.visibility = View.INVISIBLE
+                binding.videoFrameDrawView.restartDrawing()
                 userVideoTrimTime.value= (mDuration * binding.videoEditScrollView.scrollX) / ((binding.videoEditRecycler.width) - ScreenSizeUtil(applicationContext).widthPixels)
                 presenter.setVideoSeekTo(userVideoTrimTime.value!!)
                 binding.videoStartTimeTv.text = String.format("%s", TrimVideoUtils.stringForTime(userVideoTrimTime.value!!.toFloat()))
 
                 if(trimVideoTimeList.size >=3){
                     setBorder(userVideoTrimTime.value!!)
+                } else {
+                    binding.selectedTimeLineView.visibility = View.INVISIBLE
                 }
             }
         }
@@ -298,20 +341,20 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     }
 
     fun clearDraw(){
+        checkButtonColor(4)
         if(binding.videoFrameDrawView.visibility == View.INVISIBLE){
             this.toastShort("지울 객체를 먼저 선택하세요.")
         }
         else {
             binding.videoFrameDrawView.restartDrawing()
             removeMode()
-            changeTextColor.set(arrayOf(false, false, false, false, false))
-            changeTextColor.set(arrayOf(false, false, true, false, false))
         }
     }
 
 
     fun cuttingVideoBtn(){
         presenter.setCuttingVideo(this, trimVideoTimeList, binding.videoEditRecycler)
+        checkButtonColor(1)
     }
 
     override fun setGreyLine(list: ArrayList<Pair<Long, Long>>, trimmedPosition: Long) {
@@ -379,6 +422,9 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
         stackTrimList.add(presenter.getIndexOfTrimVideoList(trimUndoCount))
         trimVideoTimeList.remove(presenter.getIndexOfTrimVideoList(trimUndoCount))
         trimUndoCount++
+        if (trimVideoTimeList.size <= 2) cutUndoButtonColor.set(false)
+        if (stackTrimList.size > 0) cutRedoButtonColor.set(true)
+
         //---- trim line 제어
         binding.videoEditChildFrameLayout.removeView(dynamicViewSpace.last())
         stackDynamicViewSpace.add(dynamicViewSpace.last())
@@ -388,7 +434,10 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     fun videoEditRedoBtn(){
         trimVideoTimeList.add(stackTrimList.last())
         stackTrimList.removeAt(stackTrimList.lastIndex)
+        trimUndoCount--
         trimVideoTimeList.sortBy{ it.first }
+        if(stackTrimList.size <= 0) cutRedoButtonColor.set(false)
+        if(trimVideoTimeList.size > 2) cutUndoButtonColor.set(true)
 
         binding.videoEditChildFrameLayout.addView(stackDynamicViewSpace.last())
         dynamicViewSpace.add(stackDynamicViewSpace.last())
@@ -398,9 +447,6 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
     fun sendRemoveVideoInfoToServer(){
         videoOption = Consts.DEL_OBJ
         if(drawMaskCheck) {
-            changeTextColor.set(arrayOf(false, false, false, false, false))
-            changeTextColor.set(arrayOf(false, false, false, true, false))
-
             job = CoroutineScope(Dispatchers.Main).launch {
                 startAnimation()
                 CoroutineScope(Dispatchers.Default).async {
@@ -446,8 +492,6 @@ class TrimmerActivity : AppCompatActivity(), TrimmerContract.View {
                 }.await()
             }
         }
-        changeTextColor.set(arrayOf(false, false, false, false, false))
-        changeTextColor.set(arrayOf(false, false, false, false, true))
     }
 
 

@@ -88,13 +88,14 @@
             app:layout_constraintEnd_toEndOf="@+id/photo_edit_iv"
             app:layout_constraintStart_toStartOf="@+id/photo_edit_iv"
             app:layout_constraintTop_toTopOf="@+id/photo_edit_iv"
-            app:layout_constraintVertical_bias="0.49" />
+            app:layout_constraintVertical_bias="0.49"
+            app:drawListener="@{photo.setDrawListener}"/>
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/photo_edit_child_layout"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="120dp"
             android:background="@color/grey2"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -104,11 +105,13 @@
         <TextView
             android:id="@+id/photo_edit_remove_btn"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="30dp"
             android:layout_marginStart="10dp"
+            android:clickable="@{photo.drawButtonColor}"
+            android:gravity="center|clip_vertical|center_horizontal"
             android:onClick="@{() -> photo.drawPhotoMask()}"
             android:text="@string/draw"
-            android:textColor="@{photo.changeTextColor[1] ? @color/white : @color/black}"
+            android:textColor="@{photo.drawButtonColor?  @color/white : @color/grey3}"
             app:layout_constraintBottom_toBottomOf="@+id/photo_edit_reset_draw_btn"
             app:layout_constraintStart_toStartOf="@+id/photo_edit_child_layout"
             app:layout_constraintTop_toTopOf="@+id/photo_edit_reset_draw_btn"
@@ -121,8 +124,9 @@
             android:layout_marginStart="20dp"
             android:layout_marginBottom="8dp"
             android:onClick="@{() -> photo.resetBtn()}"
-            android:text="@string/initialize_draw"
-            android:textColor="@{photo.changeTextColor[0] ? @color/white : @color/black}"
+            android:textColor="@{photo.clearDrawButtonColor?  @color/white : @color/grey3}"
+            android:clickable="@{photo.clearDrawButtonColor}"
+            android:text="@string/clear_draw"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/photo_edit_remove_btn" />
 
@@ -148,6 +152,35 @@
             app:layout_constraintBottom_toBottomOf="@+id/photo_edit_undo_btn"
             app:layout_constraintStart_toEndOf="@+id/photo_edit_undo_btn"
             app:layout_constraintTop_toTopOf="@+id/photo_edit_undo_btn" />
+
+        <TextView
+            android:id="@+id/photo_edit_send_server_remove_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:clickable="@{photo.removeButtonColor}"
+            android:onClick="@{() -> photo.sendRemovePhotoInfoToServer()}"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:text="@string/remove"
+            android:textColor="@{photo.removeButtonColor?  @color/white : @color/grey3}"
+            app:layout_constraintStart_toStartOf="@+id/photo_edit_undo_btn"
+            app:layout_constraintTop_toBottomOf="@+id/photo_edit_undo_btn" />
+
+        <TextView
+            android:id="@+id/photo_edit_send_server_improve_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:clickable="@{photo.improveButtonColor}"
+            android:onClick="@{() -> photo.sendImprovePhotoInfoToServer()}"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:text="@string/improve"
+            android:textColor="@{photo.improveButtonColor?  @color/white : @color/grey3}"
+            app:layout_constraintStart_toEndOf="@+id/photo_edit_send_server_remove_btn"
+            app:layout_constraintTop_toBottomOf="@+id/photo_edit_redo_btn" />
 
         <kr.co.jsh.customview.BlockingView
             android:id="@+id/blockingView"

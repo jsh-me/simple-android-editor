@@ -101,6 +101,18 @@
                 app:layout_constraintStart_toStartOf="@+id/mainImageView"
                 app:layout_constraintTop_toBottomOf="@+id/textView" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/video"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/videoButton"
+                app:layout_constraintEnd_toEndOf="@+id/videoButton"/>
+
             <ImageButton
                 android:id="@+id/photoButton"
                 android:layout_width="match_parent"
@@ -113,11 +125,22 @@
                 android:onClick="@{() -> main.pickFromPicture(consts.REQUEST_VIDEO_CROPPER)}"
                 android:padding="5dp"
                 android:scaleType="fitXY"
-                android:text="@string/photo"
                 android:textColor="@color/white"
                 app:layout_constraintBottom_toTopOf="@+id/myProjectTxt"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/mainImageView" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/photo"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/photoButton"
+                app:layout_constraintEnd_toEndOf="@+id/photoButton" />
 
             <TextView
                 android:id="@+id/myProjectTxt"
