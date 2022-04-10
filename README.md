@@ -1,6 +1,14 @@
 <h1 align="center">
     Simple Android Editor</h1>
 
+### Udated 2022.04.10
+I will not reply that email related to the project (e.g., job offer, code purchase, project build failed issue) will not reply. This project was just out of curiosity, and not maintained, so you will require a lot of code modifications to be used for commercial purposes.
+Nevertheless, if you need my help for any other purpose, please contact me : ppmitsehee@gmail.com.
+
+프로젝트 관련 이메일(예: job offer, 코드 구매, 프로젝트 빌드 실패 문제)은 회신하지 않을 예정입니다. 이 프로젝트는 현재 유지보수가 안되어 있기 때문에 상업적으로 사용하기 위해서는 많은 코드 수정이 필요합니다. 그럼에도 불구하고 만약 다른 목적으로 제 도움이 필요하다면, ppmitsehee@gmail.com 으로 연락주세요.
+
+<br><br><br><br><br><br><br><br><br><br>
+
 <p align="center">
      <a href="https://opensource.org/licenses/Apache-2.0"><img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-blue.svg"/></a>
     <a href="https://android-arsenal.com/api?level=23"><img alt="API" src="https://img.shields.io/badge/API-23%2B-brightgreen.svg?style=flat"/></a><a href=""><img alt="API" src="https://img.shields.io/github/languages/top/jsh-me/android-video-editor"/></a>
