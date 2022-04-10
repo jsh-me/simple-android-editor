@@ -7,7 +7,7 @@ Nevertheless, if you need my help for any other purpose, please contact me : ppm
 
 프로젝트 관련 이메일(예: job offer, 코드 구매, 프로젝트 빌드 실패 문제)은 회신하지 않을 예정입니다. 이 프로젝트는 현재 유지보수가 안되어 있기 때문에 상업적으로 사용하기 위해서는 많은 코드 수정이 필요합니다. 그럼에도 불구하고 만약 다른 목적으로 제 도움이 필요하다면, ppmitsehee@gmail.com 으로 연락주세요.
 
-<br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br>
 
 <p align="center">
      <a href="https://opensource.org/licenses/Apache-2.0"><img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-blue.svg"/></a>
